@@ -37,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9800</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
       </span>
     </div>
 
@@ -140,7 +140,7 @@
 <p>If these things are in place, you can get your authentication token with <code><a href="../reference/dai_auth.html">dai_auth()</a></code>. Store it as <code>google_token</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Hegghammer/daiR">daiR</a></span><span class="op">)</span>
-<span class="co">#&gt; Welcome to daiR 0.0.0.9800, your gateway to Google Document AI v1beta2.</span></code></pre></div>
+<span class="co">#&gt; Welcome to daiR 0.0.0.9900, your gateway to Google Document AI v1beta2.</span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">google_token</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_auth.html">dai_auth</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>If this process fails, it’s likely because <code>daiR</code> could not find the <code>GCS_AUTH_FILE</code> variable in your <code>.Renviron</code> file. Return to the vignette on “Setting up Google Storage” and make sure steps 6 and 7 are covered. Alternatively, you can, if you prefer, obtain an access token by <a href="https://cran.r-project.org/web/packages/googleAuthR/vignettes/google-authentication-types.html">another method</a>; just make sure to store it as <code>google_token</code>.</p>
