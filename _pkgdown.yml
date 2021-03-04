@@ -1,0 +1,62 @@
+title: "daiR"
+template:
+  params:
+    bootswatch: united
+    ganalytics: G-NL6TR4PT51
+reference:
+  - title: Send for processing
+    desc: ~
+    contents:
+      - '`dai_sync`'
+      - '`dai_async`'
+  - title: Inspect output
+    desc: ~
+    contents:
+      - '`text_from_dai_response`'
+      - '`text_from_dai_file`'
+      - '`draw_blocks`'
+      - '`draw_paragraphs`'
+      - '`draw_lines`'
+      - '`draw_tokens`'
+  - title: Process output
+    desc: ~
+    contents:
+      - '`build_token_df`'
+      - '`build_block_df`'
+      - '`split_block`'
+      - '`reassign_tokens`'
+      - '`reassign_tokens2`'
+      - '`from_labelme`'
+  - title: Utilities
+    desc: ~
+    contents:
+      - '`.onAttach`'
+      - '`dai_auth`'
+      - '`get_project_id`'
+      - '`image_to_pdf`'
+      - '`create_folder`'
+      - '`img_to_binbase`'
+      - '`pdf_to_binbase`'
+navbar:
+  type: inverse
+  left:
+    - icon: fa-home
+      href: index.html
+    - text: "Quickstart"
+      href: articles/basics.html
+    - text: "Vignettes"
+      menu:
+      -  text: Setting up a Google Storage Bucket
+         href: articles/setting_up_google_storage.html
+      -  text: Using Google Document AI with R
+         href: articles/using_document_ai.html
+      -  text: Correcting text output from Google Document AI
+         href: articles/reconstructing_text.html
+      -  text: Complex file and folder management
+         href: articles/Complex_file_and_folder_management.html
+    - text: "Reference"
+      href: reference/index.html
+    - icon: fab fa-github
+      text: "Github"
+      href: https://github.com/hegghammer/dair/
+

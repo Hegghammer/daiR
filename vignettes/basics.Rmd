@@ -1,0 +1,70 @@
+---
+title: "Basic processing"
+output: html_document
+vignette: >
+  %\VignetteIndexEntry{Basic processing}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+### Authenticate
+
+After first-time setup (see [vignette](https://dair.info/articles/setting_up_google_storage.html)), initiate session with:
+
+```{r, eval=FALSE}
+library(daiR) 
+google_token <- dai_auth() 
+project_id <- get_project_id()
+```
+
+### Process synchronously
+
+Pass a single-page pdf or image file to Document AI and get the output immediately:
+
+```{r, eval=FALSE}
+myfile <- "<sample.pdf>"
+response <- dai_sync(myfile)
+text <- text_from_dai_response(response)
+cat(text)
+```
+
+### Process asynchronously
+
+Send larger batches for offline processing in three steps:
+
+#### 1. Upload files to your Google Storage bucket
+
+```{r, eval=FALSE}
+## Not run:
+library(googleCloudStorageR)
+library(fs)
+library(purrr)
+gcs_global_bucket("<YOUR_BUCKET_NAME>")
+my_pdfs <- dir_ls(glob = "*.pdf")
+map(my_pdfs, ~ gcs_upload(.x, name = .x))
+```
+
+#### 2. Tell Document AI to process them:
+
+```{r, eval=FALSE}
+## Not run:
+dai_async(my_pdfs)
+```
+
+#### 3. Download the json output and extract the text:
+
+```{r, eval=FALSE}
+## Not run:
+bucket_contents <- gcs_list_objects()
+only_jsons <- grep("*.json", bucket_contents$name, value = TRUE)
+map(only_jsons, ~ gcs_get_object(.x, saveToDisk = .x))
+
+jsons_downloaded <- dir_ls(glob = "*.json")
+text <- text_from_dai_file(jsons_downloaded[1])
+cat(text)
+```

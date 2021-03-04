@@ -1,0 +1,9 @@
+^daiR\.Rproj$
+^\.Rproj\.user$
+^\.httr-oauth$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^index.md$
+^cran-comments.md$
+^\.travis\.yml$

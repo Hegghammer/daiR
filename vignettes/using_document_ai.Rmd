@@ -1,0 +1,188 @@
+---
+title: "Using Google Document AI with R"
+author: "Thomas Hegghammer"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using Google Document AI with R}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+options(rmarkdown.html_vignette.check_title = FALSE)
+library(knitr)
+opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+**Last updated 4 March 2021**
+\
+\
+\
+
+## About Document AI
+
+[Google Document AI](https://cloud.google.com/document-ai) (DAI) is a server-based OCR engine that extracts text from pdf files. Released in November 2020, it is much more powerful than static libraries such as [`tesseract`](https://github.com/tesseract-ocr/tesseract). Short of corpus-specific, self-trained processors, DAI offers some of the best OCR capabilities currently available to the general public. At the time of writing, DAI is more expensive than Amazon's [Textract](https://aws.amazon.com/textract/), but promises to support many more languages.
+
+DAI is accessed through an API, but this API currently has no official R [client library](https://cloud.google.com/document-ai/docs/libraries). This is where the `daiR` package comes in; it provides a light wrapper for DAI's [REST API](https://cloud.google.com/document-ai/docs/reference/rest), making it possible to submit documents to DAI from within R. In addition, `daiR` comes with pre- and postprocessing tools intended to make the whole text extraction process easier. 
+
+Google Document AI is closely connected with [Google Storage](https://cloud.google.com/storage), as the latter serves as a drop-off and pick-up point for files you want processed in DAI. An R workflow for DAI processing consists of three core steps: 
+
+1. Upload your files to a Google Storage bucket. This can be done manually in the [Google Cloud Console](https://console.cloud.google.com/storage/) or programmatically with the package [`googleCloudStorager`](https://code.markedmondson.me/googleCloudStorageR/index.html). 
+2. Using `daiR`, tell DAI to process the files in your bucket. DAI will return its output to your Storage bucket in the form of json files.
+3. Download the json files from your Storage bucket to your hard drive. Again you can use either the Cloud Console or `googleCloudStorager`.
+
+## Setup
+
+A previous vignette covered the setting up of a Google Cloud service account and interacting with Google Storage. Here we pick up from where that vignette left off, and assume that the following things are in place:
+
+1. A Google Cloud Services (GCS) **project** linked to your billing account and with the Document AI API enabled.
+2. A **service account** with the role "Owner".
+3. A **json file** with the service account key, the path to which is stored in an environment variable called `GCS_AUTH_FILE`.
+
+If these things are in place, you can get your authentication token with `dai_auth()`. Store it as `google_token`. 
+
+```{r}
+library(daiR)
+```
+
+```{r, eval=FALSE}
+google_token <- dai_auth()
+```
+
+If this process fails, it's likely because `daiR` could not find the `GCS_AUTH_FILE` variable in your `.Renviron` file. Return to the vignette on "Setting up Google Storage" and make sure steps 6 and 7 are covered. Alternatively, you can, if you prefer, obtain an access token by [another method](https://cran.r-project.org/web/packages/googleAuthR/vignettes/google-authentication-types.html); just make sure to store it as `google_token`.
+
+At this point you should also store your project id as a variable, because you need it for all your processing requests to DAI. You can either write it in manually or have `daiR::get_project_id()` get it for you from the service account json file.
+
+```{r, eval=FALSE}
+project_id <- get_project_id()
+```
+
+Now there's only one configuration left: Load the library `googleCloudStorager` and set your default Storage bucket with `gcs_global_bucket()`. The latter step not strictly necessary, but will save you from having to type in the bucket name in all your subsequent commands to Google Storage and DAI.
+
+```{r, eval=FALSE}
+library(googleCloudStorageR)
+gcs_global_bucket("superbucket_2021") # my bucket name for this vignette
+```
+
+For this vignette we also need a sample document to work with. I will use a pdf from the CIA's Freedom of Information Act Electronic Reading Room: 
+
+```{r, eval=FALSE}
+download.file("https://www.cia.gov/readingroom/docs/AGH%2C%20LASLO_0011.pdf", 
+              destfile = "CIA.pdf", 
+              mode = "wb")
+```
+
+## Synchronous processing
+
+The quickest and easiest way to OCR with DAI is through synchronous processing. Pass a single-page pdf or image file to the processor using `dai_sync()` and get the result into your R environment within seconds:
+
+```{r, eval=FALSE}
+response <- dai_sync("CIA.pdf")
+```
+
+Extract the text with `text_from_dai_response()`:
+
+```{r, eval=FALSE}
+text <- text_from_dai_response(response)
+cat(text)
+```
+
+Synchronous processing is very convenient, but has two limitations. One is that `dai_sync()` converts the source file to a lightweight, grayscale image, which means OCR accuracy may be slightly reduced compared with asynchronous processing for some documents. The other is scaling; If you have a large pdf or many files, it is usually easier to process them asynchronously.    
+
+## Asynchronous single file processing
+
+The first step in asynchronous (offline) processing is to upload the source file(s) to a Google Storage bucket where DAI can find it. 
+
+```{r, eval=FALSE}
+gcs_upload("CIA.pdf")
+```
+
+Let's check that it made it safely: 
+
+```{r, eval=FALSE}
+gcs_list_objects()
+```
+
+We're now ready to send it off to Document AI with `daiR`'s workhorse function, `dai_async()`. Its core parameter, `files`, tells DAI which file(s) to process. `files` can be either a single filepath or a vector or list of filepaths. You can process either .pdf, .gif, or .tiff files. 
+
+You can also specify a `dest_folder`: the name of the bucket folder where you want the output. It defaults to the root of the bucket, but you can specify another subfolder. If the folder does not exist already, it will be created. 
+
+`dai_async()` takes five other parameters, two of which default to things that should already be in your environment, namely, `project id` and `bucket`. The last three are: 1) `filetype`, which defaults to `"pdf"` but can be set to `"gif"` or `"tiff"` if that is what you are sending to DAI; 2) `loc` (location), which defaults to `'eu'` but can be changed to `'us'`; and 3) `pps` (pages per shard), which defaults to 100 but can be set lower if you want the JSON output to be split into smaller files.
+
+If you stick with the defaults, the processing call for a single file is very simple: 
+
+```{r, eval=FALSE}
+dai_async("CIA.pdf")
+```
+
+"Status: 200" is good news, as it means the HTTP request was accepted by the API. If there was something wrong with your token or your `project_id` parameter, you would have gotten a 403 (invalid request) or some other error message.
+
+Note, however, that a 200 does not necessarily mean that the processing was successful, because the API has no way of knowing right away if the filepaths you provided exist in your bucket. If there were errors in your filepaths, your HTTP request would get a 200, but your files would not actually process. They would turn up as empty files in the folder you provided. So if you see json files of around 70 bytes each in the destination folder, you know there was something wrong with your filenames.
+
+The OCR processing time depends on the length of the document. I haven't seen official numbers, but it appears to take about 5-10 seconds per page. Let's check the bucket again for the `.json` output file:
+
+```{r, eval=FALSE}
+gcs_list_objects()
+```
+
+And there it is: `"CIA.pdf-output-page-1-to-1.json"`. Let's download it and save it under a simpler name:
+
+```{r, eval=FALSE}
+gcs_get_object("CIA.pdf-output-page-1-to-1.json", saveToDisk = "CIA.json")
+```
+
+Finally we extract the text using `text_from_dai_file`:
+
+```{r, eval=FALSE}
+text <- text_from_dai_file("CIA.json")
+cat(text)
+```
+
+## Asynchronous batch processing
+
+As mentioned, `dai_async()` can take vectors of filenames as input, so batch processing is quite straightforward. To illustrate, let's make a copy of the CIA file under another name to pretend we have more than one file. 
+
+```{r, eval=FALSE}
+library(fs)
+file_copy("CIA.pdf", "CIA2.pdf")
+```
+
+We go back to square one and start by uploading the files to our bucket. `gcs_upload()` takes only one item at a time, so we need to iterate the function over a vector containing our files:
+
+```{r, eval=FALSE}
+library(purrr)
+pdfs <- dir_ls(glob = "*.pdf")
+map(pdfs, ~ gcs_upload(.x, name = .x))
+```
+
+Then we just pass the same vector straight to `dai_async()`:
+
+```{r, eval=FALSE}
+dai_async(pdfs)
+```
+
+The current version of `dai_async()` handles batch requests by submitting individual files at 10 second intervals (to respect the rate limit). If you have many files, this can hold up your R session for some time, so consider running your script as a separate [RStudio job](https://blog.rstudio.com/2019/03/14/rstudio-1-2-jobs/). Document AI starts OCR processing the moment it receives the first document, so you should see action in your bucket fairly soon even if you submitted a large batch.
+
+When you check your bucket for the results of a batch submission, store the output as a vector, as you'll need it soon for the download. 
+
+```{r, eval=FALSE}
+contents <- gcs_list_objects()
+contents
+```
+
+Now we need to create a vector with just the `.json` files in the bucket. We do this by searching the `contents$name` vector for files ending in `.json`:
+
+```{r, eval=FALSE}
+jsons <- grep("*.json$", contents$name, value = TRUE)
+```
+
+Then we iterate the `gcs_get_object()` function over our `jsons` vector:
+
+```{r, eval=FALSE}
+map(jsons, ~ gcs_get_object(.x, saveToDisk = .x))
+```
+
+Now the ouput files should be on your hard drive ready for parsing with `text_from_dai_file()`.

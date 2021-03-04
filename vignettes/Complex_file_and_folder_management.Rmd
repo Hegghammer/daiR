@@ -1,0 +1,115 @@
+---
+title: "Complex file and folder management"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Complex file and folder management}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+options(rmarkdown.html_vignette.check_title = FALSE)
+
+library(knitr)
+
+opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+**Last updated 4 March 2021**
+\
+\
+\
+
+The main `daiR` vignettes use deliberately simple examples involving uploads of pdf files straight into the root of the bucket and down again. In real life you may be dealing with slightly more complex scenarios. 
+
+## Image files
+
+Document AI accepts only PDFs, but sometimes your source documents are image files. `daiR`'s helper function `image_to_pdf()` is designed to help with this. Based as it is on `imagemagick`, it converts almost any image file format to pdf. You can also pass a vector of image files and ask for a single `.pdf` output, which is useful for collating several pagewise images to a single, multipage `.pdf`.
+
+To illustrate, we can take this image of an old text from the National Park Service Website:
+
+```{r, eval = FALSE}
+download.file("https://www.nps.gov/articles/images/dec-of-sentiments-loc-copy.jpg", 
+              destfile = "nps.jpeg", 
+              mode = "wb")
+```
+
+And convert it to a pdf like so:
+
+```{r, eval = FALSE}
+library(daiR)
+image_to_pdf("nps.jpeg", "nps.pdf")
+```
+
+And the file is ready for processing with Document AI.
+
+## Processing a folder tree
+
+At other times you may want to have folders inside your bucket. A typical scenario is when your source documents are stored in a folder tree and you want to batch process everything without losing the original folder structure. 
+
+Problem is, it's techically not possible to have folders in Google Storage; files in a bucket are kept side by side in a flat structure. We can, however, *imitate* a folder structure by adding prefixes with forward slashes to filenames. This is not complicated, but requires paying attention to filenames at the upload and download stage. 
+
+To illustrate, let's create two folders in our working directory: `folder1` and `folder2`: 
+
+```{r, eval = FALSE}
+library(fs)
+dir_create("folder1")
+dir_create("folder2")
+```
+
+Then we create three duplicates of the file `nps.pdf` and put two pdfs in each folder.  
+
+```{r, eval = FALSE}
+file_move("nps.pdf", "./folder1/nps.pdf")
+file_copy("./folder1/nps.pdf", "./folder1/nps2.pdf", overwrite = TRUE)
+file_copy("./folder1/nps.pdf", "./folder2/nps3.pdf", overwrite = TRUE)
+file_copy("./folder1/nps.pdf", "./folder2/nps4.pdf", overwrite = TRUE)
+```
+
+To upload this entire structure to Google Storage, we create a vector of files in all subfolders with the parameter `recurse = TRUE` in the `dir_ls()` function. I'm assuming here that the working directory is otherwise empty of pdf files. 
+
+```{r, eval = FALSE}
+pdfs <- dir_ls(glob = "*.pdf", recurse = TRUE)
+```
+
+We then iterate the `gcs_upload()` function over our vector:
+
+```{r, eval = FALSE}
+library(purrr)
+map(pdfs, ~ gcs_upload(.x, name = .x))
+```
+
+If we now check the bucket contents, we see that the files are in their respective "folders". 
+
+```{r, eval = FALSE}
+gcs_list_objects()
+```
+
+Bear in mind, though, that this is an optical illusion; the files are technically still on the same level. In reality, the `folder1/` and `folder2/` elements are an integral part of the filenames. 
+
+We can process these files as they are with the following command:
+
+```{r, eval = FALSE}
+dai_async(pdfs) 
+```
+
+In which case DAI returns `.json` files titled `folder1/nps.pdf-output-page-1-to-1` and so forth. We can download these the usual way:
+
+```{r, eval = FALSE}
+content <- gcs_list_objects()
+jsons <- grep("*.json$", contents$name, value = TRUE)
+map(jsons, ~ gcs_get_object(.x, saveToDisk = .x))
+```
+
+And the json files will be stored in their respective subfolders alongside the source pdfs. 
+
+Note, however, that this last script only worked because there already were folders titled `folder1` and `folder2` in our working directory. If there hadn't been, R would have returned an error, because the `gcs_get_object()` function cannot create new folders on your hard drive.
+
+If you wanted to download the files to another folder where there wasn't a corresponding folder tree to "receive" them, you would have to use a workaround such as changing the forward slash in the bucket filepaths for an underscore (or something else) as follows:
+
+```{r, eval = FALSE}
+map(jsons, ~ gcs_get_object(.x, saveToDisk = gsub("/", "_", .x)))
+```

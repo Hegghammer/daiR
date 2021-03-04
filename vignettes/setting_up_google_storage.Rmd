@@ -1,0 +1,236 @@
+---
+title: "Setting up a Google Storage bucket"
+author: "Thomas Hegghammer"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Setting up a Google Storage bucket}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+options(rmarkdown.html_vignette.check_title = FALSE)
+
+library(knitr)
+
+opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+**Last updated 16 February 2021**
+\
+\
+\
+
+This is a rundown for beginners of how to set up and interact with Google Storage in R. You need Google Storage in order to use Document AI and other Google APIs on scale, because these services do not accept bulk file submissions directly. Instead they use Google Storage as an intermediary, so you need to know how to get files in and out of it.    
+
+It is possible to bulk upload and download files to Google Storage in the [Google Cloud Console](https://console.cloud.google.com/storage). In fact, for uploads it can sometimes be easier than doing it programmatically. But downloads and deletions are cumbersome if you have a lot of files. And since bulk processing in DAI can only be done with code, you might as well keep the whole workflow in R. 
+
+## Authentication
+
+The biggest hurdle to using any Google API is authentication, which is daunting for several reasons. It involves abstract new concepts like "service accounts", "Oauth2.0", and "scopes". Moreover, the Google Cloud Console is so crowded it's a nightmare to navigate as a beginner. In addition, different R packages have different procedures for authenticating with Google Cloud Services (GCS).
+
+A full explanation of Google API authentication could fill a book, but suffice to say here that there are several different ways to authenticate to GCS from R. In the following I will walk you through one such way, the one I think is the simplest and most robust if you are primarily planning to use Google Storage and Google Document AI and to do so in an interactive setting. 
+
+The procedure outlined below relies on service accounts and json key files. It involves a little bit more hands-on configuration than some of the setup wizards in packages such as `googleStorageR`. But as a beginner I found these tools somewhat confusing because they don't tell you what they do under the hood. My thinking is: if you are computer-literate enough to consider working programmatically with an API, you are also able to find your way around the Google Cloud Console and .Renviron files. But know that there are [several](https://cran.r-project.org/web/packages/gargle/vignettes/get-api-credentials.html) [other](https://cran.r-project.org/web/packages/googleAuthR/vignettes/google-authentication-types.html) authenticatication strategies; which is better depends on where and how you intend to use the R wrapper.
+
+### Step 1: Get a Gmail account
+
+If you have one already, you can use that. Or you can [create](https://accounts.google.com/signup/v2/webcreateaccount) a burner account for your GCS work.
+
+### Step 2: Activate the Google Cloud Console
+
+While logged in to your gmail account, go to the [Google Cloud Console](https://console.cloud.google.com/). Agree to the terms of service and click "Try for free". 
+
+```{r, echo=FALSE, out.width = "50%"}
+include_graphics("storage1.PNG")
+```
+
+Accept the terms again, and add an address and a **credit card**. This last part is a prerequisite for using GCS.
+
+### Step 3: Link your project to your billing account
+
+The largest "unit" of your GCS activities is your *project*. You can think of it as your root folder, since you will most likely only ever need one unless you are a business or a developer (in principle, though, you can have as many projects as you like). 
+
+When you activate GCS, you are assigned a project named "My first project". Click on "My first project" in the top blue bar, just to the right of "Google cloud services". You'll see a screen like this: 
+
+```{r, echo=FALSE, out.width = "50%"}
+include_graphics("storage2.PNG")
+```
+
+Note that your project has an *ID*, usually consisting of an adjective, a noun, and a number. You'll need this soon, so I recommend opening RStudio and storing it as a vector: 
+
+```{r, eval=FALSE}
+my_project_id <- "<your project id>"
+```
+
+Return to the Google Cloud Console and look at the left column. Toward the top you see an entry called "Billing". Click it. You'll get to a screen saying "This project has no billing account". Click "link a billing account" and set the billing account to "My billing account". 
+
+```{r, echo=FALSE, out.width = "50%"}
+include_graphics("storage3.PNG")
+```
+
+All this is necessary for you to be able to access Google Storage and other Google tools programmatically. Both Google Storage and DAI are paid services, although for Google Storage the cost is negligible unless you plan to keep very large amounts of data there for a long time. For DAI, you're looking at around EUR 0.06 per processed page, though at the current time of writing, you get 300$ worth of free credits. 
+
+### Step 4: Activate additional APIs
+
+Bring out the navigation menu on the left hand side by clicking the little circle with the three horizonal lines in the top left of the screen. Click on "APIs and services". Scroll down and you'll see a list of the APIs which are enabled by default. These include the Google Storage API and a few others. Now is a good time to activate any other APIs that you know you are going to use in conjuction with Google Storage, such as Document AI. Click on "Enable APIs and Services", type "document ai" in the search field, click on "cloud document ai API" and then "Enable". Repeat for other APIs you are interested in. 
+
+Now open the navigation menu on the left again, and click on APIs and services. Then click on "credentials" in the left pane. You should see this: 
+
+```{r, echo=FALSE, out.width = "50%"}
+include_graphics("storage4.PNG")
+```
+
+### Step 5: Set up a service account
+
+Now we want to create a service account. Click on "create credentials" in the top middle, then choose service account. Give it any name you like (e.g. "my_rstudio_service_account") and a description (e.g. "Interacting with GCS through R") and click "create". 
+
+In section 2 titled "Grant this service account access to project", add "Basic > **Owner**" to the service account's roles.  
+
+```{r, echo=FALSE, out.width = "50%"}
+include_graphics("storage5.PNG")
+```
+
+Click "continue", then "done" at the bottom. You should now see your service account listed at the bottom. 
+
+```{r, echo=FALSE, out.width = "50%"}
+include_graphics("storage6.PNG")
+```
+
+### Step 6: Download a json file with the service account key
+
+Now we need to generate a json file containing the login details for this service account. Click the small edit icon on the bottom right. On the next page, click "add key", choose "create new key", select JSON format, and click "create". This should prompt a save file window. Save the file to your hard drive. You can change the name to something more memorable if you like (but keep the ".json" extension). Also, take note of where you stored it. Now we are done in the Google Cloud Console and can finally start working in RStudio.
+
+### Step 7: Tell RStudio where to find the json file
+
+The last step is to store the path to the json file in your .Renviron file so that RStudio can authenticate you whenever you are working with GCS from R. Start by writing the following in the console:
+
+```{r, message=FALSE, eval=FALSE}
+usethis::edit_r_environ()
+```
+
+This will open a pane with your .Renviron file. If you haven't modified it before, it is probably empty. 
+
+All you need to do is add a line with the following: **`GCS_AUTH_FILE='<full path to the json file you stored earlier>'`**. Make sure all the slashes in the filepath are forward slashes. Save the file, close it, and restart RStudio.
+
+Now when you load the library `googleCloudStorageR`, you will be auto-authenticated and ready to communicate with your Google Storage account from within R. 
+
+```{r, message=FALSE, eval=FALSE}
+library(googleCloudStorageR)
+```
+
+## Working with googleCloudStorageR
+
+`googleCloudStorageR` is a so-called wrapper for the Google Storage API, which means it translates your R input into URLs that the API can understand. When you execute `googleCloudStorageR` functions, you are really sending GET and POST requests to Google and receiving responses in return.
+
+### Creating and inspecting buckets
+
+Google Storage is a file repository, and it keeps your files in so-called "buckets". You need at least one bucket to store files. To inspect your Storage account, first bring out your project id. If you did not store it in step 3 above, you can get it from the Google Cloud Console or from the json file with your service account key. 
+
+```{r, eval = FALSE}
+my_project_id <- "<your project id>"
+```
+
+Now let's see how many buckets we have:
+```{r, eval = FALSE}
+gcs_list_buckets(my_project_id)
+```
+
+Answer: zero, because we haven't created one yet. We can do this with `gcs_create_bucket()`. Note that it has to be globally unique ("my_bucket" won't work because someone's already taken it). For this example, let's call it "superbucket_2021". Also add your location ("EU" or "US").
+
+```{r, eval = FALSE}
+gcs_create_bucket("superbucket_2021", my_project_id, location = "EU")
+```
+
+Now we can see the bucket listed:
+```{r, eval = FALSE}
+gcs_list_buckets(my_project_id)
+```
+
+At this point you may want to tell R that this is your default bucket. It saves you from adding the bucket id to every subsequent call.
+```{r, eval = FALSE}
+gcs_global_bucket("superbucket_2021")
+```
+
+We can get more details about the bucket with `gcs_get_bucket()`
+```{r, eval = FALSE}
+gcs_get_bucket()
+```
+
+To get the bucket's file inventory, we use `gcs_list_objects()`
+```{r, eval = FALSE}
+gcs_list_objects()
+```
+
+At this point it's obviously empty, so let's upload something. 
+
+### Uploading files
+
+This we do with `gcs_upload()`. If the file is in your working directory, just write the filename; otherwise provide the full file path. If you want, you can store the file under another name in Google Storage with the `name` parameter. Otherwise, just leave the parameter out.  
+
+```{r, eval = FALSE}
+write.csv(mtcars, "mtcars.csv")
+gcs_upload("mtcars.csv", name = "overused_tutorial_dataset.csv")
+```
+
+Now let's check the contents:
+```{r, eval = FALSE}
+gcs_list_objects()
+```
+
+The Google Storage API handles only one file at a time, so for bulk uploads you need to use a loop or an apply function. To test it, we can download two random pdfs.  
+
+```{r, eval = FALSE}
+library(purrr)
+download.file("https://cran.r-project.org/web/packages/googleCloudStorageR/googleCloudStorageR.pdf", 
+              "storager_doc.pdf")
+download.file("https://cran.r-project.org/web/packages/gargle/gargle.pdf", 
+              "gargle_doc.pdf")
+my_pdfs <- list.files(pattern = "*.pdf") 
+map(my_pdfs, ~ gcs_upload(.x, name = .x))
+```
+
+Let's check the contents again:
+```{r, eval = FALSE}
+gcs_list_objects()
+```
+
+Note that there's a file size limit of 5Mb, but you can change it with `gcs_upload_set_limit()`. 
+```{r, eval = FALSE}
+gcs_upload_set_limit(upload_limit = 20000000L)
+```
+
+### Downloading files
+
+Downloads are performed with gcs_get_object(). Here, too, you can save it under a different name, but this time the parameter is `saveToDisk`.
+
+```{r, eval = FALSE}
+gcs_get_object("overused_tutorial_dataset.csv", saveToDisk = "mtcars_duplicate.csv")
+```
+
+To download multiple files we need to loop or map. Let's say we wanted to download all the pdfs in the bucket:
+
+```{r, eval = FALSE}
+contents <- gcs_list_objects()
+pdfs_to_download <- grep("*.pdf", contents$name, value = TRUE)
+map(pdfs_to_download, ~ gcs_get_object(.x, saveToDisk = .x, overwrite = TRUE))
+```
+
+### Deleting
+
+We can delete files in the bucket with `gcs_delete_object()`: 
+```{r, eval = FALSE}
+gcs_delete_object("overused_tutorial_dataset.csv")
+```
+
+To delete several, we again need to loop or map. Let's try to delete everything in the bucket:
+
+```{r, eval = FALSE}
+contents <- gcs_list_objects()
+map(contents$name, gcs_delete_object)
+```
+
+And the bucket is empty. With this you should be ready to process files with Document AI and other APIs that involve Google Storage as an intermediary.
