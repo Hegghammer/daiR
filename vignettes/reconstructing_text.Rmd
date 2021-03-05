@@ -22,7 +22,7 @@ opts_chunk$set(
 \
 \
 
-Google Document AI (DAI) has excellent character recognition, but often reads columns wrong. This vignette will show how to identify and reorder jumbled text with the tools in the `daiR` package.  
+Google Document AI (DAI) has excellent character recognition, but often reads columns wrong. This vignette will show you how to identify and reorder jumbled text with the tools in the `daiR` package.  
 
 ## The problem
 
@@ -71,7 +71,7 @@ gcs_get_object("CIA_columns.pdf-output-page-1-to-1.json",
 
 Finally we extract the text:
 
-```{r, eval=FALSE}
+```{r}
 text <- text_from_dai_file("CIA_columns.json")
 cat(text)
 ```
@@ -82,7 +82,7 @@ On first inspection, this does not look so bad. But notice the transition from t
 
 Something's not right. Could it be a column-reading error?
 
-We can find out with `dair::draw_blocks()`, which extracts boundary box data from the `.json` file and draws numbered rectangles on an image of each page of the source document.  
+We can find out with the function `draw_blocks()`, which extracts boundary box data from the `.json` file and draws numbered rectangles on an image of each page of the source document.  
 
 ```{r, eval=FALSE}
 draw_blocks("CIA_columns.pdf", "CIA_columns.json")
@@ -96,7 +96,7 @@ include_graphics("CIA_columns1_blocks.png")
 
 We can immediately see that the blocks are in the wrong order. How to fix this?
 
-Fortunately, the `.json` file from DAI comes with a ton of data that allow us to programmatically reorder the text. The key is to generate a token dataframe with page location data and then filter and reorder as necessary. We create the dataframe with `dair::build_token_df`:
+Fortunately, the `.json` file from DAI comes with a ton of data that allow us to programmatically reorder the text. The key is to generate a token dataframe with page location data and then filter and reorder as necessary. We create the dataframe with `build_token_df()`:
 
 ```{r}
 token_df <- build_token_df("CIA_columns.json")
@@ -161,7 +161,7 @@ include_graphics("peshtigo1_blocks.png")
 
 As we can see, this time DAI has failed to distinguish between the two main columns. We can verify this by checking the beginning of the text:
 
-```{r, eval=FALSE}
+```{r}
 text <- text_from_dai_file("peshtigo.json")
 snippet <- substr(text, start = 1, stop = 1000)
 cat(snippet)
@@ -180,7 +180,7 @@ We can split blocks mathematically by using the location data for existing block
 block_df <- build_block_df("peshtigo.json")
 ```
 
-Then we use the function `daiR::split_block()` to cut block 12 vertically in half. This function takes as input a block dataframe, the page and number of the block to split, and a parameter `cut_point`, which is a number from 1 to 99 for the relative location of the cut point. `split_block()` returns a new block dataframe that includes the new block and revised coordinates for the old one. 
+Then we use the function `split_block()` to cut block 12 vertically in half. This function takes as input a block dataframe, the page and number of the block to split, and a parameter `cut_point`, which is a number from 1 to 99 for the relative location of the cut point. `split_block()` returns a new block dataframe that includes the new block and revised coordinates for the old one. 
 
 ```{r}
 new_block_df <- split_block(df = block_df, block = 12, cut_point = 50)
@@ -188,7 +188,7 @@ new_block_df <- split_block(df = block_df, block = 12, cut_point = 50)
 
 If we had more blocks to split, we could repeat the procedure as many times as necessary. We just have to make sure to feed the latest version of the block dataframe into the `split_block()` function. 
 
-When we have a block dataframe that captures the layout fairly accurately, we can use the `daiR::reassign_tokens()` function to assign new block values to the words in the *token* dataframe. `reassign_tokens()` takes as input the token dataframe and the new block dataframe and returns a revised token dataframe.
+When we have a block dataframe that captures the layout fairly accurately, we can use the `reassign_tokens()` function to assign new block values to the words in the *token* dataframe. `reassign_tokens()` takes as input the token dataframe and the new block dataframe and returns a revised token dataframe.
 
 ```{r}
 token_df <- build_token_df("peshtigo.json")
@@ -222,13 +222,13 @@ Then we mark the right-hand column and label it 13 (for the number of the new bl
 include_graphics("labelme2.png")
 ```
 
-Click "save" and store the json file, for example as `peshtigo1_blocks.json`. Now we can load it in R and get the coordinates of the new block 13 with the function `dair::from_labelme()`. This function returns a one-row dataframe formatted like block dataframes generated with `build_block_df`.
+Click "save" and store the json file, for example as `peshtigo1_blocks.json`. Now we can load it in R and get the coordinates of the new block 13 with the function `from_labelme()`. This function returns a one-row dataframe formatted like block dataframes generated with `build_block_df`.
 
 ```{r, eval=FALSE}
 block13 <- from_labelme("peshtigo1_blocks.json")
 ```
 
-We can then assign a new block number to the tokens that fall within block13. For this we use `daiR::reassign_tokens2()`, which reassigns tokens on a specified page according to the coordinates of a single new block. 
+We can then assign a new block number to the tokens that fall within block13. For this we use `reassign_tokens2()`, which reassigns tokens on a specified page according to the coordinates of a single new block. 
 
 ```{r, eval=FALSE}
 token_df_new <- reassign_tokens2(token_df, block13) 

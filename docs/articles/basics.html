@@ -128,7 +128,8 @@
 <a href="#process-synchronously" class="anchor"></a>Process synchronously</h3>
 <p>Pass a single-page pdf or image file to Document AI and get the output immediately:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">myfile</span> <span class="op">&lt;-</span> <span class="st">"&lt;sample.pdf&gt;"</span>
+<code class="sourceCode R"><span class="co">## Not run:</span>
+<span class="va">myfile</span> <span class="op">&lt;-</span> <span class="st">"&lt;sample.pdf&gt;"</span>
 <span class="va">response</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_sync.html">dai_sync</a></span><span class="op">(</span><span class="va">myfile</span><span class="op">)</span>
 <span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/text_from_dai_response.html">text_from_dai_response</a></span><span class="op">(</span><span class="va">response</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="va">text</span><span class="op">)</span></code></pre></div>

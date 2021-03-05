@@ -19,7 +19,7 @@
 
 dai_auth <- function(scopes = "https://www.googleapis.com/auth/cloud-platform",
                      env_var = "GCS_AUTH_FILE"
-) {
+                     ) {
 
   if (!(length(env_var) == 1)){
     stop("Error: Environment variable must be length 1.")
@@ -28,7 +28,7 @@ dai_auth <- function(scopes = "https://www.googleapis.com/auth/cloud-platform",
   # get token
   google_token <- gargle::credentials_service_account(scopes = scopes,
                                                       path = Sys.getenv(env_var)
-  )
+                                                      )
 
   glue::glue("Setting scopes to {scopes}.")
 
@@ -36,7 +36,6 @@ dai_auth <- function(scopes = "https://www.googleapis.com/auth/cloud-platform",
 
   return(google_token)
 }
-
 
 #' Get project id from service account file
 #'
@@ -58,7 +57,6 @@ get_project_id <- function(env_var = "GCS_AUTH_FILE") {
 
   return(project_id)
 }
-
 
 #' Convert images to PDF
 #'
@@ -82,7 +80,7 @@ get_project_id <- function(env_var = "GCS_AUTH_FILE") {
 #' image_to_pdf(images)
 #' }
 
-image_to_pdf <- function(files, pdf_name){
+image_to_pdf <- function(files, pdf_name) {
 
   if (!(is.vector(files))) {
     stop("Error: 'files' input not a vector.")
@@ -101,7 +99,6 @@ image_to_pdf <- function(files, pdf_name){
                       pdf_name
                       )
 }
-
 
 #' Create folder in Google Storage
 #'

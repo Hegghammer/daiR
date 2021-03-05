@@ -36,13 +36,13 @@ Google Document AI is closely connected with [Google Storage](https://cloud.goog
 
 ## Setup
 
-A previous vignette covered the setting up of a Google Cloud service account and interacting with Google Storage. Here we pick up from where that vignette left off, and assume that the following things are in place:
+A [previous vignette](https://dair.info/articles/setting_up_google_storage.html) covered the setting up of a Google Cloud service account and interacting with Google Storage. Here we pick up from where that vignette left off, and assume that the following things are in place:
 
 1. A Google Cloud Services (GCS) **project** linked to your billing account and with the Document AI API enabled.
 2. A **service account** with the role "Owner".
 3. A **json file** with the service account key, the path to which is stored in an environment variable called `GCS_AUTH_FILE`.
 
-If these things are in place, you can get your authentication token with `dai_auth()`. Store it as `google_token`. 
+If these things are in place, you can get your authentication token with `dai_auth()`. While the abovementioned steps only need to be executed once, I recommend running `dai_auth()` at the beginning of every session just to make sure your account key works. 
 
 ```{r}
 library(daiR)
@@ -52,13 +52,7 @@ library(daiR)
 google_token <- dai_auth()
 ```
 
-If this process fails, it's likely because `daiR` could not find the `GCS_AUTH_FILE` variable in your `.Renviron` file. Return to the vignette on "Setting up Google Storage" and make sure steps 6 and 7 are covered. Alternatively, you can, if you prefer, obtain an access token by [another method](https://cran.r-project.org/web/packages/googleAuthR/vignettes/google-authentication-types.html); just make sure to store it as `google_token`.
-
-At this point you should also store your project id as a variable, because you need it for all your processing requests to DAI. You can either write it in manually or have `daiR::get_project_id()` get it for you from the service account json file.
-
-```{r, eval=FALSE}
-project_id <- get_project_id()
-```
+If this process fails, it's likely because `daiR` could not find the `GCS_AUTH_FILE` variable in your `.Renviron` file. Return to the vignette on "Setting up Google Storage" and make sure steps 6 and 7 are covered. Alternatively, you can, if you prefer, obtain an access token by [another method](https://cran.r-project.org/web/packages/googleAuthR/vignettes/google-authentication-types.html) and feed it into the token parameter of the `dai_sync()` and `dai_async()` functions (see below).
 
 Now there's only one configuration left: Load the library `googleCloudStorager` and set your default Storage bucket with `gcs_global_bucket()`. The latter step not strictly necessary, but will save you from having to type in the bucket name in all your subsequent commands to Google Storage and DAI.
 
@@ -90,7 +84,7 @@ text <- text_from_dai_response(response)
 cat(text)
 ```
 
-Synchronous processing is very convenient, but has two limitations. One is that `dai_sync()` converts the source file to a lightweight, grayscale image, which means OCR accuracy may be slightly reduced compared with asynchronous processing for some documents. The other is scaling; If you have a large pdf or many files, it is usually easier to process them asynchronously.    
+Synchronous processing is very convenient, but has two limitations. One is that OCR accuracy may be slightly reduced compared with asynchronous processing, because `dai_sync()` converts the source file to a lightweight, grayscale image before passing it to DAI. The other is scaling; If you have a large pdf or many files, it is usually easier to process them asynchronously.    
 
 ## Asynchronous single file processing
 
@@ -110,9 +104,7 @@ We're now ready to send it off to Document AI with `daiR`'s workhorse function, 
 
 You can also specify a `dest_folder`: the name of the bucket folder where you want the output. It defaults to the root of the bucket, but you can specify another subfolder. If the folder does not exist already, it will be created. 
 
-`dai_async()` takes five other parameters, two of which default to things that should already be in your environment, namely, `project id` and `bucket`. The last three are: 1) `filetype`, which defaults to `"pdf"` but can be set to `"gif"` or `"tiff"` if that is what you are sending to DAI; 2) `loc` (location), which defaults to `'eu'` but can be changed to `'us'`; and 3) `pps` (pages per shard), which defaults to 100 but can be set lower if you want the JSON output to be split into smaller files.
-
-If you stick with the defaults, the processing call for a single file is very simple: 
+`dai_async()` takes a number of other arguments, but they default to things that should apply to most scenarios (see the documentation for details). Unless you need to tweak the parameters, the processing call is very simple: 
 
 ```{r, eval=FALSE}
 dai_async("CIA.pdf")

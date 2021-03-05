@@ -42,6 +42,20 @@ dai_sync <- function(file,
 
     }
 
+  if (length(proj_id) > 1) {
+    stop("Error: proj_id parameter of length > 1.")
+  }
+
+  if (!(is.character(proj_id))) {
+    stop("Error: proj_id not a character vector")
+  }
+
+  loc <- tolower(loc)
+
+  if (!(loc %in% c("eu", "us"))) {
+    stop("Error: invalid location parameter.")
+  }
+
   # Encode
   if (extension == "pdf"){
 
@@ -110,6 +124,7 @@ dai_sync <- function(file,
 #' # Specify a bucket subfolder for the json output:
 #' dai_async(my_files, dest_folder = "processed")
 #' }
+
 dai_async <- function(files,
                       filetype = "pdf",
                       dest_folder = NULL,
@@ -188,11 +203,11 @@ dai_async <- function(files,
     stop("Error: proj_id not a character vector")
   }
 
-  if (!(loc %in% c("eu", "EU", "us", "US"))) {
+  loc <- tolower(loc)
+
+  if (!(loc %in% c("eu", "us"))) {
     stop("Error: invalid location parameter.")
   }
-
-  loc <- tolower(loc)
 
   # setup to return response list if several files
   response <- list()
@@ -260,12 +275,19 @@ dai_async <- function(files,
 #' Convert pdf to base64-encoded binary tiff
 #' @param file path to a single-page pdf file
 #' @return string containing base64-encoded binary tiff
-pdf_to_binbase <- function(file){
+
+pdf_to_binbase <- function(file) {
+
   img <- magick::image_read_pdf(file)
+
   img_gray <- magick::image_convert(img, colorspace = "Gray")
+
   filepath <- glue::glue("{tempdir()}/dai_temp.tiff")
+
   magick::image_write(img_gray, filepath, format = "tiff", compression = "JPEG")
+
   enc <- base64enc::base64encode(filepath)
+
   return(enc)
 }
 
@@ -273,11 +295,17 @@ pdf_to_binbase <- function(file){
 #' @param file path to an image file
 #' @return string containing base64-encoded binary tiff
 
-img_to_binbase <- function(file){
+img_to_binbase <- function(file) {
+
   img <- magick::image_read(file)
+
   img_gray <- magick::image_convert(img, colorspace = "Gray")
+
   filepath <- glue::glue("{tempdir()}/dai_temp.tiff")
+
   magick::image_write(img_gray, filepath, format = "tiff", compression = "JPEG")
+
   enc <- base64enc::base64encode(filepath)
+
   return(enc)
 }

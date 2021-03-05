@@ -27,7 +27,7 @@ The main `daiR` vignettes use deliberately simple examples involving uploads of 
 
 ## Image files
 
-Document AI accepts only PDFs, but sometimes your source documents are image files. `daiR`'s helper function `image_to_pdf()` is designed to help with this. Based as it is on `imagemagick`, it converts almost any image file format to pdf. You can also pass a vector of image files and ask for a single `.pdf` output, which is useful for collating several pagewise images to a single, multipage `.pdf`.
+Document AI accepts only PDFs, GIFs and TIFFs, but sometimes your source documents are in other formats. `daiR`'s helper function `image_to_pdf()` is designed to help with this. Based as it is on `imagemagick`, it converts almost any image file format to pdf. You can also pass a vector of image files and ask for a single `.pdf` output, which is useful for collating several pagewise images to a single, multipage `.pdf`.
 
 To illustrate, we can take this image of an old text from the National Park Service Website:
 
@@ -50,7 +50,7 @@ And the file is ready for processing with Document AI.
 
 At other times you may want to have folders inside your bucket. A typical scenario is when your source documents are stored in a folder tree and you want to batch process everything without losing the original folder structure. 
 
-Problem is, it's techically not possible to have folders in Google Storage; files in a bucket are kept side by side in a flat structure. We can, however, *imitate* a folder structure by adding prefixes with forward slashes to filenames. This is not complicated, but requires paying attention to filenames at the upload and download stage. 
+Problem is, it's technically not possible to have folders in Google Storage; files in a bucket are kept side by side in a flat structure. We can, however, *imitate* a folder structure by adding prefixes with forward slashes to filenames. This is not complicated, but requires paying attention to filenames at the upload and download stage. 
 
 To illustrate, let's create two folders in our working directory: `folder1` and `folder2`: 
 
