@@ -7,3 +7,4 @@
 ^index.md$
 ^cran-comments.md$
 ^\.travis\.yml$
+^\.github$
