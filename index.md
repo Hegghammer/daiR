@@ -6,7 +6,7 @@
 
 **daiR** is an R package for [Google Document AI](https://cloud.google.com/document-ai), a powerful server-based OCR processor. The package provides a wrapper for the Document AI API and comes with additional tools for output file parsing and text reconstruction.
 
-<img src="man/figures/frontpage_image.png" width="500" align="center">
+<img src="man/figures/frontpage_image.png" width="500" class="center">
 
 ## Requirements
 
