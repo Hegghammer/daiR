@@ -1,3 +1,11 @@
+## DAI_AUTH --------------------------------------------------------------------
+
+
+## GET_PROJECT_ID --------------------------------------------------------------
+
+
+## IMAGE_TO_PDF ----------------------------------------------------------------
+
 test_that("image_to_pdf() warns of input errors", {
   expect_error(image_to_pdf(mtcars)) # if dataframe
   expect_error(image_to_pdf(as.matrix(mtcars))) # if matrix
@@ -54,6 +62,10 @@ test_that("image_to_pdf() handles different formats and multiple files", {
   tmp_files <- c(files, output)
   file.remove(tmp_files)
 })
+
+## CREATE_FOLDER ---------------------------------------------------------------
+
+## IS_PDF ----------------------------------------------------------------------
 
 test_that("is_pdf() calls out non-pdfs", {
   image <- testthat::test_path("examples", "image.jpg")

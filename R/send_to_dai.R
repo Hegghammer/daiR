@@ -37,9 +37,7 @@ dai_sync <- function(file,
   supported <- c("bmp", "gif", "jpeg", "jpg", "pdf", "png", "tiff")
 
   if (!(extension %in% supported)) {
-
     stop("Error: Unsupported file format. See documentation for details.")
-
     }
 
   if (length(proj_id) > 1) {
@@ -58,10 +56,8 @@ dai_sync <- function(file,
 
   # Encode
   if (extension == "pdf"){
-
     encoded_file <- pdf_to_binbase(file)
     } else {
-
     encoded_file <- img_to_binbase(file)
     }
 
@@ -142,7 +138,6 @@ dai_async <- function(files,
   }
 
   extensions <- tolower(stringr::str_extract_all(files, "(?<=\\.)\\w{3,4}$"))
-
   supported <- c("pdf", "gif", "tiff")
 
   if (length(unique(extensions)) > 1) {
