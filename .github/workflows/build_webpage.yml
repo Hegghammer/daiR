@@ -22,6 +22,8 @@ jobs:
           sudo R CMD javareconf
           sudo apt-get install libmagick++-dev
           sudo apt-get install libharfbuzz-dev libfribidi-dev
+          sudo apt-get install libpoppler-cpp-dev
+          sudo apt-get install qpdf
 
       - uses: r-lib/actions/setup-r@v1
 
