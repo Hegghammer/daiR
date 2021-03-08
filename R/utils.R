@@ -90,7 +90,7 @@ image_to_pdf <- function(files, pdf_name) {
     stop("Error: 'files' input not a character vector.")
   }
 
-  if (!(grepl(".pdf$", pdf_name))) {
+  if (!(grepl("\\.pdf$", pdf_name))) {
     stop("Error: destination filename not .pdf")
   }
 
@@ -139,4 +139,19 @@ create_folder <- function(fname,
 
   glue::glue("Created folder '{bucket}/{fname}'.")
 
+}
+
+#' Check that a file is pdf
+#'
+#' @param file a filepath
+#' @return boolean
+#' @export
+#' @examples
+#' \dontrun{
+#' is_pdf("document.pdf")
+#' }
+is_pdf <- function(file){
+  result <- suppressMessages(try(pdftools::pdf_info(file), silent = TRUE))
+  if (class(result) != "try-error") return(TRUE)
+  return(FALSE)
 }

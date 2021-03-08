@@ -73,7 +73,7 @@ draw_blocks <- function(pdf,
                         json
                         ) {
 
-  if (!(grepl(".pdf$", pdf))){
+  if (!(is_pdf(pdf))){
     stop("Error: input file not a pdf.")
   }
 
@@ -185,7 +185,7 @@ draw_paragraphs <- function(pdf,
                             json
                             ) {
 
-  if (!(grepl(".pdf$", pdf))){
+  if (!(is_pdf(pdf))){
     stop("Error: input file not a pdf.")
   }
 
@@ -294,7 +294,7 @@ draw_lines <- function(pdf,
                        json
                        ) {
 
-  if (!(grepl(".pdf$", pdf))){
+  if (!(is_pdf(pdf))){
     stop("Error: input file not a pdf.")
   }
 
@@ -404,7 +404,7 @@ draw_tokens <- function(pdf,
                         json
                         ) {
 
-  if (!(grepl(".pdf$", pdf))){
+  if (!(is_pdf(pdf))){
     stop("Error: input file not a pdf.")
   }
 

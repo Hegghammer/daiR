@@ -278,6 +278,10 @@ dai_async <- function(files,
 
 pdf_to_binbase <- function(file) {
 
+  if (!(is_pdf(file))){
+    stop("Error: input file not a pdf.")
+  }
+
   img <- magick::image_read_pdf(file)
 
   img_gray <- magick::image_convert(img, colorspace = "Gray")
