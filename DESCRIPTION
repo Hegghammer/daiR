@@ -1,19 +1,19 @@
 Package: daiR
 Title: An R Package for Google Document AI
-Version: 0.0.1
+Version: 0.1.0
 Authors@R: 
     person(given = "Thomas",
            family = "Hegghammer",
            role = c("aut", "cre"),
            email = "hegghammer@gmail.com",
            comment = c(ORCID = "0000-0001-6253-1518"))
-Description: Google Document AI is a powerful server-based OCR processor. This package provides a wrapper for the Document AI API and comes with additional tools for output file parsing and text reconstruction.
+Description: Google Document AI is a powerful server-based OCR processor. This package provides a wrapper for the Document AI API and additional tools for output file parsing and text reconstruction.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1.9000
-Imports: httr, glue, jsonlite, magick, stringr, tabulizer, grDevices, gargle, usethis, googleCloudStorageR, utils, fs, purrr, dplyr, base64enc, pdftools
+Imports: httr, glue, jsonlite, magick, stringr, tabulizer, grDevices, gargle, usethis, googleCloudStorageR, utils, fs, purrr, dplyr, base64enc, pdftools, curl
 Suggests: knitr, rmarkdown, qpdf, covr, testthat (>= 3.0.0)
 VignetteBuilder: knitr
 URL: https://github.com/Hegghammer/daiR

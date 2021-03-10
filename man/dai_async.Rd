@@ -8,10 +8,10 @@ dai_async(
   files,
   filetype = "pdf",
   dest_folder = NULL,
-  bucket = googleCloudStorageR::gcs_get_global_bucket(),
+  bucket = Sys.getenv("GCS_DEFAULT_BUCKET"),
   proj_id = get_project_id(),
   loc = "eu",
-  token = dai_auth(),
+  token = dai_token(),
   pps = 100
 )
 }

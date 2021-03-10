@@ -3,9 +3,15 @@
 #' @param libname name of library
 #' @param pkgname name of package
 
-.onAttach <- function(libname, pkgname) {
+.onLoad <- function(libname, pkgname) {
 
-  packageStartupMessage("Welcome to daiR 0.0.0.9900, your gateway to Google Document AI v1beta2.")
+  .auth <<- gargle::init_AuthState(
+    package     = "daiR",
+    auth_active = TRUE
+  )
+
+  invisible()
+
+  dai_auth()
 
 }
-

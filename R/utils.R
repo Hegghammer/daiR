@@ -1,63 +1,3 @@
-#' Get service account token to use daiR
-#'
-#' @param scopes scopes wanted for the token.
-#' @param env_var name of the .Renviron variable containing the path to the json file with your service account key.
-#'
-#' @return access token
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' # A simple call with default parameters:
-#' dai_auth()
-#'
-#' # A tailored call:
-#' dai_auth(scopes = c("https://www.googleapis.com/auth/cloud-platform",
-#'                     "https://www.googleapis.com/auth/bigquery"),
-#'          env_var = "ANOTHER_AUTH_FILE")
-#'}
-
-dai_auth <- function(scopes = "https://www.googleapis.com/auth/cloud-platform",
-                     env_var = "GCS_AUTH_FILE"
-                     ) {
-
-  if (!(length(env_var) == 1)){
-    stop("Error: Environment variable must be length 1.")
-  }
-
-  # get token
-  google_token <- gargle::credentials_service_account(scopes = scopes,
-                                                      path = Sys.getenv(env_var)
-                                                      )
-
-  glue::glue("Setting scopes to {scopes}.")
-
-  glue::glue("Successfully auto-authenticated via '{basename(Sys.getenv(env_var))}'.")
-
-  return(google_token)
-}
-
-#' Get project id from service account file
-#'
-#' @param env_var name of the .Renviron variable containing the path to the json file with your service account key.
-#'
-#' @return string with your project id
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#'project_id <- get_project_id()
-#'}
-
-get_project_id <- function(env_var = "GCS_AUTH_FILE") {
-
-  json <- jsonlite::fromJSON(Sys.getenv(env_var))
-
-  project_id <- json[[2]]
-
-  return(project_id)
-}
-
 #' Convert images to PDF
 #'
 #' This function converts a vector of images to a single pdf.
@@ -85,15 +25,15 @@ get_project_id <- function(env_var = "GCS_AUTH_FILE") {
 image_to_pdf <- function(files, pdf_name) {
 
   if (!(is.vector(files))) {
-    stop("Error: 'files' input not a vector.")
+    stop("'files' input not a vector.")
   }
 
   if (!(is.character(files))) {
-    stop("Error: 'files' input not a character vector.")
+    stop("'files' input not a character vector.")
   }
 
   if (!(grepl("\\.pdf$", pdf_name))) {
-    stop("Error: destination filename not .pdf")
+    stop("Destination filename not .pdf")
   }
 
   magick::image_write(magick::image_read(files),
@@ -117,30 +57,31 @@ image_to_pdf <- function(files, pdf_name) {
 #' }
 
 create_folder <- function(fname,
-                          bucket = googleCloudStorageR::gcs_get_global_bucket()
+                          bucket = Sys.getenv("GCS_DEFAULT_BUCKET")
                           ) {
 
   if (!(length(fname) == 1 && is.character(fname))) {
-    stop("Error: invalid folder name format.")
+    stop("Invalid folder name format.")
   }
 
   if (!(length(bucket) == 1 && is.character(bucket))) {
-    stop("Error: invalid bucket name format.")
+    stop("Invalid bucket name format.")
   }
 
-  if (!(grep("/$", fname))){
+  if (!(grepl("/$", fname))){
     fname <- glue::glue("{fname}/")
   }
 
-  fs::file_create("emptyfile")
+  empty <- tempfile()
 
-  googleCloudStorageR::gcs_upload("emptyfile",
+  fs::file_create(empty)
+
+  out <- googleCloudStorageR::gcs_upload(empty,
                                   bucket = bucket,
                                   name = fname
                                   )
 
-  glue::glue("Created folder '{bucket}/{fname}'.")
-
+  return(out)
 }
 
 #' Check that a file is pdf
@@ -156,4 +97,50 @@ is_pdf <- function(file){
   result <- suppressMessages(try(pdftools::pdf_info(file), silent = TRUE))
   if (class(result) != "try-error") return(TRUE)
   return(FALSE)
+}
+
+#' Convert pdf to base64-encoded binary tiff
+#' @param file path to a single-page pdf file
+#' @return string containing base64-encoded binary tiff
+
+pdf_to_binbase <- function(file) {
+
+  if (!(is_pdf(file))){
+    stop("Input file not a pdf.")
+  }
+
+  img <- magick::image_read_pdf(file)
+
+  img_gray <- magick::image_convert(img, colorspace = "Gray")
+
+  filepath <- glue::glue("{tempdir()}/dai_temp.tiff")
+
+  magick::image_write(img_gray, filepath, format = "tiff", compression = "JPEG")
+
+  enc <- base64enc::base64encode(filepath)
+
+  return(enc)
+}
+
+#' Convert image file to base64-encoded binary tiff
+#' @param file path to an image file
+#' @return string containing base64-encoded binary tiff
+
+img_to_binbase <- function(file) {
+
+  if (is_pdf(file)){
+    stop("Input file is .pdf.")
+  }
+
+  img <- magick::image_read(file)
+
+  img_gray <- magick::image_convert(img, colorspace = "Gray")
+
+  filepath <- glue::glue("{tempdir()}/dai_temp.tiff")
+
+  magick::image_write(img_gray, filepath, format = "tiff", compression = "JPEG")
+
+  enc <- base64enc::base64encode(filepath)
+
+  return(enc)
 }

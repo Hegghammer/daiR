@@ -21,7 +21,7 @@
 dai_sync <- function(file,
                      proj_id = get_project_id(),
                      loc = "eu",
-                     token = dai_auth()
+                     token = dai_token()
                      ) {
 
   # Check
@@ -124,10 +124,10 @@ dai_sync <- function(file,
 dai_async <- function(files,
                       filetype = "pdf",
                       dest_folder = NULL,
-                      bucket = googleCloudStorageR::gcs_get_global_bucket(),
+                      bucket = Sys.getenv("GCS_DEFAULT_BUCKET"),
                       proj_id = get_project_id(),
                       loc = "eu",
-                      token = dai_auth(),
+                      token = dai_token(),
                       pps = 100
                       ) {
 
@@ -265,46 +265,4 @@ dai_async <- function(files,
 
   }
   return(response)
-}
-
-#' Convert pdf to base64-encoded binary tiff
-#' @param file path to a single-page pdf file
-#' @return string containing base64-encoded binary tiff
-
-pdf_to_binbase <- function(file) {
-
-  if (!(is_pdf(file))){
-    stop("Error: input file not a pdf.")
-  }
-
-  img <- magick::image_read_pdf(file)
-
-  img_gray <- magick::image_convert(img, colorspace = "Gray")
-
-  filepath <- glue::glue("{tempdir()}/dai_temp.tiff")
-
-  magick::image_write(img_gray, filepath, format = "tiff", compression = "JPEG")
-
-  enc <- base64enc::base64encode(filepath)
-
-  return(enc)
-}
-
-#' Convert image file to base64-encoded binary tiff
-#' @param file path to an image file
-#' @return string containing base64-encoded binary tiff
-
-img_to_binbase <- function(file) {
-
-  img <- magick::image_read(file)
-
-  img_gray <- magick::image_convert(img, colorspace = "Gray")
-
-  filepath <- glue::glue("{tempdir()}/dai_temp.tiff")
-
-  magick::image_write(img_gray, filepath, format = "tiff", compression = "JPEG")
-
-  enc <- base64enc::base64encode(filepath)
-
-  return(enc)
 }

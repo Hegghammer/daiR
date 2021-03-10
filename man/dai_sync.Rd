@@ -4,7 +4,7 @@
 \alias{dai_sync}
 \title{OCR page synchronously}
 \usage{
-dai_sync(file, proj_id = get_project_id(), loc = "eu", token = dai_auth())
+dai_sync(file, proj_id = get_project_id(), loc = "eu", token = dai_token())
 }
 \arguments{
 \item{file}{Path to a single-page pdf or image file}

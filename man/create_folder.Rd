@@ -4,7 +4,7 @@
 \alias{create_folder}
 \title{Create folder in Google Storage}
 \usage{
-create_folder(fname, bucket = googleCloudStorageR::gcs_get_global_bucket())
+create_folder(fname, bucket = Sys.getenv("GCS_DEFAULT_BUCKET"))
 }
 \arguments{
 \item{fname}{name of new folder}

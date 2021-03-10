@@ -18,7 +18,9 @@ This function converts a vector of images to a single pdf.
 Combines any number of image files of almost any type
 to a single PDF. The vector can consist of different image file types.
 See the \code{magick} package documentation for details on
-supported file types.
+supported file types. Note that on Linux, ImageMagick may not allow
+conversion to pdf for security reasons. The setting can be turned off;
+see: https://stackoverflow.com/a/52863413.
 }
 \examples{
 \dontrun{
