@@ -1,4 +1,4 @@
-#' Run when daiR is attached
+#' Run when daiR loads
 #'
 #' @param libname name of library
 #' @param pkgname name of package
@@ -12,6 +12,18 @@
 
   invisible()
 
-  #dai_auth()
+}
+
+#' Run when daiR is attached
+#'
+#' @param libname name of library
+#' @param pkgname name of package
+
+.onAttach <- function(libname, pkgname) {
+
+  dai_auth()
+
+  packageStartupMessage("Welcome to daiR 0.1.0, your gateway to Google Document AI v1beta2.")
 
 }
+
