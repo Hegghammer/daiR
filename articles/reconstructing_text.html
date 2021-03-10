@@ -135,21 +135,22 @@
               mode <span class="op">=</span> <span class="st">"wb"</span><span class="op">)</span></code></pre></div>
 <p><img src="CIA_columns.jpg" width="50%"></p>
 <p>We start by uploading it to Google Storage and passing it to Document AI.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<pre><code>#&gt; Welcome to daiR 0.1.0, your gateway to Google Document AI v1beta2.</code></pre>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Hegghammer/daiR">daiR</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://code.markedmondson.me/googleCloudStorageR/">googleCloudStorageR</a></span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload</a></span><span class="op">(</span><span class="st">"CIA_columns.pdf"</span><span class="op">)</span>
 <span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_async.html">dai_async</a></span><span class="op">(</span><span class="st">"CIA_columns.pdf"</span><span class="op">)</span></code></pre></div>
 <p>Note that this code assumes you have set <code>GCS_AUTH_FILE</code> and <code>GCS_DEFAULT_BUCKET</code> variables in your .Renviron file (see the <a href="https://dair.info/articles/setting_up_google_storage.html">two</a> <a href="https://dair.info/articles/using_document_ai.html">previous</a> vignettes for details).</p>
 <p>We check our bucket for the json output and download it when it’s ready:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span>
 
 <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html">gcs_get_object</a></span><span class="op">(</span><span class="st">"CIA_columns.pdf-output-page-1-to-1.json"</span>, 
                saveToDisk <span class="op">=</span> <span class="st">"CIA_columns.json"</span><span class="op">)</span></code></pre></div>
 <p>Finally we extract the text:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/text_from_dai_file.html">text_from_dai_file</a></span><span class="op">(</span><span class="st">"CIA_columns.json"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="va">text</span><span class="op">)</span></code></pre></div>
 <p>On first inspection, this does not look so bad. But notice the transition from the first to the second paragraph:</p>
@@ -158,28 +159,28 @@
 </blockquote>
 <p>Something’s not right. Could it be a column-reading error?</p>
 <p>We can find out with the function <code><a href="../reference/draw_blocks.html">draw_blocks()</a></code>, which extracts boundary box data from the <code>.json</code> file and draws numbered rectangles on an image of each page of the source document.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/draw_blocks.html">draw_blocks</a></span><span class="op">(</span><span class="st">"CIA_columns.pdf"</span>, <span class="st">"CIA_columns.json"</span><span class="op">)</span></code></pre></div>
 <p>Check your folder for a a file ending in <code>_blocks.png</code> and pull it up:</p>
 <p><img src="CIA_columns1_blocks.png" width="50%"></p>
 <p>We can immediately see that the blocks are in the wrong order. How to fix this?</p>
 <p>Fortunately, the <code>.json</code> file from DAI comes with a ton of data that allow us to programmatically reorder the text. The key is to generate a token dataframe with page location data and then filter and reorder as necessary. We create the dataframe with <code><a href="../reference/build_token_df.html">build_token_df()</a></code>:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">token_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/build_token_df.html">build_token_df</a></span><span class="op">(</span><span class="st">"CIA_columns.json"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">token_df</span><span class="op">)</span></code></pre></div>
 <p>The dataframe has the words in the order in which DAI proposes to read them, and the <code>block</code> column has the number of the block to which each word belongs. This allows us to reorder the blocks while keeping the within-block word order intact.</p>
 <p>We see from the annotated image that the real order of the blocks should be 1 - 2 - 3 - 5 - 7 - 4 - 6. We can store this in a vector that we use to reorder the dataframe.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">order</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">4</span>, <span class="fl">6</span><span class="op">)</span>
 <span class="va">token_df</span><span class="op">$</span><span class="va">block</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">token_df</span><span class="op">$</span><span class="va">block</span>, levels <span class="op">=</span> <span class="va">order</span><span class="op">)</span>
 <span class="va">token_df_correct</span> <span class="op">&lt;-</span> <span class="va">token_df</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">token_df</span><span class="op">$</span><span class="va">block</span><span class="op">)</span>,<span class="op">]</span></code></pre></div>
 <p>We get the correct text from the <code>token_df_correct$token</code> column:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
 <span class="va">text</span> <span class="op">&lt;-</span> <span class="va">token_df_correct</span><span class="op">$</span><span class="va">token</span> <span class="op">%&gt;%</span> 
   <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span>collapse<span class="op">=</span><span class="st">""</span><span class="op">)</span></code></pre></div>
 <p>Now the transition from the first to the second paragraph makes more sense:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">snippet</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html">substr</a></span><span class="op">(</span><span class="va">text</span>, start <span class="op">=</span> <span class="fl">1</span>, stop <span class="op">=</span> <span class="fl">700</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="va">snippet</span><span class="op">)</span></code></pre></div>
 </div>
@@ -189,21 +190,21 @@
 <p>A more complex — and, unfortunately, more common — situation is when DAI fails to distinguish between columns. This means that lines do not end where they should, resulting in long stretches of incomprehensible text. We can illustrate this with an article about the great <a href="https://en.wikipedia.org/wiki/Peshtigo_fire">Peshtigo forest fire</a> in Wisconsin in 1871, available on the Internet Archive.</p>
 <p><img src="peshtigo.jpg" width="50%"></p>
 <p>We do our processing routine again:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html">download.file</a></span><span class="op">(</span><span class="st">"https://archive.org/download/themarinetteandpeshtigoeagleoct141871/The%20Marinette%20and%20Peshtigo%20Eagle%20-%20Oct%2014%201871.pdf"</span>, 
               <span class="st">"peshtigo.pdf"</span>, 
               mode <span class="op">=</span> <span class="st">"wb"</span><span class="op">)</span>
 <span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload</a></span><span class="op">(</span><span class="st">"peshtigo.pdf"</span><span class="op">)</span>
 <span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_async.html">dai_async</a></span><span class="op">(</span><span class="st">"peshtigo.pdf"</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># wait till ready</span>
 <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html">gcs_get_object</a></span><span class="op">(</span><span class="st">"peshtigo.pdf-output-page-1-to-1.json"</span>, saveToDisk <span class="op">=</span> <span class="st">"peshtigo.json"</span><span class="op">)</span></code></pre></div>
 <p>This time we’ll skip the text printout and go straight to inspecting the boundary boxes:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/draw_blocks.html">draw_blocks</a></span><span class="op">(</span><span class="st">"peshtigo.pdf"</span>, <span class="st">"peshtigo.json"</span><span class="op">)</span></code></pre></div>
 <p><img src="peshtigo1_blocks.png" width="50%"></p>
 <p>As we can see, this time DAI has failed to distinguish between the two main columns. We can verify this by checking the beginning of the text:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/text_from_dai_file.html">text_from_dai_file</a></span><span class="op">(</span><span class="st">"peshtigo.json"</span><span class="op">)</span>
 <span class="va">snippet</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html">substr</a></span><span class="op">(</span><span class="va">text</span>, start <span class="op">=</span> <span class="fl">1</span>, stop <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="va">snippet</span><span class="op">)</span></code></pre></div>
@@ -214,18 +215,18 @@
 <h3 class="hasAnchor">
 <a href="#mathematical-splitting" class="anchor"></a>Mathematical splitting</h3>
 <p>We can split blocks mathematically by using the location data for existing blocks in the json file. We start by building a block dataframe to keep track of the blocks.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">block_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/build_block_df.html">build_block_df</a></span><span class="op">(</span><span class="st">"peshtigo.json"</span><span class="op">)</span></code></pre></div>
 <p>Then we use the function <code><a href="../reference/split_block.html">split_block()</a></code> to cut block 12 vertically in half. This function takes as input a block dataframe, the page and number of the block to split, and a parameter <code>cut_point</code>, which is a number from 1 to 99 for the relative location of the cut point. <code><a href="../reference/split_block.html">split_block()</a></code> returns a new block dataframe that includes the new block and revised coordinates for the old one.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">new_block_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/split_block.html">split_block</a></span><span class="op">(</span>df <span class="op">=</span> <span class="va">block_df</span>, block <span class="op">=</span> <span class="fl">12</span>, cut_point <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></code></pre></div>
 <p>If we had more blocks to split, we could repeat the procedure as many times as necessary. We just have to make sure to feed the latest version of the block dataframe into the <code><a href="../reference/split_block.html">split_block()</a></code> function.</p>
 <p>When we have a block dataframe that captures the layout fairly accurately, we can use the <code><a href="../reference/reassign_tokens.html">reassign_tokens()</a></code> function to assign new block values to the words in the <em>token</em> dataframe. <code><a href="../reference/reassign_tokens.html">reassign_tokens()</a></code> takes as input the token dataframe and the new block dataframe and returns a revised token dataframe.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">token_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/build_token_df.html">build_token_df</a></span><span class="op">(</span><span class="st">"peshtigo.json"</span><span class="op">)</span>
 <span class="va">token_df_correct</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reassign_tokens.html">reassign_tokens</a></span><span class="op">(</span><span class="va">token_df</span>, <span class="va">new_block_df</span><span class="op">)</span>  </code></pre></div>
 <p>In this particular case, the blocks are in the right order after splitting, so we can extract a correct text right away. In other cases the blocks may need reordering, in which case we use the procedure from the previous section.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">text</span> <span class="op">&lt;-</span> <span class="va">token_df_correct</span><span class="op">$</span><span class="va">token</span> <span class="op">%&gt;%</span> 
   <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span>collapse<span class="op">=</span><span class="st">""</span><span class="op">)</span>
 <span class="va">snippet</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html">substr</a></span><span class="op">(</span><span class="va">text</span>, start <span class="op">=</span> <span class="fl">1</span>, stop <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span>
@@ -241,16 +242,16 @@
 <p>Then we mark the right-hand column and label it 13 (for the number of the new block).</p>
 <p><img src="labelme2.png" width="50%"></p>
 <p>Click “save” and store the json file, for example as <code>peshtigo1_blocks.json</code>. Now we can load it in R and get the coordinates of the new block 13 with the function <code><a href="../reference/from_labelme.html">from_labelme()</a></code>. This function returns a one-row dataframe formatted like block dataframes generated with <code>build_block_df</code>.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">block13</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/from_labelme.html">from_labelme</a></span><span class="op">(</span><span class="st">"peshtigo1_blocks.json"</span><span class="op">)</span></code></pre></div>
 <p>We can then assign a new block number to the tokens that fall within block13. For this we use <code><a href="../reference/reassign_tokens2.html">reassign_tokens2()</a></code>, which reassigns tokens on a specified page according to the coordinates of a single new block.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">token_df_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reassign_tokens2.html">reassign_tokens2</a></span><span class="op">(</span><span class="va">token_df</span>, <span class="va">block13</span><span class="op">)</span> </code></pre></div>
 <p>Now we just need to reorder the token data frame by blocks, and the words will be in the right order. In this particular case, we do not need to supply a custom block order, since the block numbering reflects the right order of the text.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">token_df_correct</span> <span class="op">&lt;-</span> <span class="va">token_df_new</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">token_df_new</span><span class="op">$</span><span class="va">block</span><span class="op">)</span>, <span class="op">]</span></code></pre></div>
 <p>And again we have a text in the right order.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">text</span> <span class="op">&lt;-</span> <span class="va">token_df_correct</span><span class="op">$</span><span class="va">token</span> <span class="op">%&gt;%</span> 
   <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span>collapse<span class="op">=</span><span class="st">""</span><span class="op">)</span>
 <span class="va">snippet</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html">substr</a></span><span class="op">(</span><span class="va">text</span>, start <span class="op">=</span> <span class="fl">1</span>, stop <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span>
