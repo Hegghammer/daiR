@@ -12,6 +12,6 @@
 
   invisible()
 
-  dai_auth()
+  #dai_auth()
 
 }
