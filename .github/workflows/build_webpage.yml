@@ -9,11 +9,22 @@ name: pkgdown
 
 jobs:
   pkgdown:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          sudo apt-get install libcurl4-openssl-dev
+          sudo apt-get install -y default-jre
+          sudo apt-get install -y default-jdk
+          sudo R CMD javareconf
+          sudo apt-get install libmagick++-dev
+          sudo apt-get install libharfbuzz-dev libfribidi-dev
+          sudo apt-get install libpoppler-cpp-dev
+          sudo apt-get install qpdf
+          sudo mv /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/policy.xml.off
 
       - uses: r-lib/actions/setup-r@v1
 
