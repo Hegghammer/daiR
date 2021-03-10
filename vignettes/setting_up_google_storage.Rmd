@@ -174,7 +174,7 @@ resp <- gcs_upload("mtcars.csv", name = "car.csv")
 `resp` here is just a container for the response that the API returns, to prevent it from printing in the console. 
 
 Now let's check the contents:
-```{r}
+```{r, eval=FALSE}
 contents <- gcs_list_objects()
 contents
 ```

@@ -115,7 +115,7 @@ If you wanted to download the files to another folder where there wasn't a corre
 resp <- map(jsons, ~ gcs_get_object(.x, saveToDisk = gsub("/", "_", .x), overwrite = TRUE))
 ```
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
 #cleanup
 library(purrr)
 library(fs)
