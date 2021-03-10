@@ -21,7 +21,9 @@
 
 .onAttach <- function(libname, pkgname) {
 
-  dai_auth()
+  if (grepl("json$", Sys.getenv("GCS_AUTH_FILE"))) {
+    dai_auth()
+  }
 
   packageStartupMessage("Welcome to daiR 0.1.0, your gateway to Google Document AI v1beta2.")
 
