@@ -23,9 +23,13 @@ test_that("dai_sync calls out input errors", {
                "Invalid proj_id.")
   expect_error(dai_sync(file = "foo.pdf", proj_id = c("Project1", "Project2")),
                "Invalid proj_id.")
+} )
 
-#  expect_error(dai_sync(file = "foo.pdf", loc = "USA"),
-#               "Invalid location parameter.")
+test_that("dai_sync calls out input errors (CONT)", {
+  skip_if_no_token() # bc from here down it calls get_project_id()
+  skip_if_offline()
+  expect_error(dai_sync(file = "foo.pdf", loc = "USA"),
+               "Invalid location parameter.")
 } )
 
 test_that("dai_sync works", {
@@ -98,9 +102,14 @@ test_that("dai_async calls out input errors", {
                "Invalid proj_id parameter.")
   expect_error(dai_async(files = "foo.pdf", proj_id = NULL),
                "Invalid proj_id parameter.")
+} )
 
-#  expect_error(dai_async(files = "foo.pdf", loc = "USA"),
-#               "Invalid loc parameter.")
+test_that("dai_async calls out input errors (CONT)", {
+  skip_if_no_token() # bc from here down it calls get_project_id()
+  skip_if_offline()
+
+  expect_error(dai_async(files = "foo.pdf", loc = "USA"),
+               "Invalid loc parameter.")
   expect_error(dai_async(files = "foo.pdf", loc = NULL),
                "Invalid loc parameter.")
 
