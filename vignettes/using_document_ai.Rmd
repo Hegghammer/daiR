@@ -52,7 +52,7 @@ library(daiR)
 
 Should you wish to verify that you have obtained an access token, you can do so with the function `dai_has_token()` or by viewing the `.auth` object directly: 
 
-```{r}
+```{r, eval=FALSE}
 dai_has_token() 
 .auth
 ```
@@ -67,7 +67,7 @@ The quickest and easiest way to OCR with DAI is through synchronous processing. 
 
 We can try with a sample pdf from the CIA's Freedom of Information Act Electronic Reading Room: 
 
-```{r}
+```{r, eval=FALSE}
 download.file("https://www.cia.gov/readingroom/docs/AGH%2C%20LASLO_0011.pdf", 
               destfile = "CIA.pdf", 
               mode = "wb")
@@ -75,13 +75,13 @@ download.file("https://www.cia.gov/readingroom/docs/AGH%2C%20LASLO_0011.pdf",
 
 We send it to Document AI with `dai_sync()` and store the HTTP response in an object, for example `response`.
 
-```{r}
+```{r, eval=FALSE}
 response <- dai_sync("CIA.pdf")
 ```
 
 Then we extract the text with `text_from_dai_response()`:
 
-```{r}
+```{r, eval=FALSE}
 text <- text_from_dai_response(response)
 cat(text)
 ```
@@ -100,7 +100,7 @@ suppressMessages(library(googleCloudStorageR))
 library(googleCloudStorageR)
 ```
 
-```{r}
+```{r, eval=FALSE}
 resp <- gcs_upload("CIA.pdf")
 ```
 
@@ -108,7 +108,7 @@ Note that if you do not have a `GCS_DEFAULT_BUCKET` variable in your .Renviron f
 
 Let's check that our file made it safely: 
 
-```{r}
+```{r, eval=FALSE}
 gcs_list_objects()
 ```
 
@@ -154,14 +154,14 @@ cat(text)
 
 As mentioned, `dai_async()` can take vectors of filenames as input, so batch processing is quite straightforward. To illustrate, let's make a copy of the CIA file under another name to pretend we have more than one file. 
 
-```{r}
+```{r, eval=FALSE}
 library(fs)
 file_copy("CIA.pdf", "CIA2.pdf")
 ```
 
 We go back to square one and start by uploading the files to our bucket. `gcs_upload()` takes only one item at a time, so we need to iterate the function over a vector containing our files:
 
-```{r}
+```{r, eval=FALSE}
 library(purrr)
 pdfs <- c("CIA.pdf", "CIA2.pdf")
 resp <- map(pdfs, ~ gcs_upload(.x, name = .x))
@@ -196,7 +196,7 @@ resp <- map(jsons, ~ gcs_get_object(.x, saveToDisk = .x))
 
 Now the ouput files should be on your hard drive ready for parsing with `text_from_dai_file()`.
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
 #cleanup
 library(purrr)
 library(fs)

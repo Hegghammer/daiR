@@ -31,7 +31,7 @@ Document AI accepts only PDFs, GIFs and TIFFs, but sometimes your source documen
 
 To illustrate, we can take this image of an old text from the National Park Service Website:
 
-```{r}
+```{r, eval=FALSE}
 download.file("https://www.nps.gov/articles/images/dec-of-sentiments-loc-copy.jpg", 
               destfile = "nps.jpeg", 
               mode = "wb")
@@ -39,7 +39,7 @@ download.file("https://www.nps.gov/articles/images/dec-of-sentiments-loc-copy.jp
 
 And convert it to a pdf like so:
 
-```{r}
+```{r, eval=FALSE}
 library(daiR)
 image_to_pdf("nps.jpeg", "nps.pdf")
 ```
@@ -54,7 +54,7 @@ Problem is, it's technically not possible to have folders in Google Storage; fil
 
 To illustrate, let's create two folders in our working directory: `folder1` and `folder2`: 
 
-```{r}
+```{r, eval=FALSE}
 library(fs)
 dir_create("folder1")
 dir_create("folder2")
@@ -62,7 +62,7 @@ dir_create("folder2")
 
 Then we create three duplicates of the file `nps.pdf` and put two pdfs in each folder.  
 
-```{r}
+```{r, eval=FALSE}
 file_move("nps.pdf", "./folder1/nps.pdf")
 file_copy("./folder1/nps.pdf", "./folder1/nps2.pdf", overwrite = TRUE)
 file_copy("./folder1/nps.pdf", "./folder2/nps3.pdf", overwrite = TRUE)
@@ -71,13 +71,13 @@ file_copy("./folder1/nps.pdf", "./folder2/nps4.pdf", overwrite = TRUE)
 
 To upload this entire structure to Google Storage, we create a vector of files in all subfolders with the parameter `recurse = TRUE` in the `dir_ls()` function. I'm assuming here that the working directory is otherwise empty of pdf files. 
 
-```{r}
+```{r, eval=FALSE}
 pdfs <- dir_ls(glob = "*.pdf", recurse = TRUE)
 ```
 
 We then iterate the `gcs_upload()` function over our vector:
 
-```{r}
+```{r, eval=FALSE}
 library(googleCloudStorageR)
 library(purrr)
 resp <- map(pdfs, ~ gcs_upload(.x, name = .x))
@@ -85,7 +85,7 @@ resp <- map(pdfs, ~ gcs_upload(.x, name = .x))
 
 If we now check the bucket contents, we see that the files are in their respective "folders". 
 
-```{r}
+```{r, eval=FALSE}
 gcs_list_objects()
 ```
 

@@ -128,7 +128,7 @@ library(googleCloudStorageR)
 
 Google Storage is a file repository, and it keeps your files in so-called "buckets". You need at least one bucket to store files. To inspect your Storage account, first bring out your project id. If you did not store it in step 3 above, you can look it up in the Google Cloud Console or use the `daiR` function `get_project_id()`. 
 
-```{r}
+```{r, eval=FALSE}
 project_id <- daiR::get_project_id()
 ```
 
@@ -144,7 +144,7 @@ gcs_create_bucket("dair-example-bucket", project_id, location = "EU")
 ```
 
 Now we can see the bucket listed:
-```{r}
+```{r, eval=FALSE}
 gcs_list_buckets(project_id)
 ```
 
@@ -156,7 +156,7 @@ You will need to supply a bucket name with every call to Google Storage (and Doc
 
 
 To get a bucket's file inventory, we use `gcs_list_objects()`. Leaving the parentheses empty will get information about the default bucket if you have set it.
-```{r}
+```{r, eval=FALSE}
 gcs_list_objects()
 ```
 
@@ -166,7 +166,7 @@ At this point it's obviously empty, so let's upload something.
 
 This we do with `gcs_upload()`. If the file is in your working directory, just write the filename; otherwise provide the full file path. If you want, you can store the file under another name in Google Storage with the `name` parameter. Otherwise, just leave the parameter out.  
 
-```{r}
+```{r, eval=FALSE}
 write.csv(mtcars, "mtcars.csv")
 resp <- gcs_upload("mtcars.csv", name = "car.csv")
 ```
@@ -181,7 +181,7 @@ contents
 
 The Google Storage API handles only one file at a time, so for bulk uploads you need to use iteration.  
 
-```{r}
+```{r, eval=FALSE}
 library(purrr)
 library(fs)
 write.csv(iris, "iris.csv")
@@ -190,13 +190,13 @@ resp <- map(my_files, ~ gcs_upload(.x, name = .x))
 ```
 
 Let's check the contents again:
-```{r}
+```{r, eval=FALSE}
 contents <- gcs_list_objects()
 contents
 ```
 
 Note that there's a file size limit of 5Mb, but you can change it with `gcs_upload_set_limit()`. 
-```{r}
+```{r, eval=FALSE}
 gcs_upload_set_limit(upload_limit = 20000000L)
 ```
 
@@ -204,13 +204,13 @@ gcs_upload_set_limit(upload_limit = 20000000L)
 
 Downloads are performed with gcs_get_object(). Here, too, you can save it under a different name, but this time the parameter is `saveToDisk`.
 
-```{r}
+```{r, eval=FALSE}
 resp <- gcs_get_object("car.csv", saveToDisk = "mtcars_duplicate.csv")
 ```
 
 To download multiple files we need to loop or map. Let's say we wanted to download all the files in the bucket:
 
-```{r}
+```{r, eval=FALSE}
 contents <- gcs_list_objects()
 resp <- map(contents$name, ~ gcs_get_object(.x, saveToDisk = .x, overwrite = TRUE))
 ```
@@ -218,20 +218,20 @@ resp <- map(contents$name, ~ gcs_get_object(.x, saveToDisk = .x, overwrite = TRU
 ### Deleting
 
 We can delete files in the bucket with `gcs_delete_object()`: 
-```{r}
+```{r, eval=FALSE}
 gcs_delete_object("car.csv")
 ```
 
 To delete several, we again need to loop or map. Let's try to delete everything in the bucket:
 
-```{r}
+```{r, eval=FALSE}
 contents <- gcs_list_objects()
 map(contents$name, gcs_delete_object)
 ```
 
 And the bucket is empty. With this you should be ready to process files with Document AI and other APIs that involve Google Storage as an intermediary.
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
 # cleanup
 file_delete(dir_ls(glob = "*.csv"))
 ```
