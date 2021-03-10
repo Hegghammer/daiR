@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Build dataframe with block location data — build_block_df • daiR</title>
+<title>Produce token — dai_token • daiR</title>
 
 
 <!-- jquery -->
@@ -41,8 +41,8 @@
   <link href="../extra.css" rel="stylesheet">
   
 
-<meta property="og:title" content="Build dataframe with block location data — build_block_df" />
-<meta property="og:description" content="Build dataframe with block location data" />
+<meta property="og:title" content="Produce token — dai_token" />
+<meta property="og:description" content="Produce token" />
 
 
 
@@ -151,33 +151,25 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Build dataframe with block location data</h1>
-    <small class="dont-index">Source: <a href='https://github.com/Hegghammer/daiR/blob/master/R/process_output.R'><code>R/process_output.R</code></a></small>
-    <div class="hidden name"><code>build_block_df.Rd</code></div>
+    <h1>Produce token</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Hegghammer/daiR/blob/master/R/auth.R'><code>R/auth.R</code></a></small>
+    <div class="hidden name"><code>dai_token.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Build dataframe with block location data</p>
+    <p>Produce token</p>
     </div>
 
-    <pre class="usage"><span class='fu'>build_block_df</span><span class='op'>(</span><span class='va'>json</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>dai_token</span><span class='op'>(</span><span class='op'>)</span></pre>
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>json</th>
-      <td><p>a json file from DAI</p></td>
-    </tr>
-    </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a dataframe</p>
+    <p>GCS access token</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='fu'>build_block_df</span><span class='op'>(</span><span class='st'>"pdf_output.json"</span><span class='op'>)</span>
+<span class='fu'>dai_token</span><span class='op'>(</span><span class='op'>)</span>
 <span class='op'>}</span>
 </div></pre>
   </div>

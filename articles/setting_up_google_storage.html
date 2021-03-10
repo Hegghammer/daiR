@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -116,7 +116,7 @@
 
     
     
-<p><strong>Last updated 16 February 2021</strong><br><br><br></p>
+<p><strong>Last updated 9 March 2021</strong><br><br><br></p>
 <p>This is a rundown for beginners of how to set up and interact with Google Storage in R. You need Google Storage in order to use Document AI and other Google APIs on scale, because these services do not accept bulk file submissions directly. Instead they use Google Storage as an intermediary, so you need to know how to get files in and out of it.</p>
 <p>It is possible to bulk upload and download files to Google Storage in the <a href="https://console.cloud.google.com/storage">Google Cloud Console</a>. In fact, for uploads it can sometimes be easier than doing it programmatically. But downloads and deletions are cumbersome if you have a lot of files. And since bulk processing in DAI can only be done with code, you might as well keep the whole workflow in R.</p>
 <div id="authentication" class="section level2">
@@ -124,7 +124,8 @@
 <a href="#authentication" class="anchor"></a>Authentication</h2>
 <p>The biggest hurdle to using any Google API is authentication, which is daunting for several reasons. It involves abstract new concepts like “service accounts”, “Oauth2.0”, and “scopes”. Moreover, the Google Cloud Console is so crowded it’s a nightmare to navigate as a beginner. In addition, different R packages have different procedures for authenticating with Google Cloud Services (GCS).</p>
 <p>A full explanation of Google API authentication could fill a book, but suffice to say here that there are several different ways to authenticate to GCS from R. In the following I will walk you through one such way, the one I think is the simplest and most robust if you are primarily planning to use Google Storage and Google Document AI and to do so in an interactive setting.</p>
-<p>The procedure outlined below relies on service accounts and json key files. It involves a little bit more hands-on configuration than some of the setup wizards in packages such as <code>googleStorageR</code>. But as a beginner I found these tools somewhat confusing because they don’t tell you what they do under the hood. My thinking is: if you are computer-literate enough to consider working programmatically with an API, you are also able to find your way around the Google Cloud Console and .Renviron files. But know that there are <a href="https://cran.r-project.org/web/packages/gargle/vignettes/get-api-credentials.html">several</a> <a href="https://cran.r-project.org/web/packages/googleAuthR/vignettes/google-authentication-types.html">other</a> authenticatication strategies; which is better depends on where and how you intend to use the R wrapper.</p>
+<p>The procedure outlined below relies on service accounts and json key files. It involves a little bit more hands-on configuration than some of the setup wizards in packages such as <code>googleStorageR</code>. But as a beginner I found these tools somewhat confusing because they don’t tell you what they do under the hood.</p>
+<p>My thinking is: if you are computer-literate enough to consider working programmatically with an API, you are also able to find your way around the Google Cloud Console and .Renviron files. But know that there are <a href="https://cran.r-project.org/web/packages/gargle/vignettes/get-api-credentials.html">several</a> <a href="https://cran.r-project.org/web/packages/googleAuthR/vignettes/google-authentication-types.html">other</a> authenticatication strategies; which is better depends on where and how you intend to use the R wrapper.</p>
 <div id="step-1-get-a-gmail-account" class="section level3">
 <h3 class="hasAnchor">
 <a href="#step-1-get-a-gmail-account" class="anchor"></a>Step 1: Get a Gmail account</h3>
@@ -143,9 +144,7 @@
 <p>The largest “unit” of your GCS activities is your <em>project</em>. You can think of it as your root folder, since you will most likely only ever need one unless you are a business or a developer (in principle, though, you can have as many projects as you like).</p>
 <p>When you activate GCS, you are assigned a project named “My first project”. Click on “My first project” in the top blue bar, just to the right of “Google cloud services”. You’ll see a screen like this:</p>
 <p><img src="storage2.PNG" width="50%"></p>
-<p>Note that your project has an <em>ID</em>, usually consisting of an adjective, a noun, and a number. You’ll need this soon, so I recommend opening RStudio and storing it as a vector:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">my_project_id</span> <span class="op">&lt;-</span> <span class="st">"&lt;your project id&gt;"</span></code></pre></div>
+<p>Note that your project has an <em>ID</em>, usually consisting of an adjective, a noun, and a number. You’ll need this soon, so I recommend opening RStudio and storing it as a vector with <code>project_id &lt;- "&lt;your project id&gt;"</code>.</p>
 <p>Return to the Google Cloud Console and look at the left column. Toward the top you see an entry called “Billing”. Click it. You’ll get to a screen saying “This project has no billing account”. Click “link a billing account” and set the billing account to “My billing account”.</p>
 <p><img src="storage3.PNG" width="50%"></p>
 <p>All this is necessary for you to be able to access Google Storage and other Google tools programmatically. Both Google Storage and DAI are paid services, although for Google Storage the cost is negligible unless you plan to keep very large amounts of data there for a long time. For DAI, you’re looking at around EUR 0.06 per processed page, though at the current time of writing, you get 300$ worth of free credits.</p>
@@ -175,12 +174,12 @@
 <h3 class="hasAnchor">
 <a href="#step-7-tell-rstudio-where-to-find-the-json-file" class="anchor"></a>Step 7: Tell RStudio where to find the json file</h3>
 <p>The last step is to store the path to the json file in your .Renviron file so that RStudio can authenticate you whenever you are working with GCS from R. Start by writing the following in the console:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/edit.html">edit_r_environ</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>This will open a pane with your .Renviron file. If you haven’t modified it before, it is probably empty.</p>
 <p>All you need to do is add a line with the following: <strong><code>GCS_AUTH_FILE='&lt;full path to the json file you stored earlier&gt;'</code></strong>. Make sure all the slashes in the filepath are forward slashes. Save the file, close it, and restart RStudio.</p>
 <p>Now when you load the library <code>googleCloudStorageR</code>, you will be auto-authenticated and ready to communicate with your Google Storage account from within R.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://code.markedmondson.me/googleCloudStorageR/">googleCloudStorageR</a></span><span class="op">)</span></code></pre></div>
 </div>
 </div>
@@ -191,26 +190,25 @@
 <div id="creating-and-inspecting-buckets" class="section level3">
 <h3 class="hasAnchor">
 <a href="#creating-and-inspecting-buckets" class="anchor"></a>Creating and inspecting buckets</h3>
-<p>Google Storage is a file repository, and it keeps your files in so-called “buckets”. You need at least one bucket to store files. To inspect your Storage account, first bring out your project id. If you did not store it in step 3 above, you can get it from the Google Cloud Console or from the json file with your service account key.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">my_project_id</span> <span class="op">&lt;-</span> <span class="st">"&lt;your project id&gt;"</span></code></pre></div>
+<p>Google Storage is a file repository, and it keeps your files in so-called “buckets”. You need at least one bucket to store files. To inspect your Storage account, first bring out your project id. If you did not store it in step 3 above, you can look it up in the Google Cloud Console or use the <code>daiR</code> function <code><a href="../reference/get_project_id.html">get_project_id()</a></code>.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">project_id</span> <span class="op">&lt;-</span> <span class="fu">daiR</span><span class="fu">::</span><span class="fu"><a href="../reference/get_project_id.html">get_project_id</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>Now let’s see how many buckets we have:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_buckets.html">gcs_list_buckets</a></span><span class="op">(</span><span class="va">project_id</span><span class="op">)</span></code></pre></div>
+<p>Answer: zero, because we haven’t created one yet. We can do this with <code><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_create_bucket.html">gcs_create_bucket()</a></code>. Note that it has to be globally unique (“my_bucket” won’t work because someone’s already taken it). For this example, let’s use “dair-example-bucket”. Also add a location (“EU” or “US”).</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_buckets.html">gcs_list_buckets</a></span><span class="op">(</span><span class="va">my_project_id</span><span class="op">)</span></code></pre></div>
-<p>Answer: zero, because we haven’t created one yet. We can do this with <code><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_create_bucket.html">gcs_create_bucket()</a></code>. Note that it has to be globally unique (“my_bucket” won’t work because someone’s already taken it). For this example, let’s call it “superbucket_2021”. Also add your location (“EU” or “US”).</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_create_bucket.html">gcs_create_bucket</a></span><span class="op">(</span><span class="st">"superbucket_2021"</span>, <span class="va">my_project_id</span>, location <span class="op">=</span> <span class="st">"EU"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_create_bucket.html">gcs_create_bucket</a></span><span class="op">(</span><span class="st">"dair-example-bucket"</span>, <span class="va">project_id</span>, location <span class="op">=</span> <span class="st">"EU"</span><span class="op">)</span></code></pre></div>
 <p>Now we can see the bucket listed:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_buckets.html">gcs_list_buckets</a></span><span class="op">(</span><span class="va">project_id</span><span class="op">)</span></code></pre></div>
+<p>You will need to supply a bucket name with every call to Google Storage (and Document AI), so you may want to store the name of a default bucket in the environment. You have two options:</p>
+<ol style="list-style-type: decimal">
+<li><p>Store it permanently in you .Renviron file by calling <code><a href="https://usethis.r-lib.org/reference/edit.html">usethis::edit_r_environ()</a></code> and adding <code>GCS_DEFAULT_BUCKET=&lt;your bucket name&gt;</code> to the list of variables, just as you did with the json key file path (<code>GCS_AUTH_FILE</code>) earlier. Note that adding a default bucket to .Renviron will not prevent you from supplying other bucket names in individual calls to Google Storage when necessary.</p></li>
+<li><p>Set it for the current session with <code><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_global_bucket.html">gcs_global_bucket("&lt;your bucket name&gt;")</a></code></p></li>
+</ol>
+<p>To get a bucket’s file inventory, we use <code><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html">gcs_list_objects()</a></code>. Leaving the parentheses empty will get information about the default bucket if you have set it.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_buckets.html">gcs_list_buckets</a></span><span class="op">(</span><span class="va">my_project_id</span><span class="op">)</span></code></pre></div>
-<p>At this point you may want to tell R that this is your default bucket. It saves you from adding the bucket id to every subsequent call.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_global_bucket.html">gcs_global_bucket</a></span><span class="op">(</span><span class="st">"superbucket_2021"</span><span class="op">)</span></code></pre></div>
-<p>We can get more details about the bucket with <code><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_bucket.html">gcs_get_bucket()</a></code></p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_bucket.html">gcs_get_bucket</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p>To get the bucket’s file inventory, we use <code><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html">gcs_list_objects()</a></code></p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>At this point it’s obviously empty, so let’s upload something.</p>
 </div>
@@ -218,48 +216,48 @@
 <h3 class="hasAnchor">
 <a href="#uploading-files" class="anchor"></a>Uploading files</h3>
 <p>This we do with <code><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload()</a></code>. If the file is in your working directory, just write the filename; otherwise provide the full file path. If you want, you can store the file under another name in Google Storage with the <code>name</code> parameter. Otherwise, just leave the parameter out.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html">write.csv</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="st">"mtcars.csv"</span><span class="op">)</span>
-<span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload</a></span><span class="op">(</span><span class="st">"mtcars.csv"</span>, name <span class="op">=</span> <span class="st">"overused_tutorial_dataset.csv"</span><span class="op">)</span></code></pre></div>
+<span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload</a></span><span class="op">(</span><span class="st">"mtcars.csv"</span>, name <span class="op">=</span> <span class="st">"car.csv"</span><span class="op">)</span></code></pre></div>
+<p><code>resp</code> here is just a container for the response that the API returns, to prevent it from printing in the console.</p>
 <p>Now let’s check the contents:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p>The Google Storage API handles only one file at a time, so for bulk uploads you need to use a loop or an apply function. To test it, we can download two random pdfs.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">contents</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span>
+<span class="va">contents</span></code></pre></div>
+<p>The Google Storage API handles only one file at a time, so for bulk uploads you need to use iteration.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://purrr.tidyverse.org">purrr</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/download.file.html">download.file</a></span><span class="op">(</span><span class="st">"https://cran.r-project.org/web/packages/googleCloudStorageR/googleCloudStorageR.pdf"</span>, 
-              <span class="st">"storager_doc.pdf"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/download.file.html">download.file</a></span><span class="op">(</span><span class="st">"https://cran.r-project.org/web/packages/gargle/gargle.pdf"</span>, 
-              <span class="st">"gargle_doc.pdf"</span><span class="op">)</span>
-<span class="va">my_pdfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span><span class="op">(</span>pattern <span class="op">=</span> <span class="st">"*.pdf"</span><span class="op">)</span> 
-<span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">my_pdfs</span>, <span class="op">~</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload</a></span><span class="op">(</span><span class="va">.x</span>, name <span class="op">=</span> <span class="va">.x</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://fs.r-lib.org">fs</a></span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/write.table.html">write.csv</a></span><span class="op">(</span><span class="va">iris</span>, <span class="st">"iris.csv"</span><span class="op">)</span>
+<span class="va">my_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://fs.r-lib.org/reference/dir_ls.html">dir_ls</a></span><span class="op">(</span>glob <span class="op">=</span> <span class="st">"*.csv"</span><span class="op">)</span>
+<span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">my_files</span>, <span class="op">~</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload</a></span><span class="op">(</span><span class="va">.x</span>, name <span class="op">=</span> <span class="va">.x</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>Let’s check the contents again:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">contents</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span>
+<span class="va">contents</span></code></pre></div>
 <p>Note that there’s a file size limit of 5Mb, but you can change it with <code><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload_set_limit()</a></code>.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload_set_limit</a></span><span class="op">(</span>upload_limit <span class="op">=</span> <span class="fl">20000000L</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="downloading-files" class="section level3">
 <h3 class="hasAnchor">
 <a href="#downloading-files" class="anchor"></a>Downloading files</h3>
 <p>Downloads are performed with gcs_get_object(). Here, too, you can save it under a different name, but this time the parameter is <code>saveToDisk</code>.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html">gcs_get_object</a></span><span class="op">(</span><span class="st">"overused_tutorial_dataset.csv"</span>, saveToDisk <span class="op">=</span> <span class="st">"mtcars_duplicate.csv"</span><span class="op">)</span></code></pre></div>
-<p>To download multiple files we need to loop or map. Let’s say we wanted to download all the pdfs in the bucket:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html">gcs_get_object</a></span><span class="op">(</span><span class="st">"car.csv"</span>, saveToDisk <span class="op">=</span> <span class="st">"mtcars_duplicate.csv"</span><span class="op">)</span></code></pre></div>
+<p>To download multiple files we need to loop or map. Let’s say we wanted to download all the files in the bucket:</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">contents</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span>
-<span class="va">pdfs_to_download</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">grep</a></span><span class="op">(</span><span class="st">"*.pdf"</span>, <span class="va">contents</span><span class="op">$</span><span class="va">name</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">pdfs_to_download</span>, <span class="op">~</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html">gcs_get_object</a></span><span class="op">(</span><span class="va">.x</span>, saveToDisk <span class="op">=</span> <span class="va">.x</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">contents</span><span class="op">$</span><span class="va">name</span>, <span class="op">~</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html">gcs_get_object</a></span><span class="op">(</span><span class="va">.x</span>, saveToDisk <span class="op">=</span> <span class="va">.x</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="deleting" class="section level3">
 <h3 class="hasAnchor">
 <a href="#deleting" class="anchor"></a>Deleting</h3>
 <p>We can delete files in the bucket with <code><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_delete_object.html">gcs_delete_object()</a></code>:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_delete_object.html">gcs_delete_object</a></span><span class="op">(</span><span class="st">"overused_tutorial_dataset.csv"</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_delete_object.html">gcs_delete_object</a></span><span class="op">(</span><span class="st">"car.csv"</span><span class="op">)</span></code></pre></div>
 <p>To delete several, we again need to loop or map. Let’s try to delete everything in the bucket:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">contents</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">contents</span><span class="op">$</span><span class="va">name</span>, <span class="va">gcs_delete_object</span><span class="op">)</span></code></pre></div>
 <p>And the bucket is empty. With this you should be ready to process files with Document AI and other APIs that involve Google Storage as an intermediary.</p>

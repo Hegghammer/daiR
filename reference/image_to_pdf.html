@@ -84,7 +84,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -180,7 +180,9 @@
     <p>Combines any number of image files of almost any type
 to a single PDF. The vector can consist of different image file types.
 See the <code>magick</code> package documentation for details on
-supported file types.</p>
+supported file types. Note that on Linux, ImageMagick may not allow
+conversion to pdf for security reasons. The setting can be turned off;
+see: https://stackoverflow.com/a/52863413.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>

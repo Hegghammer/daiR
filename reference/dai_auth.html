@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get service account token to use daiR — dai_auth • daiR</title>
+<title>Get service account token — dai_auth • daiR</title>
 
 
 <!-- jquery -->
@@ -41,8 +41,8 @@
   <link href="../extra.css" rel="stylesheet">
   
 
-<meta property="og:title" content="Get service account token to use daiR — dai_auth" />
-<meta property="og:description" content="Get service account token to use daiR" />
+<meta property="og:title" content="Get service account token — dai_auth" />
+<meta property="og:description" content="Get service account token" />
 
 
 
@@ -84,7 +84,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -151,18 +151,18 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get service account token to use daiR</h1>
-    <small class="dont-index">Source: <a href='https://github.com/Hegghammer/daiR/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
+    <h1>Get service account token</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Hegghammer/daiR/blob/master/R/auth.R'><code>R/auth.R</code></a></small>
     <div class="hidden name"><code>dai_auth.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Get service account token to use daiR</p>
+    <p>Get service account token</p>
     </div>
 
     <pre class="usage"><span class='fu'>dai_auth</span><span class='op'>(</span>
   scopes <span class='op'>=</span> <span class='st'>"https://www.googleapis.com/auth/cloud-platform"</span>,
-  env_var <span class='op'>=</span> <span class='st'>"GCS_AUTH_FILE"</span>
+  path <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.getenv.html'>Sys.getenv</a></span><span class='op'>(</span><span class='st'>"GCS_AUTH_FILE"</span><span class='op'>)</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -170,27 +170,18 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>scopes</th>
-      <td><p>scopes wanted for the token.</p></td>
+      <td><p>GCS auth scopes for the token.</p></td>
     </tr>
     <tr>
-      <th>env_var</th>
-      <td><p>name of the .Renviron variable containing the path to the json file with your service account key.</p></td>
+      <th>path</th>
+      <td><p>path to a json file with a service account key.</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>access token</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='co'># A simple call with default parameters:</span>
 <span class='fu'>dai_auth</span><span class='op'>(</span><span class='op'>)</span>
-
-<span class='co'># A tailored call:</span>
-<span class='fu'>dai_auth</span><span class='op'>(</span>scopes <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"https://www.googleapis.com/auth/cloud-platform"</span>,
-                    <span class='st'>"https://www.googleapis.com/auth/bigquery"</span><span class='op'>)</span>,
-         env_var <span class='op'>=</span> <span class='st'>"ANOTHER_AUTH_FILE"</span><span class='op'>)</span>
 <span class='op'>}</span>
 </div></pre>
   </div>
