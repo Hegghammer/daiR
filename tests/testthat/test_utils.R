@@ -1,8 +1,5 @@
 
-dai_auth()
-
 ## IMAGE_TO_PDF ----------------------------------------------------------------
-
 
 test_that("image_to_pdf() warns of input errors", {
   expect_error(image_to_pdf(mtcars)) # if dataframe
@@ -91,6 +88,7 @@ test_that("create_folder() works", {
   bucket <- Sys.getenv("GCS_DEFAULT_BUCKET")
   out5 <- create_folder(folder1, bucket)
   expect_identical(out5$bucket, bucket)
+  dai_auth()
 })
 
 ## IS_PDF ----------------------------------------------------------------------

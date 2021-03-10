@@ -36,7 +36,7 @@ A full explanation of Google API authentication could fill a book, but suffice t
 
 The procedure outlined below relies on service accounts and json key files. It involves a little bit more hands-on configuration than some of the setup wizards in packages such as `googleStorageR`. But as a beginner I found these tools somewhat confusing because they don't tell you what they do under the hood. 
 
-My thinking is: if you are computer-literate enough to consider working programmatically with an API, you are also able to find your way around the Google Cloud Console and .Renviron files. But know that there are [several](https://cran.r-project.org/web/packages/gargle/vignettes/get-api-credentials.html) [other](https://cran.r-project.org/web/packages/googleAuthR/vignettes/google-authentication-types.html) authenticatication strategies; which is better depends on where and how you intend to use the R wrapper.
+My thinking is: if you are computer-literate enough to consider working programmatically with an API, you are also able to find your way around the Google Cloud Console and .Renviron files. But know that there are [several](https://cran.r-project.org/package=gargle/vignettes/get-api-credentials.html) [other](https://cran.r-project.org/package=googleAuthR/vignettes/google-authentication-types.html) authenticatication strategies; which is better depends on where and how you intend to use the R wrapper.
 
 ### Step 1: Get a Gmail account
 

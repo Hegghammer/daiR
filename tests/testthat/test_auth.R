@@ -1,3 +1,4 @@
+
 ## DAI_AUTH --------------------------------------------------------------------
 
 test_that("dai_auth calls out input errors", {
@@ -34,9 +35,11 @@ test_that("dai_auth sets scopes as instructed", {
   dai_auth(scopes = c(scope2, scope3))
   token <- dai_token()
   expect_match(token[["params"]][["scope"]], glue::glue("^{scope2} {scope3}.*"))
+  dai_auth()
 })
 
 test_that("dai_auth does not authenticate with wrong credentials", {
+  skip_if_no_token()
   skip_if_offline()
   dai_deauth()
   json <- jsonlite::toJSON("a fake json file")
@@ -48,6 +51,8 @@ test_that("dai_auth does not authenticate with wrong credentials", {
 ## DAI_TOKEN -------------------------------------------------------------------
 
 test_that("dai_token works", {
+  skip_if_no_token()
+  skip_if_offline()
   dai_deauth()
   expect_equal(dai_token(), NULL)
 
@@ -62,14 +67,13 @@ test_that("dai_token works", {
 
 ## DAI_HAS_TOKEN ---------------------------------------------------------------
 
-dai_has_token()
 
 ## DAI_USER --------------------------------------------------------------------
 
 test_that("dai_user works", {
   skip_if_no_token()
   skip_if_offline()
-
+  dai_auth()
   response <- dai_user()
   expect_equal(response[[2]], 200)
   dai_deauth()
@@ -90,7 +94,8 @@ test_that("get_project_id calls out input errors", {
 
 test_that("dai_deauth works", {
   skip_if_no_token()
-
+  skip_if_offline()
   dai_deauth()
   expect_false(dai_has_token())
+  dai_auth()
 })

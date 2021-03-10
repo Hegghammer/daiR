@@ -1,4 +1,3 @@
-dai_auth()
 
 ## DAI_SYNC --------------------------------------------------------------------
 
@@ -46,6 +45,7 @@ test_that("dai_sync works", {
   expect_type(parsed2[["text"]], "character")
 
   file.remove("foo.pdf")
+  dai_auth()
 })
 
 test_that("dai_sync informs about unsuccessful requests", {
@@ -55,7 +55,7 @@ test_that("dai_sync informs about unsuccessful requests", {
   file <- testthat::test_path("examples", "image.jpg")
   response <- dai_sync(file, token = NULL)
   expect_equal(response[["status_code"]], 403)
-
+  dai_auth()
 })
 
 
@@ -142,6 +142,7 @@ test_that("dai_sync sends succesful requests to Document AI", {
   response <- dai_async(c("foo.pdf", "bar.pdf"))
   expect_equal(response[[1]][["status_code"]], 200)
   expect_equal(response[[2]][["status_code"]], 200)
+  dai_auth()
 })
 
 test_that("dai_sync informs about unsuccessful requests", {
@@ -150,5 +151,5 @@ test_that("dai_sync informs about unsuccessful requests", {
 
   response <- dai_async("foo.pdf", token = NULL)
   expect_equal(response[[1]][["status_code"]], 403)
-
+  dai_auth()
 })

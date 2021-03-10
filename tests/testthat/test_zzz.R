@@ -1,3 +1,4 @@
+
 ## .ONLOAD ---------------------------------------------------------------------
 
 test_that(".onLoad initiates auth state", {
@@ -6,6 +7,8 @@ test_that(".onLoad initiates auth state", {
   expect_true(.auth$auth_active)
 
 })
+
+## .ONATTACH -------------------------------------------------------------------
 
 test_that(".onAttach authenticates", {
   skip_if_no_token()
