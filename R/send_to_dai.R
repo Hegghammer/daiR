@@ -25,33 +25,25 @@ dai_sync <- function(file,
                      ) {
 
   # Check
-  if (!(is.character(file))) {
-    stop("Error: 'file' input not a character vector.")
-    }
-
-  if (length(file) > 1) {
-    stop("Error: 'file' input of length > 1.")
+  if (!(is.character(file) && length(file) == 1)) {
+    stop("Invalid file input.")
     }
 
   extension <- tolower(stringr::str_extract(file, "(?<=\\.)\\w{3,4}$"))
   supported <- c("bmp", "gif", "jpeg", "jpg", "pdf", "png", "tiff")
 
   if (!(extension %in% supported)) {
-    stop("Error: Unsupported file format. See documentation for details.")
+    stop("Unsupported file format. See documentation for details.")
     }
 
-  if (length(proj_id) > 1) {
-    stop("Error: proj_id parameter of length > 1.")
-  }
-
-  if (!(is.character(proj_id))) {
-    stop("Error: proj_id not a character vector")
+  if (!(is.character(proj_id) && length(proj_id) == 1)) {
+    stop("Invalid proj_id.")
   }
 
   loc <- tolower(loc)
 
   if (!(loc %in% c("eu", "us"))) {
-    stop("Error: invalid location parameter.")
+    stop("Invalid location parameter.")
   }
 
   # Encode
@@ -83,6 +75,14 @@ dai_sync <- function(file,
                          httr::config(token = token),
                          body = bod
                          )
+  time <- response[[7]]
+  status <- response[[2]]
+
+  if (status == 200){
+    print(glue::glue("File submitted at {time}. HTTP status: 200 - OK."))
+  } else {
+    print(glue::glue("File submitted at {time}. HTTP status: {status} - unsuccessful."))
+  }
 
   return(response)
 }
@@ -133,29 +133,29 @@ dai_async <- function(files,
 
   # Check and modify
 
-  if (!(is.character(files))) {
-    stop("Error: 'files' input not a character vector.")
+  if (!(is.character(files) && length(files) >= 1)) {
+    stop("Invalid files parameter.")
   }
 
   extensions <- tolower(stringr::str_extract_all(files, "(?<=\\.)\\w{3,4}$"))
   supported <- c("pdf", "gif", "tiff")
 
-  if (length(unique(extensions)) > 1) {
-    stop("Error: elements in files vector not all of the same type.")
+  if (!(all(unique(extensions) %in% supported))) {
+    stop("Input file type not supported.")
   }
 
-  if (!(unique(extensions) %in% supported)) {
-    stop("Error: input file type not supported.")
+  if (length(unique(extensions)) > 1) {
+    stop("Elements in files vector not all of the same type.")
   }
 
   filetype <- tolower(filetype)
 
-  if (!(filetype %in% supported)) {
-    stop("Error: invalid filetype parameter.")
+  if (!(filetype %in% supported && length(filetype) == 1)) {
+    stop("Invalid filetype parameter.")
   }
 
   if (!(filetype == unique(extensions))) {
-    stop("Error: mismatch between filetype parameter and actual format of files.")
+    stop("Mismatch between filetype parameter and actual format of files.")
   }
 
   if (filetype == "pdf") {
@@ -166,20 +166,20 @@ dai_async <- function(files,
     mime <- "image/tiff"
   }
 
-  if ((length(dest_folder) > 1)) {
-    stop("Error: dest_folder parameter of length > 1.")
+  if (length(dest_folder) > 1) {
+    stop("Invalid dest_folder parameter.")
+  }
+
+  if (length(dest_folder) == 1 && !(is.character(dest_folder))) {
+    stop("Invalid dest_folder parameter.")
   }
 
   if (length(dest_folder) == 1 && grepl("/$", dest_folder)) {
     dest_folder <- stringr::str_replace(dest_folder, "/$", "")
   }
 
-  if ((length(bucket) > 1)) {
-    stop("Error: bucket parameter of length > 1")
-  }
-
-  if (!(is.character(bucket))) {
-    stop("Error: bucket not a character vector.")
+  if (!(is.character(bucket) && length(bucket) == 1)) {
+    stop("Invalid bucket parameter.")
   }
 
   if (grepl("^gs://", bucket)) {
@@ -190,18 +190,22 @@ dai_async <- function(files,
     bucket <- stringr::str_replace(bucket, "/$", "")
   }
 
-  if (length(proj_id) > 1) {
-    stop("Error: proj_id parameter of length > 1.")
-  }
-
-  if (!(is.character(proj_id))) {
-    stop("Error: proj_id not a character vector")
+  if (!(is.character(proj_id) && length(proj_id) == 1)) {
+    stop("Invalid proj_id parameter.")
   }
 
   loc <- tolower(loc)
 
-  if (!(loc %in% c("eu", "us"))) {
-    stop("Error: invalid location parameter.")
+  if (!(loc %in% c("eu", "us") && length(loc) == 1)) {
+    stop("Invalid loc parameter.")
+  }
+
+  if (!(is.numeric(pps) && round(pps) == pps && length(pps) == 1)) {
+    stop("Invalid pps parameter.")
+  }
+
+  if (pps < 1 || pps > 100) {
+    stop("Invalid pps parameter.")
   }
 
   # setup to return response list if several files
@@ -249,10 +253,12 @@ dai_async <- function(files,
 
     status <- resp[[2]]
 
+    time <- resp[[7]]
+
     if (status == 200){
-      print(glue::glue("File {counter} of {length(files)} submitted. HTTP status: {status} - OK."))
+      print(glue::glue("File {counter} of {length(files)} submitted at {time}. HTTP status: 200 - OK."))
     } else {
-      print(glue::glue("HTTP status: {status} - unsuccessful. See response for details."))
+      print(glue::glue("File {counter} of {length(files)} submitted at {time}. HTTP status: {status} - unsuccessful."))
     }
 
     resp <- list(resp)

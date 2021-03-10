@@ -32,10 +32,10 @@ dai_auth <- function(scopes = "https://www.googleapis.com/auth/cloud-platform",
 
   .auth$set_auth_active(TRUE)
 
-  invisible()
-
   if (dai_has_token()) {
   glue::glue("Token obtained and stored in .auth.")
+  } else {
+  glue::glue("Token not obtained. Have you provided a valid service account key file?")
   }
 
 }
@@ -89,12 +89,10 @@ dai_has_token <- function() {
 #'}
 dai_user <- function() {
 
-  info <- httr::GET("https://www.googleapis.com/oauth2/v1/userinfo",
+  response <- httr::GET("https://www.googleapis.com/oauth2/v1/userinfo",
                     httr::config(token = dai_token()))
 
-  parsed <- httr::content(info)
-
-  return(parsed)
+  return(response)
 }
 
 #' Get project id from service account file

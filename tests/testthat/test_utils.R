@@ -1,5 +1,8 @@
 
+dai_auth()
+
 ## IMAGE_TO_PDF ----------------------------------------------------------------
+
 
 test_that("image_to_pdf() warns of input errors", {
   expect_error(image_to_pdf(mtcars)) # if dataframe

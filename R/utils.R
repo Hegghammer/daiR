@@ -76,11 +76,10 @@ create_folder <- function(fname,
 
   fs::file_create(empty)
 
-  out <- googleCloudStorageR::gcs_upload(empty,
+  googleCloudStorageR::gcs_upload(empty,
                                   bucket = bucket,
                                   name = fname
                                   )
-
   return(out)
 }
 
