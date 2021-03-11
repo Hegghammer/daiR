@@ -53,7 +53,7 @@ test_that("dai_sync works", {
 })
 
 test_that("dai_sync informs about unsuccessful requests", {
-  #skip_if_no_token()
+  skip_if_no_token()
   skip_if_offline()
 
   file <- testthat::test_path("examples", "image.jpg")
