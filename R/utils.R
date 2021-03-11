@@ -24,6 +24,7 @@
 
 image_to_pdf <- function(files, pdf_name) {
 
+  # checks
   if (!(is.vector(files))) {
     stop("'files' input not a vector.")
   }
@@ -36,6 +37,7 @@ image_to_pdf <- function(files, pdf_name) {
     stop("Destination filename not .pdf")
   }
 
+  # convert
   magick::image_write(magick::image_read(files),
                       format = "pdf",
                       pdf_name
@@ -60,6 +62,7 @@ create_folder <- function(fname,
                           bucket = Sys.getenv("GCS_DEFAULT_BUCKET")
                           ) {
 
+  # check
   if (!(length(fname) == 1 && is.character(fname))) {
     stop("Invalid folder name format.")
   }
@@ -72,10 +75,12 @@ create_folder <- function(fname,
     fname <- glue::glue("{fname}/")
   }
 
+  # create empty file
   empty <- tempfile()
 
   fs::file_create(empty)
 
+  # upload to Google Storage
   out <- googleCloudStorageR::gcs_upload(empty,
                                   bucket = bucket,
                                   name = fname
@@ -92,9 +97,36 @@ create_folder <- function(fname,
 #' \dontrun{
 #' is_pdf("document.pdf")
 #' }
+
 is_pdf <- function(file){
+
   result <- suppressMessages(try(pdftools::pdf_info(file), silent = TRUE))
+
   if (class(result) != "try-error") return(TRUE)
+
+  return(FALSE)
+}
+
+
+
+#' Check that a file is json
+#'
+#' @param file a filepath
+#'
+#' @return boolean
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' is_json("file.json")
+#' }
+
+is_json <- function(file){
+
+  result <- suppressMessages(try(jsonlite::fromJSON(file), silent = TRUE))
+
+  if (class(result) != "try-error") return(TRUE)
+
   return(FALSE)
 }
 
@@ -112,7 +144,7 @@ pdf_to_binbase <- function(file) {
 
   img_gray <- magick::image_convert(img, colorspace = "Gray")
 
-  filepath <- glue::glue("{tempdir()}/dai_temp.tiff")
+  filepath <- file.path(tempdir(), "dai_temp.tiff")
 
   magick::image_write(img_gray, filepath, format = "tiff", compression = "JPEG")
 
@@ -135,7 +167,7 @@ img_to_binbase <- function(file) {
 
   img_gray <- magick::image_convert(img, colorspace = "Gray")
 
-  filepath <- glue::glue("{tempdir()}/dai_temp.tiff")
+  filepath <- file.path(tempdir(), "dai_temp.tiff")
 
   magick::image_write(img_gray, filepath, format = "tiff", compression = "JPEG")
 

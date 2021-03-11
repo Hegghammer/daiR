@@ -7,7 +7,7 @@
 text_from_dai_response(object)
 }
 \arguments{
-\item{object}{a json response object}
+\item{object}{a json response object from DAI}
 }
 \value{
 a string.

@@ -19,16 +19,19 @@ test_that("dai_sync calls out input errors", {
   expect_error(dai_sync(file = "foo"),
                "Unsupported file format. See documentation for details.")
 
-  expect_error(dai_sync(file = "foo.pdf", proj_id = 012345),
+  expect_error(dai_sync(file = "foo.pdf"), "Input file not a real pdf.")
+
+  expect_error(dai_sync(file = "foo.png", proj_id = 012345),
                "Invalid proj_id.")
-  expect_error(dai_sync(file = "foo.pdf", proj_id = c("Project1", "Project2")),
+  expect_error(dai_sync(file = "foo.png", proj_id = c("Project1", "Project2")),
                "Invalid proj_id.")
 } )
 
 test_that("dai_sync calls out input errors (CONT)", {
   skip_if_no_token() # bc from here down it calls get_project_id()
   skip_if_offline()
-  expect_error(dai_sync(file = "foo.pdf", loc = "USA"),
+  realpdf <- testthat::test_path("examples", "sample.pdf")
+  expect_error(dai_sync(file = realpdf, loc = "USA"),
                "Invalid location parameter.")
 } )
 
@@ -36,14 +39,14 @@ test_that("dai_sync works", {
   skip_if_no_token()
   skip_if_offline()
 
-  file1 <- testthat::test_path("examples", "image.jpg")
-  response1 <- dai_sync(file1)
+  image <- testthat::test_path("examples", "image.jpg")
+  response1 <- dai_sync(image)
   expect_equal(response1[["status_code"]], 200)
   parsed1 <- httr::content(response1)
   expect_type(parsed1[["text"]], "character")
 
-  file2 <- image_to_pdf(file1, "foo.pdf")
-  response2 <- dai_sync(file2)
+  pdf <- image_to_pdf(image, "foo.pdf")
+  response2 <- dai_sync(pdf)
   expect_equal(response2[["status_code"]], 200)
   parsed2 <- httr::content(response2)
   expect_type(parsed2[["text"]], "character")
@@ -123,7 +126,7 @@ test_that("dai_async calls out input errors (CONT)", {
                "Invalid pps parameter.")
   expect_error(dai_async(files = "foo.pdf", pps = NULL),
                "Invalid pps parameter.")
-  dai_auth(path = rawToChar(json))
+  dai_auth()
 } )
 
 

@@ -1,0 +1,1 @@
+{"uri":"gs://dair-example-bucket/blank.tiff","mimeType":"image/tiff","pages":[{"pageNumber":1,"dimension":{"width":200,"height":300,"unit":"pixels"},"layout":{"textAnchor":{"textSegments":[{}]},"boundingPoly":{"vertices":[{},{"x":200},{"x":200,"y":300},{"y":300}],"normalizedVertices":[{},{"x":1},{"x":1,"y":1},{"y":1}]},"orientation":"PAGE_UP"}}],"shardInfo":{"shardCount":"1"}}

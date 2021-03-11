@@ -4,12 +4,14 @@
 \alias{draw_tokens}
 \title{Inspect token bounding boxes in Google Document AI json output}
 \usage{
-draw_tokens(pdf, json)
+draw_tokens(pdf, json, dir = tempdir())
 }
 \arguments{
 \item{pdf}{filepath of the pdf sent for processing.}
 
 \item{json}{filepath of the json output file.}
+
+\item{dir}{path to output directory}
 }
 \description{
 This function extracts the token bounding box coordinates

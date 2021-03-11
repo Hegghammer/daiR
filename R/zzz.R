@@ -25,7 +25,7 @@
     dai_auth()
   }
 
-  packageStartupMessage("Welcome to daiR 0.1.0, your gateway to Google Document AI v1beta2.")
+  packageStartupMessage("Welcome to daiR 0.2.0, your gateway to Google Document AI v1beta2.")
 
 }
 

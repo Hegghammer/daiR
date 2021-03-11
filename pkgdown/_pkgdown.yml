@@ -42,6 +42,7 @@ reference:
       - '`image_to_pdf`'
       - '`create_folder`'
       - '`is_pdf`'
+      - '`is_json`'
       - '`pdf_to_binbase`'
       - '`img_to_binbase`'
 navbar:

@@ -4,12 +4,14 @@
 \alias{draw_lines}
 \title{Inspect line bounding boxes in Google Document AI json output}
 \usage{
-draw_lines(pdf, json)
+draw_lines(pdf, json, dir = tempdir())
 }
 \arguments{
 \item{pdf}{filepath of the pdf sent for processing.}
 
 \item{json}{filepath of the json output file.}
+
+\item{dir}{path to output directory}
 }
 \description{
 This function extracts the line bounding box coordinates

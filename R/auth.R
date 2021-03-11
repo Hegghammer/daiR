@@ -87,6 +87,7 @@ dai_has_token <- function() {
 #' \dontrun{
 #' dai_user()
 #'}
+
 dai_user <- function() {
 
   response <- httr::GET("https://www.googleapis.com/oauth2/v1/userinfo",

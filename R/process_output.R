@@ -15,8 +15,9 @@
 
 build_token_df <- function(json) {
 
-  if (!(grepl(".json$", json))){
-    stop("Error: input file not .json.")
+  # check
+  if (!(is_json(json))){
+    stop("Input file not .json.")
   }
 
   # turn json file to list
@@ -143,8 +144,9 @@ build_token_df <- function(json) {
 
 build_block_df <- function(json) {
 
-  if (!(grepl(".json$", json))){
-    stop("Error: input file not .json.")
+  # check
+  if (!(is_json(json))){
+    stop("Input file not .json.")
   }
 
   # turn the json into a list
@@ -221,12 +223,14 @@ build_block_df <- function(json) {
 #' \dontrun{
 #' new_block_df <- split_block(df = old_block_df, block = 7, cut_point = 33)
 #' }
+
 split_block <- function(df,
                         page = 1,
                         block,
                         cut_point,
                         direction = "V") {
 
+  # checks
   if (!(is.data.frame(df))){
     stop("Error: Input not a data frame.")
   }
@@ -247,12 +251,15 @@ split_block <- function(df,
     stop("Error: Invalid split direction.")
   }
 
+  # rename for readability
   old_df <- df
 
+  # select page and block
   old_page_df <- old_df[old_df$page == page,]
 
   old_block <- old_page_df[old_page_df$block == block,]
 
+  # vertical split
   if (direction %in% c("V", "v")){
 
     dist <- old_block$right - old_block$left
@@ -291,6 +298,7 @@ split_block <- function(df,
       new_block_df <- rbind(preceding, new_page_df, succeeding)
     }
 
+  # horizontal split
   } else {
 
     dist <- old_block$bottom - old_block$top
@@ -351,6 +359,7 @@ split_block <- function(df,
 reassign_tokens <- function(token_df,
                             block_df) {
 
+  # checks
   if (!(is.data.frame(token_df))){
     stop("Error: Token input not a data frame.")
   }
@@ -359,6 +368,7 @@ reassign_tokens <- function(token_df,
     stop("Error: Block input not a data frame.")
   }
 
+  # get list of pagewise dfs
   token_df_pages <- split(token_df,
                           token_df$page
   )
@@ -375,7 +385,7 @@ reassign_tokens <- function(token_df,
   # loop over each page
   for (i in 1:length(token_df_pages)){
 
-    # short names for pagewise dataframes
+    # short names for readability
     tokens <- token_df_pages[[i]]
     blocks <- block_df_pages[[i]]
 
@@ -423,6 +433,7 @@ reassign_tokens2 <- function(token_df,
                              block,
                              page = 1) {
 
+  # checks
   if (!(is.data.frame(token_df))){
     stop("Error: Token input not a data frame.")
   }
@@ -431,6 +442,7 @@ reassign_tokens2 <- function(token_df,
     stop("Error: Block input not a data frame.")
   }
 
+  # get only selected page
   page_df <- token_df[token_df$page == page, ]
 
   page_df$block[page_df$top >= block$top &
@@ -438,15 +450,20 @@ reassign_tokens2 <- function(token_df,
                   page_df$left >= block$left &
                   page_df$right <= block$right] <- as.numeric(block$block)
 
+  # if only page
   if (page == 1 && max(token_df$page) == 1) {
 
     new_token_df <- page_df
 
+  #TODO if first of several
+
+  # if last of several
   } else if (page > 1 && page == max(token_df$page)){
 
     preceeding <- token_df[token_df$page < page, ]
     new_token_df <- rbind(preceding, page_df)
 
+  # if in middle
   } else {
     preceding <- token_df[token_df$page < page, ]
     succeeding <- token_df[token_df$page > page, ]
@@ -474,14 +491,16 @@ reassign_tokens2 <- function(token_df,
 from_labelme <- function(json,
                          page = 1) {
 
-  if (!(grepl(".json$", json))){
-    stop("Error: input file not .json.")
+  # checks
+  if (!(is_json(json))){
+    stop("Input file not .json.")
   }
 
   if (!(is.numeric(page)) || length(page) > 1) {
     stop("Error: invalid page parameter.")
   }
 
+  # extract the coordinates
   info <- jsonlite::fromJSON(json)
 
   height <- info[[6]]

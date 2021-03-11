@@ -4,12 +4,14 @@
 \alias{draw_blocks}
 \title{Inspect block bounding boxes in Google Document AI json output}
 \usage{
-draw_blocks(pdf, json)
+draw_blocks(pdf, json, dir = tempdir())
 }
 \arguments{
 \item{pdf}{filepath of the pdf sent for processing.}
 
 \item{json}{filepath of the json output file.}
+
+\item{dir}{path to output directory}
 }
 \description{
 This function extracts the block bounding box coordinates

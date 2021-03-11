@@ -4,12 +4,14 @@
 \alias{draw_paragraphs}
 \title{Inspect paragraph boxes in Google Document AI json output}
 \usage{
-draw_paragraphs(pdf, json)
+draw_paragraphs(pdf, json, dir = tempdir())
 }
 \arguments{
 \item{pdf}{filepath of the pdf sent for processing.}
 
 \item{json}{filepath of the json output file.}
+
+\item{dir}{path to output directory}
 }
 \description{
 This function extracts the paragraph bounding box coordinates

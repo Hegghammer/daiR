@@ -3,7 +3,7 @@
 #' This function extracts the text element of a json response object
 #' returned from dai::dai_sync()
 #'
-#' @param object a json response object
+#' @param object a json response object from DAI
 #'
 #' @return a string.
 #' @export
@@ -14,8 +14,22 @@
 
 text_from_dai_response <- function(object) {
 
+  # checks
+  if (!(inherits(object, "response"))) {
+    stop("Object is not a valid HTTP response.")
+  }
+
   json <- httr::content(object, as="parsed")
 
+  if (!("pages" %in% names(json))) {
+    stop("Object not a positive dai_sync response.")
+  }
+
+  if (!("text" %in% names(json))) {
+    stop("DAI found no text. Was the page blank?")
+  }
+
+  # get text
   text <- json[["text"]]
 
   return(text)
@@ -37,12 +51,26 @@ text_from_dai_response <- function(object) {
 
 text_from_dai_file <- function(json) {
 
-  if (!(grepl(".json$", json))){
-    stop("Error: input file not .json.")
+  # checks
+  if (!(is.character(json) && length(json) == 1)) {
+    stop("Invalid file input.")
+  }
+
+  if (!(is_json(json))){
+    stop("Input file not .json.")
   }
 
   output <- jsonlite::fromJSON(json)
 
+  if (!("pages" %in% names(output))) {
+    stop("File not from DAI.")
+  }
+
+  if (!("text" %in% names(output))) {
+    stop("DAI found no text. Was the document blank?")
+  }
+
+  # get text
   text <- output$text
 
   return(text)
@@ -57,11 +85,14 @@ text_from_dai_file <- function(json) {
 #'
 #' @param pdf filepath of the pdf sent for processing.
 #' @param json filepath of the json output file.
+#' @param dir path to output directory
 #'
-#' @details Not vectorized. Takes only pdf documents (if you processed .gif or .tiff files,
-#' convert them to pdf first). Generates an annotated .png file for each page in the original pdf.
-#' Assumes equal page length between the pdf and the json, so if the json output was split into shards,
-#' split the pdf accordingly first.
+#' @details Not vectorized, but documents can be multi-page.
+#' Takes only pdf documents (if you processed .gif or .tiff files,
+#' convert them to pdf first). Generates an annotated .png file
+#' for each page in the original pdf. Assumes equal page length
+#' between the pdf and the json, so if the json output was split
+#' into shards, split the pdf accordingly first.
 #'
 #' @export
 #' @examples
@@ -70,15 +101,32 @@ text_from_dai_file <- function(json) {
 #' }
 
 draw_blocks <- function(pdf,
-                        json
+                        json,
+                        dir = tempdir()
                         ) {
-
-  if (!(is_pdf(pdf))){
-    stop("Error: input file not a pdf.")
+  # checks
+  if (length(pdf) > 1) {
+    stop("Invalid pdf input. This function is not vectorised.")
   }
 
-  if (!(grepl(".json$", json))){
-    stop("Error: input file not .json.")
+  if (length(json) > 1) {
+    stop("Invalid json input. This function is not vectorised.")
+  }
+
+  if (!(is.character(pdf))) {
+    stop("Invalid pdf input.")
+  }
+
+  if (!(is.character(json))) {
+    stop("Invalid json input.")
+  }
+
+  if (!(is_pdf(pdf))){
+    stop("Input 'pdf' not a pdf.")
+  }
+
+  if (!(is_json(json))){
+    stop("Input 'json' not .json.")
   }
 
   # split pdf into individual pages:
@@ -148,7 +196,9 @@ draw_blocks <- function(pdf,
 
     filename <- glue::glue("{prefix}_blocks.png")
 
-    magick::image_write(img, format = "png", filename)
+    path <- file.path(dir, filename)
+
+    magick::image_write(img, format = "png", path)
 
     grDevices::dev.off()
 
@@ -157,7 +207,7 @@ draw_blocks <- function(pdf,
 
   pages <- length(pages_blocks)
 
-  print(glue::glue("Generated {pages} annotated image(s)."))
+  glue::glue("Generated {pages} annotated image(s).")
 }
 
 #' Inspect paragraph boxes in Google Document AI json output
@@ -169,11 +219,14 @@ draw_blocks <- function(pdf,
 #'
 #' @param pdf filepath of the pdf sent for processing.
 #' @param json filepath of the json output file.
+#' @param dir path to output directory
 #'
-#' @details Not vectorized. Takes only pdf documents (if you processed .gif or .tiff files,
-#' convert them to pdf first). Generates an annotated .png file for each page in the original pdf.
-#' Assumes equal page length between the pdf and the json, so if the json output was split into shards,
-#' split the pdf accordingly first.
+#' @details Not vectorized, but documents can be multi-page.
+#' Takes only pdf documents (if you processed .gif or .tiff files,
+#' convert them to pdf first). Generates an annotated .png file
+#' for each page in the original pdf. Assumes equal page length
+#' between the pdf and the json, so if the json output was split
+#' into shards, split the pdf accordingly first.
 #'
 #' @export
 #' @examples
@@ -182,15 +235,32 @@ draw_blocks <- function(pdf,
 #' }
 
 draw_paragraphs <- function(pdf,
-                            json
+                            json,
+                            dir = tempdir()
                             ) {
-
-  if (!(is_pdf(pdf))){
-    stop("Error: input file not a pdf.")
+  # checks
+  if (length(pdf) > 1) {
+    stop("Invalid pdf input. This function is not vectorised.")
   }
 
-  if (!(grepl(".json$", json))){
-    stop("Error: input file not .json.")
+  if (length(json) > 1) {
+    stop("Invalid json input. This function is not vectorised.")
+  }
+
+  if (!(is.character(pdf))) {
+    stop("Invalid pdf input.")
+  }
+
+  if (!(is.character(json))) {
+    stop("Invalid json input.")
+  }
+
+  if (!(is_pdf(pdf))){
+    stop("Input 'pdf' not a pdf.")
+  }
+
+  if (!(is_json(json))){
+    stop("Input 'json' not .json.")
   }
 
   # split pdf into individual pages:
@@ -257,7 +327,9 @@ draw_paragraphs <- function(pdf,
 
     filename <- glue::glue("{prefix}_paragraphs.png")
 
-    magick::image_write(img, format = "png", filename)
+    path <- file.path(dir, filename)
+
+    magick::image_write(img, format = "png", path)
 
     grDevices::dev.off()
 
@@ -266,7 +338,7 @@ draw_paragraphs <- function(pdf,
 
   pages <- length(pages_paras)
 
-  print(glue::glue("Generated {pages} annotated image(s)."))
+  glue::glue("Generated {pages} annotated image(s).")
 }
 
 #' Inspect line bounding boxes in Google Document AI json output
@@ -278,11 +350,14 @@ draw_paragraphs <- function(pdf,
 #'
 #' @param pdf filepath of the pdf sent for processing.
 #' @param json filepath of the json output file.
+#' @param dir path to output directory
 #'
-#' @details Not vectorized. Takes only pdf documents (if you processed .gif or .tiff files,
-#' convert them to pdf first). Generates an annotated .png file for each page in the original pdf.
-#' Assumes equal page length between the pdf and the json, so if the json output was split into shards,
-#' split the pdf accordingly first.
+#' @details Not vectorized, but documents can be multi-page.
+#' Takes only pdf documents (if you processed .gif or .tiff files,
+#' convert them to pdf first). Generates an annotated .png file
+#' for each page in the original pdf. Assumes equal page length
+#' between the pdf and the json, so if the json output was split
+#' into shards, split the pdf accordingly first.
 #'
 #' @export
 #' @examples
@@ -291,15 +366,33 @@ draw_paragraphs <- function(pdf,
 #' }
 
 draw_lines <- function(pdf,
-                       json
+                       json,
+                       dir = tempdir()
                        ) {
 
-  if (!(is_pdf(pdf))){
-    stop("Error: input file not a pdf.")
+  # checks
+  if (length(pdf) > 1) {
+    stop("Invalid pdf input. This function is not vectorised.")
   }
 
-  if (!(grepl(".json$", json))){
-    stop("Error: input file not .json.")
+  if (length(json) > 1) {
+    stop("Invalid json input. This function is not vectorised.")
+  }
+
+  if (!(is.character(pdf))) {
+    stop("Invalid pdf input.")
+  }
+
+  if (!(is.character(json))) {
+    stop("Invalid json input.")
+  }
+
+  if (!(is_pdf(pdf))){
+    stop("Input 'pdf' not a pdf.")
+  }
+
+  if (!(is_json(json))){
+    stop("Input 'json' not .json.")
   }
 
   # split pdf into individual pages:
@@ -367,7 +460,9 @@ draw_lines <- function(pdf,
 
     filename <- glue::glue("{prefix}_lines.png")
 
-    magick::image_write(img, format = "png", filename)
+    path <- file.path(dir, filename)
+
+    magick::image_write(img, format = "png", path)
 
     grDevices::dev.off()
 
@@ -376,7 +471,7 @@ draw_lines <- function(pdf,
 
   pages <- length(pages_lines)
 
-  print(glue::glue("Generated {pages} annotated image(s)."))
+  glue::glue("Generated {pages} annotated image(s).")
 }
 
 #' Inspect token bounding boxes in Google Document AI json output
@@ -388,11 +483,14 @@ draw_lines <- function(pdf,
 #'
 #' @param pdf filepath of the pdf sent for processing.
 #' @param json filepath of the json output file.
+#' @param dir path to output directory
 #'
-#' @details Not vectorized. Takes only pdf documents (if you processed .gif or .tiff files,
-#' convert them to pdf first). Generates an annotated .png file for each page in the original pdf.
-#' Assumes equal page length between the pdf and the json, so if the json output was split into shards,
-#' split the pdf accordingly first.
+#' @details Not vectorized, but documents can be multi-page.
+#' Takes only pdf documents (if you processed .gif or .tiff files,
+#' convert them to pdf first). Generates an annotated .png file
+#' for each page in the original pdf. Assumes equal page length
+#' between the pdf and the json, so if the json output was split
+#' into shards, split the pdf accordingly first.
 #'
 #' @export
 #' @examples
@@ -401,15 +499,33 @@ draw_lines <- function(pdf,
 #' }
 
 draw_tokens <- function(pdf,
-                        json
+                        json,
+                        dir = tempdir()
                         ) {
 
-  if (!(is_pdf(pdf))){
-    stop("Error: input file not a pdf.")
+  # checks
+  if (length(pdf) > 1) {
+    stop("Invalid pdf input. This function is not vectorised.")
   }
 
-  if (!(grepl(".json$", json))){
-    stop("Error: input file not .json.")
+  if (length(json) > 1) {
+    stop("Invalid json input. This function is not vectorised.")
+  }
+
+  if (!(is.character(pdf))) {
+    stop("Invalid pdf input.")
+  }
+
+  if (!(is.character(json))) {
+    stop("Invalid json input.")
+  }
+
+  if (!(is_pdf(pdf))){
+    stop("Input 'pdf' not a pdf.")
+  }
+
+  if (!(is_json(json))){
+    stop("Input 'json' not .json.")
   }
 
   # split pdf into individual pages:
@@ -476,7 +592,9 @@ draw_tokens <- function(pdf,
 
     filename <- glue::glue("{prefix}_tokens.png")
 
-    magick::image_write(img, format = "png", filename)
+    path <- file.path(dir, filename)
+
+    magick::image_write(img, format = "png", path)
 
     grDevices::dev.off()
 
@@ -485,5 +603,5 @@ draw_tokens <- function(pdf,
 
   pages <- length(pages_tokens)
 
-  print(glue::glue("Generated {pages} annotated image(s)."))
+  glue::glue("Generated {pages} annotated image(s).")
 }

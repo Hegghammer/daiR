@@ -36,6 +36,10 @@ dai_sync <- function(file,
     stop("Unsupported file format. See documentation for details.")
     }
 
+  if (extension == "pdf" && !(is_pdf(file))) {
+    stop("Input file not a real pdf.")
+  }
+
   if (!(is.character(proj_id) && length(proj_id) == 1)) {
     stop("Invalid proj_id.")
   }
@@ -79,9 +83,9 @@ dai_sync <- function(file,
   status <- response[[2]]
 
   if (status == 200){
-    print(glue::glue("File submitted at {time}. HTTP status: 200 - OK."))
+    glue::glue("File submitted at {time}. HTTP status: 200 - OK.")
   } else {
-    print(glue::glue("File submitted at {time}. HTTP status: {status} - unsuccessful."))
+    glue::glue("File submitted at {time}. HTTP status: {status} - unsuccessful.")
   }
 
   return(response)
@@ -256,9 +260,9 @@ dai_async <- function(files,
     time <- resp[[7]]
 
     if (status == 200){
-      print(glue::glue("File {counter} of {length(files)} submitted at {time}. HTTP status: 200 - OK."))
+      glue::glue("File {counter} of {length(files)} submitted at {time}. HTTP status: 200 - OK.")
     } else {
-      print(glue::glue("File {counter} of {length(files)} submitted at {time}. HTTP status: {status} - unsuccessful."))
+      glue::glue("File {counter} of {length(files)} submitted at {time}. HTTP status: {status} - unsuccessful.")
     }
 
     resp <- list(resp)
