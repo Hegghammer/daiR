@@ -68,7 +68,7 @@ test_that("create_folder() warns of input errors", {
 } )
 
 test_that("create_folder() works", {
-  #skip_if_no_token()
+  skip_if_no_token()
   skip_if_offline()
 
   folder1 <- "foo"
@@ -88,8 +88,7 @@ test_that("create_folder() works", {
   bucket <- Sys.getenv("GCS_DEFAULT_BUCKET")
   out5 <- create_folder(folder1, bucket)
   expect_identical(out5$bucket, bucket)
-  #dai_auth()
-  dai_auth(path = rawToChar(json))
+  dai_auth()
 })
 
 ## IS_PDF ----------------------------------------------------------------------

@@ -3,6 +3,7 @@
 # - https://github.com/tidyverse/googledrive/blob/master/tests/testthat/helper.R
 
 has_internet <- !is.null(curl::nslookup(host = "r-project.org", error = FALSE))
+
 if (has_internet && gargle:::secret_can_decrypt("daiR")) {
   json <- gargle:::secret_read("daiR", "dair_testing.json")
   dai_auth(path = rawToChar(json))
