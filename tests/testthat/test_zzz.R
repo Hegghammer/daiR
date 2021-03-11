@@ -14,7 +14,7 @@ test_that(".onAttach authenticates", {
   skip_if_no_token()
   skip_if_offline()
 
-  z <- daiR:::.onAttach()
-  expect_match(z, "Token obtained and stored in .auth.")
+  msg <- daiR:::.onAttach()
+  expect_match(msg, "Token obtained and stored in .auth.")
   expect_true(.auth$has_cred())
 })

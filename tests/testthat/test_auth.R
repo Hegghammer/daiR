@@ -11,41 +11,46 @@ test_that("dai_auth calls out input errors", {
 })
 
 test_that("dai_auth authenticates with correct credentials", {
-  skip_if_no_token()
+  #skip_if_no_token()
   skip_if_offline()
 
   dai_deauth()
-  dai_auth()
+  #dai_auth()
+  dai_auth(path = rawToChar(json))
   expect_true(dai_has_token())
 })
 
 test_that("dai_auth sets scopes as instructed", {
-  skip_if_no_token()
+  #skip_if_no_token()
   skip_if_offline()
 
   dai_deauth()
   scope1 <- "https://www.googleapis.com/auth/cloud-platform"
-  dai_auth(scopes = scope1)
+  #dai_auth(scopes = scope1)
+  dai_auth(scopes = scope1, path = rawToChar(json))
   token <- dai_token()
   expect_match(token[["params"]][["scope"]], glue::glue("^{scope1}.*"))
 
   dai_deauth()
   scope2 <- "https://www.googleapis.com/auth/books"
   scope3 <- "https://www.googleapis.com/auth/documents"
-  dai_auth(scopes = c(scope2, scope3))
+  #dai_auth(scopes = c(scope2, scope3))
+  dai_auth(scopes = c(scope2, scope3), path = rawToChar(json))
   token <- dai_token()
   expect_match(token[["params"]][["scope"]], glue::glue("^{scope2} {scope3}.*"))
-  dai_auth()
+  #dai_auth()
+  dai_auth(path = rawToChar(json))
 })
 
 test_that("dai_auth does not authenticate with wrong credentials", {
-  skip_if_no_token()
+  #skip_if_no_token()
   skip_if_offline()
   dai_deauth()
   json <- jsonlite::toJSON("a fake json file")
   dai_auth(path = json)
   expect_false(dai_has_token())
-  dai_auth()
+  #dai_auth()
+  dai_auth(path = rawToChar(json))
 })
 
 ## DAI_TOKEN -------------------------------------------------------------------
@@ -60,7 +65,8 @@ test_that("dai_token works", {
   expect_type(dai_token(), "environment")
   expect_s3_class(dai_token(), "Token2.0")
 
-  dai_auth()
+  #dai_auth()
+  dai_auth(path = rawToChar(json))
   expect_type(dai_token(), "environment")
   expect_s3_class(dai_token(), "Token2.0")
 })
@@ -73,13 +79,15 @@ test_that("dai_token works", {
 test_that("dai_user works", {
   skip_if_no_token()
   skip_if_offline()
-  dai_auth()
+  #dai_auth()
+  dai_auth(path = rawToChar(json))
   response <- dai_user()
   expect_equal(response[[2]], 200)
   dai_deauth()
   response <- dai_user()
   expect_equal(response[[2]], 401)
-  dai_auth()
+  #dai_auth()
+  dai_auth(path = rawToChar(json))
 })
 
 ## GET_PROJECT_ID --------------------------------------------------------------
@@ -97,5 +105,6 @@ test_that("dai_deauth works", {
   skip_if_offline()
   dai_deauth()
   expect_false(dai_has_token())
-  dai_auth()
+  #dai_auth()
+  dai_auth(path = rawToChar(json))
 })
