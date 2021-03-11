@@ -87,7 +87,7 @@ for human inspection." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -166,7 +166,7 @@ and plots them on a copy of the source document
 for human inspection.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>draw_lines</span><span class='op'>(</span><span class='va'>pdf</span>, <span class='va'>json</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>draw_lines</span><span class='op'>(</span><span class='va'>pdf</span>, <span class='va'>json</span>, dir <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -178,6 +178,10 @@ for human inspection.</p>
     <tr>
       <th>json</th>
       <td><p>filepath of the json output file.</p></td>
+    </tr>
+    <tr>
+      <th>dir</th>
+      <td><p>path to output directory</p></td>
     </tr>
     </table>
 
