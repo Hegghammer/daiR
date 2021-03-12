@@ -97,8 +97,8 @@ test_that("draw_blocks() produces a correctly named png file", {
   realjson <- testthat::test_path("examples", "output.json")
 
   pages <- pdftools::pdf_info(realpdf)$pages
-  expected_message <- as.character(glue::glue("Generated {pages} annotated image*"))
-  message <- draw_blocks(realpdf, realjson)
+  expected_message <- glue::glue("Generated {pages} annotated image*")
+  message <- capture.output(draw_blocks(realpdf, realjson), type = "message")
   expect_match(message, expected_message)
 
   expected_filepaths <- character()
@@ -163,8 +163,8 @@ test_that("draw_paragraphs() produces a correctly named new png file", {
   realjson <- testthat::test_path("examples", "output.json")
 
   pages <- pdftools::pdf_info(realpdf)$pages
-  expected_message <- as.character(glue::glue("Generated {pages} annotated image*"))
-  message <- draw_paragraphs(realpdf, realjson)
+  expected_message <- glue::glue("Generated {pages} annotated image*")
+  message <- capture.output(draw_paragraphs(realpdf, realjson), type = "message")
   expect_match(message, expected_message)
 
   expected_filepaths <- character()
@@ -229,8 +229,8 @@ test_that("draw_lines() produces a correctly named new png file", {
   realjson <- testthat::test_path("examples", "output.json")
 
   pages <- pdftools::pdf_info(realpdf)$pages
-  expected_message <- as.character(glue::glue("Generated {pages} annotated image*"))
-  message <- draw_lines(realpdf, realjson)
+  expected_message <- glue::glue("Generated {pages} annotated image*")
+  message <- capture.output(draw_lines(realpdf, realjson), type = "message")
   expect_match(message, expected_message)
 
   expected_filepaths <- character()
@@ -295,8 +295,8 @@ test_that("draw_tokens() produces a correctly named new png file", {
   realjson <- testthat::test_path("examples", "output.json")
 
   pages <- pdftools::pdf_info(realpdf)$pages
-  expected_message <- as.character(glue::glue("Generated {pages} annotated image*"))
-  message <- draw_tokens(realpdf, realjson)
+  expected_message <- glue::glue("Generated {pages} annotated image*")
+  message <- capture.output(draw_tokens(realpdf, realjson), type = "message")
   expect_match(message, expected_message)
 
   expected_filepaths <- character()
