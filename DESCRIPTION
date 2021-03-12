@@ -14,7 +14,7 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1.9000
 Imports: httr, glue, jsonlite, magick, stringr, tabulizer, grDevices, gargle, usethis, googleCloudStorageR, utils, fs, purrr, dplyr, base64enc, pdftools, curl
-Suggests: knitr, rmarkdown, qpdf, covr, testthat (>= 3.0.0)
+Suggests: knitr, rmarkdown, qpdf, covr, testthat (>= 3.0.0), ngram
 VignetteBuilder: knitr
 URL: https://github.com/Hegghammer/daiR
 BugReports: https://github.com/Hegghammer/daiR/issues
