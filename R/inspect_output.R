@@ -183,7 +183,8 @@ draw_blocks <- function(pdf,
            y = box$y1[1],
            label = counter2,
            cex = 2,
-           col = "blue"
+           col = "blue",
+           family = "mono"
            )
 
       counter2 <- counter2 + 1
@@ -315,7 +316,9 @@ draw_paragraphs <- function(pdf,
            y = box$y1[1],
            label = counter2,
            cex = 0.6,
-           col = "blue")
+           col = "blue",
+           family = "mono"
+           )
 
       counter2 <- counter2 + 1
     }
@@ -448,7 +451,9 @@ draw_lines <- function(pdf,
            y = box$y1[1],
            label = counter2,
            cex = 0.6,
-           col = "blue")
+           col = "blue",
+           family = "mono"
+           )
 
       counter2 <- counter2 + 1
     }
@@ -580,7 +585,9 @@ draw_tokens <- function(pdf,
            y = box$y1[1],
            label = counter2,
            cex = 0.6,
-           col = "blue")
+           col = "blue",
+           family = "mono"
+           )
 
       counter2 <- counter2 + 1
     }
