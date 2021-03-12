@@ -2,9 +2,19 @@
 
 language: R
 cache: packages
+warnings_are_errors: true
+sudo: required
+
+apt_packages:
+  - r-cran-rjava
+
+before_install:
+  - sudo $(which R) CMD javareconf
+
 addons:
   apt:
     sources:
     - sourceline: 'ppa:chris-lea/libsodium'
     packages:
     - libsodium-dev
+
