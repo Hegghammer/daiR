@@ -28,6 +28,7 @@ jobs:
           sudo apt-get install libharfbuzz-dev libfribidi-dev
           sudo apt-get install libpoppler-cpp-dev
           sudo apt-get install qpdf
+          sudo apt-get install ghostscript
           sudo mv /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/policy.xml.off
       - uses: r-lib/actions/setup-r@v1
 
