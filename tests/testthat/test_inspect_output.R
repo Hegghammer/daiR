@@ -51,7 +51,7 @@ test_that("text_from_dai_file() warns of file not containing text", {
   json <- jsonlite::toJSON(random)
   madeup <- tempfile(fileext = ".json")
   write(json, madeup)
-  expect_error(text_from_dai_file(madeup), "File not from DAI.")
+  expect_error(text_from_dai_file(madeup), "JSON not in right format. Is it from DAI?")
 
   blank <- testthat::test_path("examples", "output_blank.json")
   expect_error(text_from_dai_file(blank), "DAI found no text. Was the document blank?")

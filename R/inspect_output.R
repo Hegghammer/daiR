@@ -63,7 +63,7 @@ text_from_dai_file <- function(json) {
   output <- jsonlite::fromJSON(json)
 
   if (!("pages" %in% names(output))) {
-    stop("File not from DAI.")
+    stop("JSON not in right format. Is it from DAI?")
   }
 
   if (!("text" %in% names(output))) {

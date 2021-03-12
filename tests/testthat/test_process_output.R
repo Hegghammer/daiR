@@ -24,29 +24,82 @@ test_that("build_token_df() warns of files not containing tokens", {
 
   # from DAI but blank
   blank <- testthat::test_path("examples", "output_blank.json")
-  expect_error(text_from_dai_file(blank), "DAI found no tokens. Was the document blank?")
+  expect_error(build_token_df(blank), "DAI found no tokens. Was the document blank?")
   unlink(madeup, force = TRUE)
 })
 
 test_that("build_token_df() builds a token dataframe", {
 
   json <- testthat::test_path("examples", "output.json")
+
   # is df
-  output <- build_token_df(json)
-  expect_true(is.data.frame(output))
+  df <- build_token_df(json)
+  expect_true(is.data.frame(df))
 
   # has right properties
-
+  expect_equal(ncol(df), 9)
+  expect_setequal(colnames(df), c("token", "start_ind", "end_ind", "left", "right", "top", "bottom", "page", "block"))
+  expect_true(is.character(df$token))
+  expect_true(is.numeric(df$left))
+  expect_lt(max(df$right, na.rm = TRUE), 1)
+  expect_gt(min(df$top, na.rm = TRUE), 0)
+  jsonlist <- jsonlite::fromJSON(json)
+  expect_equal(max(df$page), nrow(jsonlist[["pages"]]))
+  words <- ngram::wordcount(text_from_dai_file(json))
+  expect_lt(nrow(df), 1.5*words)
+  expect_gt(nrow(df), 0.5*words)
+  expect_false(is.unsorted(df$start_ind))
 })
-
 
 ## BUILD_BLOCK_DF --------------------------------------------------------------
 
 test_that("build_block_df() warns of input errors", {
 
+  expect_error(build_block_df(NULL), "Input file not .json.")
+  expect_error(build_block_df(12345), "Input file not .json.")
+  expect_error(build_block_df(mtcars), "Input file not .json.")
+  expect_error(build_block_df(as.matrix(mtcars)), "Input file not .json.")
+  expect_error(build_block_df("string"), "Input file not .json.")
+  expect_error(build_block_df(c("string", "vector")), "Input file not .json.")
+  expect_error(build_block_df(list("a", "list")), "Input file not .json.")
+  expect_error(build_block_df("wrongfile.csv"), "Input file not .json.")
+  expect_error(build_block_df("madeup.json"), "Input file not .json.")
 
 })
 
+test_that("build_token_df() warns of files not containing blocks", {
+
+  # Wrong type of json
+  random <- list("a" = 1, "b" = 2)
+  json <- jsonlite::toJSON(random)
+  madeup <- tempfile(fileext = ".json")
+  write(json, madeup)
+  expect_error(build_block_df(madeup), "JSON not in right format. Is it from DAI?")
+
+  # from DAI but blank
+  blank <- testthat::test_path("examples", "output_blank.json")
+  expect_error(build_block_df(blank), "DAI found no blocks. Was the document blank?")
+  unlink(madeup, force = TRUE)
+})
+
+test_that("build_block_df() builds a block dataframe", {
+
+  json <- testthat::test_path("examples", "output.json")
+
+  # is df
+  df <- build_block_df(json)
+  expect_true(is.data.frame(df))
+
+  # has right properties
+  expect_equal(ncol(df), 6)
+  expect_setequal(colnames(df), c("page", "block", "left", "right", "top", "bottom"))
+  expect_true(is.numeric(df$left))
+  expect_lt(max(df$right, na.rm = TRUE), 1)
+  expect_gt(min(df$top, na.rm = TRUE), 0)
+  jsonlist <- jsonlite::fromJSON(json)
+  expect_equal(max(df$page), nrow(jsonlist[["pages"]]))
+  expect_false(is.unsorted(df$block))
+})
 
 ## SPLIT_BLOCK -----------------------------------------------------------------
 

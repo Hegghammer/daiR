@@ -20,10 +20,12 @@ and plots them on a copy of the pdf source document
 for human inspection.
 }
 \details{
-Not vectorized. Takes only pdf documents (if you processed .gif or .tiff files,
-convert them to pdf first). Generates an annotated .png file for each page in the original pdf.
-Assumes equal page length between the pdf and the json, so if the json output was split into shards,
-split the pdf accordingly first.
+Not vectorized, but documents can be multi-page.
+Takes only pdf documents (if you processed .gif or .tiff files,
+convert them to pdf first). Generates an annotated .png file
+for each page in the original pdf. Assumes equal page length
+between the pdf and the json, so if the json output was split
+into shards, split the pdf accordingly first.
 }
 \examples{
 \dontrun{

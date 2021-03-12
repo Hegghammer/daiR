@@ -20,8 +20,15 @@ build_token_df <- function(json) {
     stop("Input file not .json.")
   }
 
-  # turn json file to list
   output_as_list <- jsonlite::fromJSON(json)
+
+  if (!("pages" %in% names(output_as_list))) {
+    stop("JSON not in right format. Is it from DAI?")
+  }
+
+  if (!("text" %in% names(output_as_list))) {
+    stop("DAI found no tokens. Was the document blank?")
+  }
 
   # get pagewise indices
   pages_tokens <- output_as_list$pages$tokens
@@ -149,8 +156,15 @@ build_block_df <- function(json) {
     stop("Input file not .json.")
   }
 
-  # turn the json into a list
   output_as_list <- jsonlite::fromJSON(json)
+
+  if (!("pages" %in% names(output_as_list))) {
+    stop("JSON not in right format. Is it from DAI?")
+  }
+
+  if (!("text" %in% names(output_as_list))) {
+    stop("DAI found no blocks. Was the document blank?")
+  }
 
   # extract a list with pagewise sets of block boundary boxes
   pages_blocks <- output_as_list$pages$blocks
