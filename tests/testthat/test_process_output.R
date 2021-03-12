@@ -104,9 +104,31 @@ test_that("build_block_df() builds a block dataframe", {
 ## SPLIT_BLOCK -----------------------------------------------------------------
 
 test_that("split_block() warns of input errors", {
+  expect_error(split_block(df = NULL), "Input not a data frame.")
+  expect_error(split_block(df = 12345), "Input not a data frame.")
+  expect_error(split_block(df = "string"), "Input not a data frame.")
+  expect_error(split_block(df = c(1,2)), "Input not a data frame.")
+  expect_error(split_block(df = c("string", "vector")), "Input not a data frame.")
+  expect_error(split_block(df = list("a", "list")), "Input not a data frame.")
+  expect_error(split_block(df = as.matrix(mtcars)), "Input not a data frame.")
+  expect_error(split_block(df = mtcars), "Dataframe not recognized. Was it made with build_block_df?")
 
-
+  json <- testthat::test_path("examples", "output.json")
+  df <- build_block_df(json)
+  expect_error(split_block(df = df, page = 1-2), "Invalid page parameter.")
+  expect_error(split_block(df = df, page = "one"), "Invalid page parameter.")
+  expect_error(split_block(df = df, page = c(1,2)), "Invalid page parameter.")
+  expect_error(split_block(df = df, page = 10), "No such page number in this dataframe.")
+  expect_error(split_block(df = df, block = 1-2), "Invalid block parameter.")
+  expect_error(split_block(df = df, block = "one"), "Invalid block parameter.")
+  expect_error(split_block(df = df, block = c(1,2)), "Invalid block parameter.")
+  expect_error(split_block(df = df, block = 50), "No such block number on this page.")
+  expect_error(split_block(df = df, block = 1, cut_point = "middle"), "Invalid cut point parameter.")
+  expect_error(split_block(df = df, block = 1, cut_point = 150), "Cut point out of range.")
+  expect_error(split_block(df = df, block = 1, cut_point = 50, direction = 1), "Invalid direction parameter.")
+  expect_error(split_block(df = df, block = 1, cut_point = 50, direction = "horizontal"), 'Split direction must be either "h" or "v".')
 })
+
 
 ## REASSIGN_TOKENS -------------------------------------------------------------
 

@@ -65,7 +65,7 @@ jobs:
             eval sudo $cmd
           done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
           sudo apt-get install ghostscript
-          sudo apt-get install ./libfreetype6_2.8-0.2_amd64.deb
+          sudo apt-get install libfreetype6-dev
           sudo mv /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/policy.xml.off
       - name: Install dependencies
         run: |

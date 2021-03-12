@@ -242,27 +242,49 @@ split_block <- function(df,
                         page = 1,
                         block,
                         cut_point,
-                        direction = "V") {
+                        direction = "v") {
 
   # checks
   if (!(is.data.frame(df))){
-    stop("Error: Input not a data frame.")
+    stop("Input not a data frame.")
   }
 
-  if (!(page %in% 1:max(df))){
-    stop("Error: Invalid page number.")
+  if (!(identical(colnames(df), c("page", "block", "left", "right", "top", "bottom")))) {
+    stop("Dataframe not recognized. Was it made with build_block_df?")
+  }
+
+  if (!(length(page) == 1 && is.numeric(page) && round(page) == page && page > 0)) {
+    stop("Invalid page parameter.")
+  }
+
+  if (!(page %in% 1:max(df$page, na.rm = TRUE))){
+    stop("No such page number in this dataframe.")
+  }
+
+  if (!(length(block) == 1 && is.numeric(block) && round(block) == block && block > 0)) {
+    stop("Invalid block parameter.")
   }
 
   if (!(block %in% 1:max(df$block[df$page == page]))){
-    stop("Error: No such block number on this page.")
+    stop("No such block number on this page.")
+  }
+
+  if (!(length(cut_point) == 1 && is.numeric(cut_point) && round(cut_point) == cut_point && cut_point > 0)) {
+    stop("Invalid cut point parameter.")
   }
 
   if (!(cut_point %in% 1:99)){
-    stop("Error: Invalid cut point.")
+    stop("Cut point out of range.")
   }
 
-  if (!(direction %in% c("H", "h", "V", "v"))){
-    stop("Error: Invalid split direction.")
+  if (!(length(direction) == 1 && is.character(direction))) {
+    stop("Invalid direction parameter.")
+  }
+
+  direction <- tolower(direction)
+
+  if (!(direction %in% c("h", "v"))){
+    stop('Split direction must be either "h" or "v".')
   }
 
   # rename for readability
