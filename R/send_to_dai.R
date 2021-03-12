@@ -83,9 +83,9 @@ dai_sync <- function(file,
   status <- response[[2]]
 
   if (status == 200){
-    glue::glue("File submitted at {time}. HTTP status: 200 - OK.")
+    message(glue::glue("File submitted at {time}. HTTP status: 200 - OK."))
   } else {
-    glue::glue("File submitted at {time}. HTTP status: {status} - unsuccessful.")
+    message(glue::glue("File submitted at {time}. HTTP status: {status} - unsuccessful."))
   }
 
   return(response)
@@ -260,9 +260,9 @@ dai_async <- function(files,
     time <- resp[[7]]
 
     if (status == 200){
-      glue::glue("File {counter} of {length(files)} submitted at {time}. HTTP status: 200 - OK.")
+      message(glue::glue("File {counter} of {length(files)} submitted at {time}. HTTP status: 200 - OK."))
     } else {
-      glue::glue("File {counter} of {length(files)} submitted at {time}. HTTP status: {status} - unsuccessful.")
+      message(glue::glue("File {counter} of {length(files)} submitted at {time}. HTTP status: {status} - unsuccessful."))
     }
 
     resp <- list(resp)

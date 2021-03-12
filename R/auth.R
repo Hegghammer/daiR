@@ -33,9 +33,9 @@ dai_auth <- function(scopes = "https://www.googleapis.com/auth/cloud-platform",
   .auth$set_auth_active(TRUE)
 
   if (dai_has_token()) {
-  glue::glue("Token obtained and stored in .auth.")
+  message("Token obtained and stored in .auth.")
   } else {
-  glue::glue("Token not obtained. Have you provided a valid service account key file?")
+  message("Token not obtained. Have you provided a valid service account key file?")
   }
 
 }

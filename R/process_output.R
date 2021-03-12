@@ -376,7 +376,6 @@ split_block <- function(block_df,
   }
 
   return(new_block_df)
-
 }
 
 #' Assign tokens to new blocks
@@ -590,5 +589,4 @@ from_labelme <- function(json,
                           bottom = bottom)
 
   return(blockdata)
-
 }

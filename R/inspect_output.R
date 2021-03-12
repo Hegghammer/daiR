@@ -208,7 +208,7 @@ draw_blocks <- function(pdf,
 
   pages <- length(pages_blocks)
 
-  glue::glue("Generated {pages} annotated image(s).")
+  message(glue::glue("Generated {pages} annotated image(s)."))
 }
 
 #' Inspect paragraph boxes in Google Document AI json output
@@ -341,7 +341,7 @@ draw_paragraphs <- function(pdf,
 
   pages <- length(pages_paras)
 
-  glue::glue("Generated {pages} annotated image(s).")
+  message(glue::glue("Generated {pages} annotated image(s)."))
 }
 
 #' Inspect line bounding boxes in Google Document AI json output
@@ -476,7 +476,7 @@ draw_lines <- function(pdf,
 
   pages <- length(pages_lines)
 
-  glue::glue("Generated {pages} annotated image(s).")
+  message(glue::glue("Generated {pages} annotated image(s)."))
 }
 
 #' Inspect token bounding boxes in Google Document AI json output
@@ -610,5 +610,5 @@ draw_tokens <- function(pdf,
 
   pages <- length(pages_tokens)
 
-  glue::glue("Generated {pages} annotated image(s).")
+  message(glue::glue("Generated {pages} annotated image(s)."))
 }

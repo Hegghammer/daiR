@@ -15,6 +15,6 @@ devtools::install_github("hegghammer/daiR")
 ```
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/daiR)](https://CRAN.R-project.org/package=daiR)
-[![Travis build status](https://travis-ci.com/hegghammer/dair.svg?branch=master)](https://travis-ci.com/hegghammer/dair)
+[![R-CMD-check](https://github.com/Hegghammer/daiR/actions/workflows/package-check.yml/badge.svg)](https://github.com/Hegghammer/daiR/actions/workflows/package-check.yml)
 [![Codecov test coverage](https://codecov.io/gh/Hegghammer/daiR/branch/master/graph/badge.svg)](https://codecov.io/gh/Hegghammer/daiR?branch=master)
 <!-- badges: end -->
