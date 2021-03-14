@@ -132,6 +132,7 @@ is_json <- function(file){
 
 #' Convert pdf to base64-encoded binary tiff
 #' @param file path to a single-page pdf file
+#' @export
 #' @return string containing base64-encoded binary tiff
 
 pdf_to_binbase <- function(file) {
@@ -155,6 +156,7 @@ pdf_to_binbase <- function(file) {
 
 #' Convert image file to base64-encoded binary tiff
 #' @param file path to an image file
+#' @export
 #' @return string containing base64-encoded binary tiff
 
 img_to_binbase <- function(file) {

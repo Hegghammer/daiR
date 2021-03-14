@@ -4,10 +4,10 @@
 \alias{text_from_dai_file}
 \title{Get document text from a Document AI json file}
 \usage{
-text_from_dai_file(json)
+text_from_dai_file(file)
 }
 \arguments{
-\item{json}{filepath of the json file.}
+\item{file}{filepath of a json file from DAI}
 }
 \value{
 a string.

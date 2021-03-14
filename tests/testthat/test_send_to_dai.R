@@ -19,7 +19,7 @@ test_that("dai_sync calls out input errors", {
   expect_error(dai_sync(file = "foo"),
                "Unsupported file format. See documentation for details.")
 
-  expect_error(dai_sync(file = "foo.pdf"), "Input file not a real pdf.")
+  expect_error(dai_sync(file = "foo.pdf"), "Input file not a real pdf. Is the file in your working directory?")
 
   expect_error(dai_sync(file = "foo.png", proj_id = 012345),
                "Invalid proj_id.")

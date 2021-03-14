@@ -41,8 +41,8 @@ test_that("text_from_dai_file() warns of input errors", {
   expect_error(text_from_dai_file(as.matrix(mtcars)), "Invalid file input.")
   expect_error(text_from_dai_file(c("string", "vector")), "Invalid file input.")
   expect_error(text_from_dai_file(list("a", "list")), "Invalid file input.")
-  expect_error(text_from_dai_file("wrong.txt"), "Input file not .json.")
-  expect_error(text_from_dai_file("fake.json"), "Input file not .json.")
+  expect_error(text_from_dai_file("wrong.txt"), "Input file not .json. Is the file in your working directory?")
+  expect_error(text_from_dai_file("fake.json"), "Input file not .json. Is the file in your working directory?")
 })
 
 test_that("text_from_dai_file() warns of file not containing text", {

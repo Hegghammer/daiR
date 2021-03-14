@@ -54,10 +54,12 @@ navbar:
       href: articles/basics.html
     - text: "Vignettes"
       menu:
-      -  text: Setting up a Google Storage Bucket
+      -  text: Setting up a Google Storage bucket
          href: articles/setting_up_google_storage.html
       -  text: Using Google Document AI with R
          href: articles/using_document_ai.html
+      -  text: Extracting tables
+         href: articles/extracting_tables.html
       -  text: Correcting text output from Google Document AI
          href: articles/reconstructing_text.html
       -  text: Complex file and folder management

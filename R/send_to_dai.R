@@ -37,7 +37,7 @@ dai_sync <- function(file,
     }
 
   if (extension == "pdf" && !(is_pdf(file))) {
-    stop("Input file not a real pdf.")
+    stop("Input file not a real pdf. Is the file in your working directory?")
   }
 
   if (!(is.character(proj_id) && length(proj_id) == 1)) {
