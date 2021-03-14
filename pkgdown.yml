@@ -4,8 +4,9 @@ pkgdown_sha: ~
 articles:
   Complex_file_and_folder_management: Complex_file_and_folder_management.html
   basics: basics.html
+  extracting_tables: extracting_tables.html
   reconstructing_text: reconstructing_text.html
   setting_up_google_storage: setting_up_google_storage.html
   using_document_ai: using_document_ai.html
-last_built: 2021-03-13T00:02Z
+last_built: 2021-03-14T17:15Z
 

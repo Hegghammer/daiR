@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
       </span>
     </div>
 
@@ -61,10 +61,13 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/setting_up_google_storage.html">Setting up a Google Storage Bucket</a>
+      <a href="../articles/setting_up_google_storage.html">Setting up a Google Storage bucket</a>
     </li>
     <li>
       <a href="../articles/using_document_ai.html">Using Google Document AI with R</a>
+    </li>
+    <li>
+      <a href="../articles/extracting_tables.html">Extracting tables</a>
     </li>
     <li>
       <a href="../articles/reconstructing_text.html">Correcting text output from Google Document AI</a>
@@ -142,7 +145,7 @@
 <p>If these things are in place, there is nothing you need to do in <code>daiR</code> to authenticate. The package will obtain an access token for you on attachment.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Hegghammer/daiR">daiR</a></span><span class="op">)</span>
-<span class="co">#&gt; Welcome to daiR 0.2.0, your gateway to Google Document AI v1beta2.</span></code></pre></div>
+<span class="co">#&gt; Welcome to daiR 0.4.0, your gateway to Google Document AI v1beta2.</span></code></pre></div>
 <p>Should you wish to verify that you have obtained an access token, you can do so with the function <code><a href="../reference/dai_has_token.html">dai_has_token()</a></code> or by viewing the <code>.auth</code> object directly:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/dai_has_token.html">dai_has_token</a></span><span class="op">(</span><span class="op">)</span> 
