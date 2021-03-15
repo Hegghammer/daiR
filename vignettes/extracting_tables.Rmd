@@ -22,11 +22,11 @@ opts_chunk$set(
 \
 \
 
-When OCRing historical documents, we're often interested in extracting tables and getting the data into R in tidy format. Having been designed primarily for processing business documents, Document AI has very powerful table extraction capabilities. With the help of the `daiR` package, you can get these tables into R dataframes with a single line of code.
+In optical character recognition (OCR) of historical documents, we're often interested in extracting tables and getting the data into R in tidy format. Having been designed primarily for processing business documents, Google Document AI has very powerful table extraction capabilities. With the help of the `daiR` package, you can get these tables into R dataframes with a single line of code.
 
-Document AI automatically scans all documents for tabular data and includes any findings in the json document returned to the user. This means you don't have to configure the `dai_sync()`/`dai_async()` call specifically for table extraction.^[Technically, the Document AI API accepts a few table-specific parameters that can help in very difficult cases. The feature is not yet implemented in `daiR`, but will be in due course.] It also means that if you process a bunch of document and realise only later that you need the tables, they're already there in your old json files. 
+When you send an image or pdf to Document AI for OCR processing, the engine automatically extracts tabular data as well as text. This means you don't have to configure the `dai_sync()`/`dai_async()` call specifically for table extraction.^[Technically, the Document AI API accepts a few table-specific parameters that can help in very difficult cases. The feature is not yet implemented in `daiR`, but will be in due course.] It also means that if you process a bunch of documents and realise only later that you need the tables, they're already there in your old json files. 
 
-`daiR` has two functions for extracting table data: `tables_from_dai_response()` and `tables_from_dai_file()`. They do the same thing, but take different inputs. You use the former for response objects obtained with `dai_sync()` and the latter for .json files obtained with `dai_async()`.
+`daiR` has two functions for getting this table data into R: `tables_from_dai_response()` and `tables_from_dai_file()`. They do the same thing, but take different inputs. You use the former for response objects obtained with `dai_sync()` and the latter for .json files obtained with `dai_async()`.
 
 ## Tables from response objects
 

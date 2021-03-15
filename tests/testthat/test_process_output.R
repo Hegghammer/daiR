@@ -149,6 +149,26 @@ test_that("split_block() returns a revised block dataframe", {
   rest_new_df <- new_df_ex_last[!new_df_ex_last$block == block,]
   expect_true(isTRUE(all.equal(rest_old_df, rest_new_df)))
 
+  ### same process, but for horizontal split
+
+  # choose random block and cut point
+  block <- sample(min(df$block):max(df$block), 1)
+  cut_point <- sample(1:99, 1)
+
+  # check that output df has one block more
+  new_df <- split_block(df, block = block, cut_point = cut_point, direction = "h")
+  expect_equal(max(new_df$block), max(df$block) + 1)
+
+  # check that the selected block is now different while others are similar
+  old_block_n <- df[df$block == block,]
+  new_block_n <- new_df[new_df$block == block,]
+  expect_false(isTRUE(all.equal(old_block_n, new_block_n)))
+
+  rest_old_df <- df[!df$block == block,]
+  new_df_ex_last <- new_df[!new_df$block == max(new_df$block),]
+  rest_new_df <- new_df_ex_last[!new_df_ex_last$block == block,]
+  expect_true(isTRUE(all.equal(rest_old_df, rest_new_df)))
+
 })
 
 ## REASSIGN_TOKENS -------------------------------------------------------------

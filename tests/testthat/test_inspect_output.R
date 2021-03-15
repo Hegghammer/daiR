@@ -15,8 +15,11 @@ test_that("text_from_dai_response() warns of response not containing text", {
   skip_if_no_token()
   skip_if_offline()
 
-  wrong <- dai_user()
-  expect_error(text_from_dai_response(wrong), "Object not a positive dai_sync response.")
+  wrong <- dai_async("random.pdf")
+  expect_error(text_from_dai_response(wrong), "Input not recognized. Did you use dai_async instead of dai_sync?")
+
+  wrong2 <- dai_user()
+  expect_error(text_from_dai_response(wrong2), "Input not recognized. Is it from dai_async?")
 
   blank <- dai_sync(testthat::test_path("examples", "blank.tiff"))
   expect_error(text_from_dai_response(blank), "DAI found no text. Was the page blank?")

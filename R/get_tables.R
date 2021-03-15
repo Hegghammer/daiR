@@ -30,10 +30,15 @@ tables_from_dai_response <- function(object) {
     stop("DAI found no text. Was the page blank?")
   }
 
-  text <- text_from_dai_response(object)
-
   table_list_raw <- purrr::map(parsed[["pages"]], ~ .x[["tables"]])
+
+  if (all(sapply(table_list_raw, is.null))) {
+    stop("DAI found no tables in the document.")
+  }
+
   table_list <- purrr::flatten(table_list_raw)
+
+  text <- text_from_dai_response(object)
 
   resp_build_table <- function(table) {
     headers_list <- table[["headerRows"]]
@@ -119,6 +124,10 @@ tables_from_dai_file <- function(file) {
 
   if (!("text" %in% names(parsed))) {
     stop("DAI found no text. Was the document blank?")
+  }
+
+  if (!("tables" %in% names(parsed[["pages"]]))) {
+    stop("DAI found no tables in the document.")
   }
 
   message("Reading file...")

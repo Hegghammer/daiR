@@ -15,6 +15,10 @@
 text_from_dai_response <- function(object) {
 
   # checks
+  if (is.list(object) && (inherits(object[[1]], "response"))) {
+    stop("Input not recognized. Did you use dai_async instead of dai_sync?")
+  }
+
   if (!(inherits(object, "response"))) {
     stop("Object is not a valid HTTP response.")
   }
@@ -22,7 +26,7 @@ text_from_dai_response <- function(object) {
   parsed <- httr::content(object, as="parsed")
 
   if (!("pages" %in% names(parsed))) {
-    stop("Object not a positive dai_sync response.")
+    stop("Input not recognized. Is it from dai_async?")
   }
 
   if (!("text" %in% names(parsed))) {

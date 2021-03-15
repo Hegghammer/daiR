@@ -15,12 +15,13 @@ test_that("dai_auth authenticates with correct credentials", {
   skip_if_offline()
 
   dai_deauth()
-  dai_auth()
+  #dai_auth()
+  test_auth()
   expect_true(dai_has_token())
 })
 
 test_that("dai_auth sets scopes as instructed", {
-  skip_if_no_token()
+  skip_on_ci()
   skip_if_offline()
 
   dai_deauth()
@@ -45,7 +46,8 @@ test_that("dai_auth does not authenticate with wrong credentials", {
   json <- jsonlite::toJSON("a fake json file")
   dai_auth(path = json)
   expect_false(dai_has_token())
-  dai_auth()
+  #dai_auth()
+  test_auth()
 })
 
 ## DAI_TOKEN -------------------------------------------------------------------
@@ -60,7 +62,8 @@ test_that("dai_token works", {
   expect_type(dai_token(), "environment")
   expect_s3_class(dai_token(), "Token2.0")
 
-  dai_auth()
+  #dai_auth()
+  test_auth()
   expect_type(dai_token(), "environment")
   expect_s3_class(dai_token(), "Token2.0")
 })
@@ -73,13 +76,15 @@ test_that("dai_token works", {
 test_that("dai_user works", {
   skip_if_no_token()
   skip_if_offline()
-  dai_auth()
+  #dai_auth()
+  test_auth()
   response <- dai_user()
   expect_equal(response[[2]], 200)
   dai_deauth()
   response <- dai_user()
   expect_equal(response[[2]], 401)
-  dai_auth()
+  #dai_auth()
+  test_auth()
 })
 
 ## GET_PROJECT_ID --------------------------------------------------------------
@@ -97,5 +102,6 @@ test_that("dai_deauth works", {
   skip_if_offline()
   dai_deauth()
   expect_false(dai_has_token())
-  dai_auth()
+  #dai_auth()
+  test_auth()
 })

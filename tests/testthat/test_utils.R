@@ -70,7 +70,7 @@ test_that("create_folder() warns of input errors", {
 } )
 
 test_that("create_folder() works", {
-  skip_if_no_token()
+  skip_on_ci()
   skip_if_offline()
 
   folder1 <- "foo"
