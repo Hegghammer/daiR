@@ -147,9 +147,68 @@ test_that("split_block() returns a revised block dataframe", {
   rest_old_df <- df[!df$block == block,]
   new_df_ex_last <- new_df[!new_df$block == max(new_df$block),]
   rest_new_df <- new_df_ex_last[!new_df_ex_last$block == block,]
+  rownames(rest_new_df) <- NULL
+  rownames(rest_old_df) <- NULL
+  expect_true(isTRUE(all.equal(rest_old_df, rest_new_df)))
+
+  ### same process but for block in middle of multipage doc
+
+  json <- testthat::test_path("examples", "sample3pg.json")
+  df <- build_block_df(json)
+  df_sub <- df[df$page == 2,]
+
+  # choose random block and cut point
+  block <- sample(min(df_sub$block):max(df_sub$block), 1)
+  cut_point <- sample(1:99, 1)
+
+  # check that output df has one block more
+  new_df <- split_block(df, block = block, cut_point = cut_point, page = 2)
+  expect_equal(nrow(new_df), nrow(df) + 1)
+
+  # check that the selected block is now different while others are similar
+  new_df_sub <- new_df[new_df$page == 2,]
+  old_block_n <- df_sub[df_sub$block == block,]
+  new_block_n <- new_df_sub[new_df_sub$block == block,]
+  expect_false(isTRUE(all.equal(old_block_n, new_block_n)))
+
+  rest_old_df <- df_sub[!df_sub$block == block,]
+  new_df_ex_last <- new_df_sub[!new_df_sub$block == max(new_df_sub$block),]
+  rest_new_df <- new_df_ex_last[!new_df_ex_last$block == block,]
+  rownames(rest_new_df) <- NULL
+  rownames(rest_old_df) <- NULL
+  expect_true(isTRUE(all.equal(rest_old_df, rest_new_df)))
+
+  ### same process but for block at end of multipage doc
+
+  json <- testthat::test_path("examples", "sample3pg.json")
+  df <- build_block_df(json)
+  df_sub <- df[df$page == 3,]
+
+  # choose random block and cut point
+  block <- sample(min(df_sub$block):max(df_sub$block), 1)
+  cut_point <- sample(1:99, 1)
+
+  # check that output df has one block more
+  new_df <- split_block(df, block = block, cut_point = cut_point, page = 3)
+  expect_equal(nrow(new_df), nrow(df) + 1)
+
+  # check that the selected block is now different while others are similar
+  new_df_sub <- new_df[new_df$page == 3,]
+  old_block_n <- df_sub[df_sub$block == block,]
+  new_block_n <- new_df_sub[new_df_sub$block == block,]
+  expect_false(isTRUE(all.equal(old_block_n, new_block_n)))
+
+  rest_old_df <- df_sub[!df_sub$block == block,]
+  new_df_ex_last <- new_df_sub[!new_df_sub$block == max(new_df_sub$block),]
+  rest_new_df <- new_df_ex_last[!new_df_ex_last$block == block,]
+  rownames(rest_new_df) <- NULL
+  rownames(rest_old_df) <- NULL
   expect_true(isTRUE(all.equal(rest_old_df, rest_new_df)))
 
   ### same process, but for horizontal split
+
+  json <- testthat::test_path("examples", "sample3pg.json")
+  df <- build_block_df(json)
 
   # choose random block and cut point
   block <- sample(min(df$block):max(df$block), 1)
@@ -167,6 +226,62 @@ test_that("split_block() returns a revised block dataframe", {
   rest_old_df <- df[!df$block == block,]
   new_df_ex_last <- new_df[!new_df$block == max(new_df$block),]
   rest_new_df <- new_df_ex_last[!new_df_ex_last$block == block,]
+  rownames(rest_new_df) <- NULL
+  rownames(rest_old_df) <- NULL
+  expect_true(isTRUE(all.equal(rest_old_df, rest_new_df)))
+
+  ### same process but for block in middle of multipage doc
+
+  json <- testthat::test_path("examples", "sample3pg.json")
+  df <- build_block_df(json)
+  df_sub <- df[df$page == 2,]
+
+  # choose random block and cut point
+  block <- sample(min(df_sub$block):max(df_sub$block), 1)
+  cut_point <- sample(1:99, 1)
+
+  # check that output df has one block more
+  new_df <- split_block(df, block = block, cut_point = cut_point, page = 2, direction = "h")
+  expect_equal(nrow(new_df), nrow(df) + 1)
+
+  # check that the selected block is now different while others are similar
+  new_df_sub <- new_df[new_df$page == 2,]
+  old_block_n <- df_sub[df_sub$block == block,]
+  new_block_n <- new_df_sub[new_df_sub$block == block,]
+  expect_false(isTRUE(all.equal(old_block_n, new_block_n)))
+
+  rest_old_df <- df_sub[!df_sub$block == block,]
+  new_df_ex_last <- new_df_sub[!new_df_sub$block == max(new_df_sub$block),]
+  rest_new_df <- new_df_ex_last[!new_df_ex_last$block == block,]
+  rownames(rest_new_df) <- NULL
+  rownames(rest_old_df) <- NULL
+  expect_true(isTRUE(all.equal(rest_old_df, rest_new_df)))
+
+  ### same process but for block at end of multipage doc
+
+  json <- testthat::test_path("examples", "sample3pg.json")
+  df <- build_block_df(json)
+  df_sub <- df[df$page == 3,]
+
+  # choose random block and cut point
+  block <- sample(min(df_sub$block):max(df_sub$block), 1)
+  cut_point <- sample(1:99, 1)
+
+  # check that output df has one block more
+  new_df <- split_block(df, block = block, cut_point = cut_point, page = 3, direction = "h")
+  expect_equal(nrow(new_df), nrow(df) + 1)
+
+  # check that the selected block is now different while others are similar
+  new_df_sub <- new_df[new_df$page == 3,]
+  old_block_n <- df_sub[df_sub$block == block,]
+  new_block_n <- new_df_sub[new_df_sub$block == block,]
+  expect_false(isTRUE(all.equal(old_block_n, new_block_n)))
+
+  rest_old_df <- df_sub[!df_sub$block == block,]
+  new_df_ex_last <- new_df_sub[!new_df_sub$block == max(new_df_sub$block),]
+  rest_new_df <- new_df_ex_last[!new_df_ex_last$block == block,]
+  rownames(rest_new_df) <- NULL
+  rownames(rest_old_df) <- NULL
   expect_true(isTRUE(all.equal(rest_old_df, rest_new_df)))
 
 })

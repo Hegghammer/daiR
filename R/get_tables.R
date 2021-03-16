@@ -30,6 +30,8 @@ tables_from_dai_response <- function(object) {
     stop("DAI found no text. Was the page blank?")
   }
 
+  # Compile a list of table entries
+
   table_list_raw <- purrr::map(parsed[["pages"]], ~ .x[["tables"]])
 
   if (all(sapply(table_list_raw, is.null))) {
@@ -38,15 +40,7 @@ tables_from_dai_response <- function(object) {
 
   table_list <- purrr::flatten(table_list_raw)
 
-  text <- text_from_dai_response(object)
-
-  resp_build_table <- function(table) {
-    headers_list <- table[["headerRows"]]
-    rows_list <- table[["bodyRows"]]
-
-    resp_get_row_vector <- function(elem) {
-      cells <- elem[["cells"]]
-
+      # Function to get the text of an individual cell
       resp_get_cell_text <- function(cell) {
         anchors <- cell[["layout"]][["textAnchor"]]
         if (length(anchors) == 0) {
@@ -60,28 +54,39 @@ tables_from_dai_response <- function(object) {
             } else {
               line_start <- i[["startIndex"]]
             }
-              line_end <- i[["endIndex"]]
-              line_txt <- substr(text, line_start, line_end)
-              txt <- paste(txt, line_txt, sep = "\n")
+            line_end <- i[["endIndex"]]
+            line_txt <- substr(text, line_start, line_end)
+            txt <- paste(txt, line_txt, sep = "\n")
           }
         }
         return(txt)
       }
 
-      vector <- unlist(purrr::map(cells, resp_get_cell_text))
-      return(vector)
-    }
+      # Function to compile cell entries into a row vector
+      resp_get_row_vector <- function(elem) {
+        cells <- elem[["cells"]]
+        vector <- unlist(purrr::map(cells, resp_get_cell_text))
+        return(vector)
+      }
 
-    headervectors <- purrr::map(headers_list, resp_get_row_vector)
-    rowvectors <- purrr::map(rows_list, resp_get_row_vector)
-    table <- data.frame(matrix(nrow= 0, ncol=6))
-    for (i in rowvectors) {
-      table <- rbind(table, as.data.frame(t(i)))
-    }
-    table <- stats::setNames(table, headervectors[[1]])
-    return(table)
-  }
+      # Function to build a table from row vectors
+      resp_build_table <- function(table) {
+        headers_list <- table[["headerRows"]]
+        rows_list <- table[["bodyRows"]]
+        headervectors <- purrr::map(headers_list, resp_get_row_vector)
+        rowvectors <- purrr::map(rows_list, resp_get_row_vector)
+        table <- data.frame(matrix(nrow= 0, ncol=6))
+        for (i in rowvectors) {
+          table <- rbind(table, as.data.frame(t(i)))
+        }
+        table <- stats::setNames(table, headervectors[[1]])
+        return(table)
+      }
 
+  # Get reference text for indices
+  text <- text_from_dai_response(object)
+
+  # Build all tables
   all_tables <- purrr::map(table_list, resp_build_table)
 
   return(all_tables)
@@ -132,10 +137,10 @@ tables_from_dai_file <- function(file) {
 
   message("Reading file...")
 
-  text <- text_from_dai_file(file)
-
+  # Get the table-related elements
   table_list_raw <- parsed[["pages"]][["tables"]]
 
+      # Function to extract and reorganize the table-related sub-elements
       file_get_table_objects <- function(page) {
         if (is.null(page)) {
           return(NULL)
@@ -152,39 +157,42 @@ tables_from_dai_file <- function(file) {
         }
       }
 
+  # Compile a list of table entries
   table_list_by_page <- purrr::map(table_list_raw, file_get_table_objects)
 
   table_list <- purrr::flatten(table_list_by_page)
 
+      # Function to get the text of an individual cell
+      file_get_cell_text <- function(cell) {
+        if (is.null(cell)) {
+          txt <- ""
+        } else {
+          txt <- character()
+          for (i in 1:nrow(cell)) {
+            if (is.null(cell[i,"startIndex"])){
+              line_start <- 1
+            } else {
+              line_start <- cell[i,"startIndex"]
+            }
+            line_end <- cell[i,"endIndex"]
+            line_txt <- substr(text, line_start, line_end)
+            txt <- paste(txt, line_txt, sep = "\n")
+          }
+          return(txt)
+        }
+      }
+
+      # Function to compile cell entries into a row vector
+      file_get_row_vector <- function(elem) {
+        cells <- elem[["layout"]][["textAnchor"]][["textSegments"]]
+        vector <- unlist(purrr::map(cells, file_get_cell_text))
+        return(vector)
+      }
+
+      # Function to build a table from row vectors
       file_build_table <- function(table_object) {
         headers_list <- table_object[["headerRows"]][["cells"]]
         rows_list <- table_object[["bodyRows"]][["cells"]]
-
-            file_get_row_vector <- function(elem) {
-              cells <- elem[["layout"]][["textAnchor"]][["textSegments"]]
-                  file_get_cell_text <- function(cell) {
-                    if (is.null(cell)) {
-                      txt <- ""
-                    } else {
-                      txt <- character()
-                      for (i in 1:nrow(cell)) {
-                        if (is.null(cell[i,"startIndex"])){
-                          line_start <- 1
-                        } else {
-                        line_start <- cell[i,"startIndex"]
-                        }
-                        line_end <- cell[i,"endIndex"]
-                        line_txt <- substr(text, line_start, line_end)
-                        txt <- paste(txt, line_txt, sep = "\n")
-                      }
-                      return(txt)
-                    }
-                  }
-
-              vector <- unlist(purrr::map(cells, file_get_cell_text))
-              return(vector)
-            }
-
         headervectors <- purrr::map(headers_list, file_get_row_vector)
         rowvectors <- purrr::map(rows_list, file_get_row_vector)
         table <- data.frame(matrix(nrow= 0, ncol=6))
@@ -196,6 +204,11 @@ tables_from_dai_file <- function(file) {
       }
 
   message("Building tables...")
+
+  # Get reference text for indices
+  text <- text_from_dai_file(file)
+
+  # Build all tables
   all_tables <- purrr::map(table_list, file_build_table)
 
   return(all_tables)

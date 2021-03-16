@@ -303,8 +303,8 @@ split_block <- function(block_df,
     cut_loc <- old_block$left + cut
 
     new_block <- data.frame(
-      block = max(old_page_df$block[old_page_df$page == page]) + 1,
-      page = page,
+      block = as.integer(max(old_page_df$block[old_page_df$page == page]) + 1),
+      page = as.integer(page),
       left = cut_loc,
       right = old_block$right,
       top = old_block$top,
@@ -342,8 +342,8 @@ split_block <- function(block_df,
     cut_loc <- old_block$top + cut
 
     new_block <- data.frame(
-      block = max(old_page_df$block[old_page_df$page == page]) + 1,
-      page = page,
+      block = as.integer(max(old_page_df$block[old_page_df$page == page]) + 1),
+      page = as.integer(page),
       left = old_block$right,
       right = old_block$right,
       top = cut_loc,
@@ -374,6 +374,8 @@ split_block <- function(block_df,
     }
 
   }
+
+  row.names(new_block_df) <- NULL
 
   return(new_block_df)
 }
@@ -454,6 +456,8 @@ reassign_tokens <- function(token_df,
 
   }
 
+  row.names(new_token_df) <- NULL
+
   return(new_token_df)
 }
 
@@ -516,10 +520,12 @@ reassign_tokens2 <- function(token_df,
 
   # if only page
   if (page == 1 && max(token_df$page) == 1) {
-
     new_token_df <- page_df
 
-  #TODO if first of several
+  # if first of several
+  } else if (page == 1 && max(token_df$page) > 1) {
+    succeeding <- token_df[token_df$page > page, ]
+    new_token_df <- rbind(page_df, succeeding)
 
   # if last of several
   } else if (page > 1 && page == max(token_df$page)){
@@ -533,6 +539,8 @@ reassign_tokens2 <- function(token_df,
     succeeding <- token_df[token_df$page > page, ]
     new_token_df <- rbind(preceding, page_df, succeeding)
   }
+
+  row.names(new_token_df) <- NULL
 
   return(new_token_df)
 }

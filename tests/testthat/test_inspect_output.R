@@ -25,7 +25,7 @@ test_that("text_from_dai_response() warns of response not containing text", {
   expect_error(text_from_dai_response(blank), "DAI found no text. Was the page blank?")
 })
 
-test_that("text_from_dai_response() reads real dai response with text", {
+test_that("text_from_dai_response() gets text from DAI response from example file", {
   skip_if_no_token()
   skip_if_offline()
 
@@ -33,6 +33,17 @@ test_that("text_from_dai_response() reads real dai response with text", {
   response <- dai_sync(file)
   text <- text_from_dai_response(response)
   expect_type(text, "character")
+})
+
+test_that("text_from_dai_response() gets text from DAI response from random, real pdf", {
+  skip_on_ci()
+  skip_if_offline()
+
+  file <- get_random_pdf()
+  response <- dai_sync(file)
+  text <- text_from_dai_response(response)
+  expect_type(text, "character")
+  unlink(file, force = TRUE)
 })
 
 ## TEXT_FROM_DAI_FILE ----------------------------------------------------------
@@ -61,13 +72,62 @@ test_that("text_from_dai_file() warns of file not containing text", {
   unlink(madeup, force = TRUE)
 })
 
-test_that("text_from_dai_file() reads real dai output file with text", {
+test_that("text_from_dai_file() gets text from example json file", {
 
   sample <- testthat::test_path("examples", "output.json")
   text <- text_from_dai_file(sample)
   expect_type(text, "character")
 
 })
+
+test_that("text_from_dai_file() gets text from json file from random, real pdf", {
+
+  skip_on_ci()
+  skip_if_offline()
+
+  # get random file
+  filepath <- get_random_pdf()
+
+  # upload to bucket
+  filename <- basename(filepath)
+  googleCloudStorageR::gcs_upload(file = filepath,
+                                  bucket = Sys.getenv("GCS_DEFAULT_BUCKET"),
+                                  name = filename)
+
+  # process
+  response <- dai_async(filename)
+
+  # wait
+  message("Waiting for DAI to generate json...")
+  processed <- FALSE
+  count <- 0
+  while (count < 100 && isFALSE(processed)){
+    Sys.sleep(2)
+    content <- googleCloudStorageR::gcs_list_objects(bucket = Sys.getenv("GCS_DEFAULT_BUCKET"))
+    search_term <- glue::glue("^{filename}-output")
+    if (any(grepl(search_term, content$name))) {
+      processed <- TRUE
+    }
+    count <- count + 1
+  }
+
+  # get json
+  message("Retrieving json...")
+  full_json_name <- grep(search_term, content$name, value = TRUE)
+  short_json_name <- glue::glue("{stringr::str_sub(filename, end=-5)}.json")
+  json_path <- file.path(tempdir(), short_json_name)
+  googleCloudStorageR::gcs_get_object(full_json_name,
+                                      bucket = Sys.getenv("GCS_DEFAULT_BUCKET"),
+                                      saveToDisk = json_path)
+
+  text <- text_from_dai_file(json_path)
+  expect_type(text, "character")
+
+  # clean
+  unlink(json_path, force = TRUE)
+
+})
+
 
 ## DRAW_BLOCKS -----------------------------------------------------------------
 
