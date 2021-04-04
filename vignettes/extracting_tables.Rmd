@@ -17,16 +17,16 @@ opts_chunk$set(
 )
 ```
 
-**Last updated 14 March 2021**
+**Last updated 4 April 2021**
 \
 \
 \
 
 In optical character recognition (OCR) of historical documents, we're often interested in extracting tables and getting the data into R in tidy format. Having been designed primarily for processing business documents, Google Document AI has very powerful table extraction capabilities. With the help of the `daiR` package, you can get these tables into R dataframes with a single line of code.
 
-When you send an image or pdf to Document AI for OCR processing, the engine automatically extracts tabular data as well as text. This means you don't have to configure the `dai_sync()`/`dai_async()` call specifically for table extraction.^[Technically, the Document AI API accepts a few table-specific parameters that can help in very difficult cases. The feature is not yet implemented in `daiR`, but will be in due course.] It also means that if you process a bunch of documents and realise only later that you need the tables, they're already there in your old json files. 
+To extract table data, we use the `dai_sync_tab()` and `dai_async_tab()` commands. They work much like their siblings `dai_sync()`/`dai_async()` except that their responses also include table data. In return, the `*sync_tab()` functions have weaker language support (they currently only work for English-language documents).^[Under the hood, the `*sync()` and `*sync_tab()` functions access different endpoints in the Document AI API, each with its own capabilities. I expect these capabilities to be consolidated in a single endpoint in the future, in which case the `*sync_tab()` functions will be deprecated.] 
 
-`daiR` has two functions for getting this table data into R: `tables_from_dai_response()` and `tables_from_dai_file()`. They do the same thing, but take different inputs. You use the former for response objects obtained with `dai_sync()` and the latter for .json files obtained with `dai_async()`.
+To get the table data into R, we use the functions `tables_from_dai_response()` and `tables_from_dai_file()`. They do the same thing, but take different inputs. You use the former for response objects obtained with `dai_sync_tab()` and the latter for .json files obtained with `dai_async_tab()`.
 
 ## Tables from response objects
 
@@ -43,7 +43,7 @@ download.file("https://archive.org/download/tobacco_lpnn0000/lpnn0000.pdf",
               destfile = "tobacco.pdf",
               mode = "wb")
 
-resp <- dai_sync("tobacco.pdf")
+resp <- dai_sync_tab("tobacco.pdf")
 ```
 
 To get the tables into R, we pass the response object (`resp`) to our extraction function:
@@ -74,7 +74,7 @@ include_graphics("table.PNG")
 
 ## Tables from json files
 
-With json files obtained from `dai_async()` the process is very similar, except that we pass a filepath instead of a response object to the extraction function. If we processed the same document asynchronously and obtained a file named `"tobacco.json"`, we would extract the tables like this:
+With json files obtained from `dai_async_tab()` the process is very similar, except that we pass a filepath instead of a response object to the extraction function. If we processed the same document asynchronously and obtained a file named `"tobacco.json"`, we would extract the tables like this:
 
 ```{r, eval=FALSE}
 tables <- tables_from_dai_file("tobacco.json")

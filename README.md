@@ -1,6 +1,42 @@
 # daiR: OCR with Google Document AI in R
 
-**daiR** is an R package for [Google Document AI](https://cloud.google.com/document-ai), a powerful server-based OCR processor. The package provides a wrapper for the Document AI API and comes with additional tools for output file parsing and text reconstruction. See the `daiR` [website](http://dair.info/) for more details.
+**daiR** is an R package for [Google Document AI](https://cloud.google.com/document-ai), a powerful server-based OCR processor with support for some 60 languages. The package provides a wrapper for the Document AI API and comes with additional tools for output file parsing and text reconstruction. See the `daiR` [website](http://dair.info/) for more details.
+
+## Use
+
+Quick OCR short documents:
+
+```R
+## NOT RUN
+library(daiR)
+response <- dai_sync("file.pdf")
+text <- text_from_dai_response(response)
+cat(text)
+```
+
+Batch process asynchronously via Google Storage:
+
+```R
+## NOT RUN
+library(googleCloudStorageR)
+library(purrr)
+my_files <- c("file1.pdf", "file500.tiff", "file1000.gif")
+map(my_files, gcs_upload)
+dai_async(my_files)
+contents <- gcs_list_objects()
+output_files <- grep("json$", contents$name, value = TRUE)
+map(output_files, ~ gcs_get_object(.x, saveToDisk = .x))
+sample_text <- text_from_dai_file(output_files[1])
+cat(sample_text)
+```
+
+Turn images of tables into R dataframes:
+
+```R
+## NOT RUN:
+response <- dai_sync_tab("tables.pdf")
+dfs <- tables_from_dai_response(response) 
+```
 
 ## Requirements
 

@@ -84,7 +84,7 @@ tables_from_dai_response <- function(object) {
       }
 
   # Get reference text for indices
-  text <- text_from_dai_response(object)
+  text <- parsed[["text"]]
 
   # Build all tables
   all_tables <- purrr::map(table_list, resp_build_table)
@@ -104,7 +104,7 @@ tables_from_dai_response <- function(object) {
 #'
 #' @examples
 #' \dontrun{
-#' text <- text_from_dai_response(response)
+#' tables <- tables_from_dai_file("document.json")
 #' }
 #'
 

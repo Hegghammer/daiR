@@ -18,6 +18,9 @@ reference:
     contents:
       - '`dai_sync`'
       - '`dai_async`'
+      - '`dai_status`'
+      - '`dai_sync_tab`'
+      - '`dai_async_tab`'
   - title: Inspect output
     desc: ~
     contents:

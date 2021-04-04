@@ -33,11 +33,9 @@ Send larger batches for offline processing in three steps:
 ```{r, eval=FALSE}
 ## Not run:
 library(googleCloudStorageR)
-library(fs)
-library(purrr)
-gcs_global_bucket("<YOUR_BUCKET_NAME>")
-my_pdfs <- dir_ls(glob = "*.pdf")
-map(my_pdfs, ~ gcs_upload(.x, name = .x))
+
+my_pdfs <- c("<sample1.pdf>", "<sample2.pdf>")
+purrr::map(my_pdfs, ~ gcs_upload(.x, name = .x))
 ```
 
 #### 2. Tell Document AI to process them:
@@ -54,8 +52,6 @@ dai_async(my_pdfs)
 bucket_contents <- gcs_list_objects()
 only_jsons <- grep("*.json", bucket_contents$name, value = TRUE)
 map(only_jsons, ~ gcs_get_object(.x, saveToDisk = .x))
-
-jsons_downloaded <- dir_ls(glob = "*.json")
-text <- text_from_dai_file(jsons_downloaded[1])
+text <- text_from_dai_file(only_jsons[1])
 cat(text)
 ```

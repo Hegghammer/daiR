@@ -17,7 +17,7 @@ opts_chunk$set(
 )
 ```
 
-**Last updated 9 March 2021**
+**Last updated 4 April 2021**
 \
 \
 \
@@ -80,9 +80,15 @@ while (count < 150 && nrow(content) < 2){
 ```{r, eval=FALSE}
 gcs_list_objects()
 
-gcs_get_object("CIA_columns.pdf-output-page-1-to-1.json", 
+## NOT RUN
+our_file <- "<job_number>/0/CIA_columns-0.json"
+```
+
+```{r, eval=FALSE}
+gcs_get_object(our_file, 
                saveToDisk = "CIA_columns.json")
 ```
+
 
 Finally we extract the text:
 
@@ -162,8 +168,17 @@ resp <- dai_async("peshtigo.pdf")
 
 ```{r, eval=FALSE}
 # wait till ready
-gcs_get_object("peshtigo.pdf-output-page-1-to-1.json", saveToDisk = "peshtigo.json")
+gcs_list_objects()
+
+## NOT RUN
+our_file <- "<job_number>/0/peshtigo-0.json"
 ```
+
+```{r, eval=FALSE}
+gcs_get_object(our_file, 
+               saveToDisk = "peshtigo.json")
+```
+
 
 This time we'll skip the text printout and go straight to inspecting the boundary boxes:
 

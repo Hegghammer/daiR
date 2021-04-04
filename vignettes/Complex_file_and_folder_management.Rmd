@@ -18,7 +18,7 @@ opts_chunk$set(
 )
 ```
 
-**Last updated 9 March 2021**
+**Last updated 4 April 2021**
 \
 \
 \
@@ -97,7 +97,7 @@ We can process these files as they are with the following command:
 resp <- dai_async(pdfs) 
 ```
 
-In which case DAI returns `.json` files titled `folder1/nps.pdf-output-page-1-to-1` and so forth. We can download these the usual way:
+In which case DAI returns `.json` files titled `folder1/<job_number>/0/nps-0.json` and so forth. We can download these the usual way:
 
 ```{r, eval=FALSE}
 content <- gcs_list_objects()

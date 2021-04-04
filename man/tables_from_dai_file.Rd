@@ -21,7 +21,7 @@ the submitted document and returns them as a list of dataframes.
 }
 \examples{
 \dontrun{
-text <- text_from_dai_response(response)
+tables <- tables_from_dai_file("document.json")
 }
 
 }

@@ -37,7 +37,7 @@ test_that("dai_sync informs about unsuccessful requests", {
   skip_if_offline()
   file <- testthat::test_path("examples", "image.jpg")
   response <- dai_sync(file, token = NULL)
-  expect_equal(response[["status_code"]], 403)
+  expect_equal(response[["status_code"]], 401)
   test_auth()
 })
 
@@ -49,13 +49,13 @@ test_that("dai_sync gets text from an example file", {
   response <- dai_sync(image)
   expect_equal(response[["status_code"]], 200)
   parsed <- httr::content(response)
-  expect_type(parsed[["text"]], "character")
+  expect_type(parsed[["document"]][["text"]], "character")
 
   pdf <- image_to_pdf(image, "foo.pdf")
   response <- dai_sync(pdf)
   expect_equal(response[["status_code"]], 200)
   parsed <- httr::content(response)
-  expect_type(parsed[["text"]], "character")
+  expect_type(parsed[["document"]][["text"]], "character")
   unlink("foo.pdf", force = TRUE)
 })
 
@@ -66,7 +66,7 @@ test_that("dai_sync gets text from a random, real pdf", {
   response <- dai_sync(filepath)
   expect_equal(response[["status_code"]], 200)
   parsed <- httr::content(response)
-  expect_type(parsed[["text"]], "character")
+  expect_type(parsed[["document"]][["text"]], "character")
   unlink(filepath, force = TRUE)
 })
 
@@ -79,15 +79,7 @@ test_that("dai_async calls out input errors", {
   expect_error(dai_async(files = NULL), "Invalid files parameter.")
   expect_error(dai_async(files = 1), "Invalid files parameter.")
   expect_error(dai_async(files = as.integer(1)), "Invalid files parameter.")
-  expect_error(dai_async(files = "foo.png"), "Input file type not supported.")
-  expect_error(dai_async(files = c("foo.pdf", "bar.gif")),
-               "Elements in files vector not all of the same type.")
-  expect_error(dai_async(files = "foo.pdf", filetype = "bdf"),
-               "Invalid filetype parameter.")
-  expect_error(dai_async(files = "foo.pdf", filetype = NULL),
-               "Invalid filetype parameter.")
-  expect_error(dai_async(files = "foo.pdf", filetype = "tiff"),
-               "Mismatch between filetype parameter and actual format of files.")
+  expect_error(dai_async(files = "foo.png"), "Files contain unsupported file types. Only .pdf, .gif, and .tiff accepted.")
   expect_error(dai_async(files = "foo.pdf", dest_folder = c("folder1", "folder2")),
                "Invalid dest_folder parameter.")
   expect_error(dai_async(files = "foo.pdf", dest_folder = 12345),
@@ -113,23 +105,13 @@ test_that("dai_async calls out input errors (CONT)", {
                "Invalid loc parameter.")
   expect_error(dai_async(files = "foo.pdf", loc = NULL),
                "Invalid loc parameter.")
-  expect_error(dai_async(files = "foo.pdf", pps = 0),
-               "Invalid pps parameter.")
-  expect_error(dai_async(files = "foo.pdf", pps = 150),
-               "Invalid pps parameter.")
-  expect_error(dai_async(files = "foo.pdf", pps = 1.1),
-               "Invalid pps parameter.")
-  expect_error(dai_async(files = "foo.pdf", pps = "ten"),
-               "Invalid pps parameter.")
-  expect_error(dai_async(files = "foo.pdf", pps = NULL),
-               "Invalid pps parameter.")
 } )
 
 test_that("dai_async informs about unsuccessful requests", {
   skip_if_no_token()
   skip_if_offline()
   response <- dai_async("foo.pdf", token = NULL)
-  expect_equal(response[[1]][["status_code"]], 403)
+  expect_equal(response[["status_code"]], 401)
   test_auth()
 })
 
@@ -137,20 +119,20 @@ test_that("dai_async sends succesful requests with input in different formats", 
   skip_if_no_token()
   skip_if_offline()
   response <- dai_async("foo.pdf")
-  expect_equal(response[[1]][["status_code"]], 200)
-  response <- dai_async("foo.gif", filetype = "gif")
-  expect_equal(response[[1]][["status_code"]], 200)
-  response <- dai_async("foo.tiff", filetype = "tiff")
-  expect_equal(response[[1]][["status_code"]], 200)
+  expect_equal(response[["status_code"]], 200)
+  response <- dai_async("foo.gif")
+  expect_equal(response[["status_code"]], 200)
+  response <- dai_async("foo.tiff")
+  expect_equal(response[["status_code"]], 200)
   response <- dai_async("foo.pdf", dest_folder = "folder/")
-  expect_equal(response[[1]][["status_code"]], 200)
+  expect_equal(response[["status_code"]], 200)
   response <- dai_async("foo.pdf", bucket = "gs://bucket")
-  expect_equal(response[[1]][["status_code"]], 200)
+  expect_equal(response[["status_code"]], 200)
   response <- dai_async("foo.pdf", bucket = "bucket/")
-  expect_equal(response[[1]][["status_code"]], 200)
+  expect_equal(response[["status_code"]], 200)
   response <- dai_async(c("foo.pdf", "bar.pdf"))
-  expect_equal(response[[1]][["status_code"]], 200)
-  expect_equal(response[[2]][["status_code"]], 200)
+  expect_equal(response[["status_code"]], 200)
+  expect_equal(response[["status_code"]], 200)
 })
 
 test_that("dai_async produces actual jsons from random, real pdfs", {
@@ -168,7 +150,7 @@ test_that("dai_async produces actual jsons from random, real pdfs", {
 
   # process
   response <- dai_async(filename)
-  expect_equal(response[[1]][["status_code"]], 200)
+  expect_equal(response[["status_code"]], 200)
 
   # wait
   message("Waiting for DAI to generate json...")
@@ -177,7 +159,8 @@ test_that("dai_async produces actual jsons from random, real pdfs", {
   while (count < 100 && isFALSE(processed)){
     Sys.sleep(2)
     content <- googleCloudStorageR::gcs_list_objects(bucket = Sys.getenv("GCS_DEFAULT_BUCKET"))
-    search_term <- glue::glue("^{filename}-output")
+    filename_no_ext <- stringr::str_sub(filename, end=-5)
+    search_term <- glue::glue("{filename_no_ext}-0.json$")
     if (any(grepl(search_term, content$name))) {
       processed <- TRUE
     }
@@ -187,8 +170,7 @@ test_that("dai_async produces actual jsons from random, real pdfs", {
   # get json
   message("Retrieving json...")
   full_json_name <- grep(search_term, content$name, value = TRUE)
-  short_json_name <- glue::glue("{stringr::str_sub(filename, end=-5)}.json")
-  json_path <- file.path(tempdir(), short_json_name)
+  json_path <- file.path(tempdir(), basename(full_json_name))
   googleCloudStorageR::gcs_get_object(full_json_name,
                                       bucket = Sys.getenv("GCS_DEFAULT_BUCKET"),
                                       saveToDisk = json_path)

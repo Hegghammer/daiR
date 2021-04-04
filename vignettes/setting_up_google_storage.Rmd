@@ -19,7 +19,7 @@ opts_chunk$set(
 )
 ```
 
-**Last updated 9 March 2021**
+**Last updated 4 April 2021**
 \
 \
 \
@@ -34,9 +34,7 @@ The biggest hurdle to using any Google API is authentication, which is daunting 
 
 A full explanation of Google API authentication could fill a book, but suffice to say here that there are several different ways to authenticate to GCS from R. In the following I will walk you through one such way, the one I think is the simplest and most robust if you are primarily planning to use Google Storage and Google Document AI and to do so in an interactive setting. 
 
-The procedure outlined below relies on service accounts and json key files. It involves a little bit more hands-on configuration than some of the setup wizards in packages such as `googleStorageR`. But as a beginner I found these tools somewhat confusing because they don't tell you what they do under the hood. 
-
-My thinking is: if you are computer-literate enough to consider working programmatically with an API, you are also able to find your way around the Google Cloud Console and .Renviron files. But know that there are [several](https://cran.r-project.org/package=gargle/vignettes/get-api-credentials.html) [other](https://cran.r-project.org/package=googleAuthR/vignettes/google-authentication-types.html) authenticatication strategies; which is better depends on where and how you intend to use the R wrapper.
+The procedure outlined below relies on service accounts and json key files. It involves a little bit more hands-on configuration than some of the setup wizards in other Google API wrappers, but the solution is robust and secure. My thinking is: if you are computer-literate enough to consider working programmatically with an API, you are also able to find your way around the Google Cloud Console. But know that there are [several](https://cran.r-project.org/package=gargle/vignettes/get-api-credentials.html) [other](https://cran.r-project.org/package=googleAuthR/vignettes/google-authentication-types.html) authenticatication strategies; which is better depends on where and how you intend to use the R wrapper.
 
 ### Step 1: Get a Gmail account
 
@@ -72,19 +70,15 @@ include_graphics("storage3.PNG")
 
 All this is necessary for you to be able to access Google Storage and other Google tools programmatically. Both Google Storage and DAI are paid services, although for Google Storage the cost is negligible unless you plan to keep very large amounts of data there for a long time. For DAI, you're looking at around EUR 0.06 per processed page, though at the current time of writing, you get 300$ worth of free credits. 
 
-### Step 4: Activate additional APIs
+### Step 4: Set up a service account
 
-Bring out the navigation menu on the left hand side by clicking the little circle with the three horizonal lines in the top left of the screen. Click on "APIs and services". Scroll down and you'll see a list of the APIs which are enabled by default. These include the Google Storage API and a few others. Now is a good time to activate any other APIs that you know you are going to use in conjuction with Google Storage, such as Document AI. Click on "Enable APIs and Services", type "document ai" in the search field, click on "cloud document ai API" and then "Enable". Repeat for other APIs you are interested in. 
-
-Now open the navigation menu on the left again, and click on APIs and services. Then click on "credentials" in the left pane. You should see this: 
+Now we need to create a service account. Bring out the navigation menu on the left hand side by clicking the little circle with the three horizonal lines in the top left of the screen. Click on "APIs and services." Then click on "credentials" in the left pane. You should see this: 
 
 ```{r, echo=FALSE, out.width = "50%"}
 include_graphics("storage4.PNG")
 ```
 
-### Step 5: Set up a service account
-
-Now we want to create a service account. Click on "create credentials" in the top middle, then choose service account. Give it any name you like (e.g. "my_rstudio_service_account") and a description (e.g. "Interacting with GCS through R") and click "create". 
+Click on "create credentials" in the top middle, then choose service account. Give it any name you like (e.g. "my_rstudio_service_account") and a description (e.g. "Interacting with GCS through R") and click "create". 
 
 In section 2 titled "Grant this service account access to project", add "Basic > **Owner**" to the service account's roles.  
 
@@ -98,11 +92,11 @@ Click "continue", then "done" at the bottom. You should now see your service acc
 include_graphics("storage6.PNG")
 ```
 
-### Step 6: Download a json file with the service account key
+### Step 5: Download a json file with the service account key
 
 Now we need to generate a json file containing the login details for this service account. Click the small edit icon on the bottom right. On the next page, click "add key", choose "create new key", select JSON format, and click "create". This should prompt a save file window. Save the file to your hard drive. You can change the name to something more memorable if you like (but keep the ".json" extension). Also, take note of where you stored it. Now we are done in the Google Cloud Console and can finally start working in RStudio.
 
-### Step 7: Tell RStudio where to find the json file
+### Step 6: Tell RStudio where to find the json file
 
 The last step is to store the path to the json file in your .Renviron file so that RStudio can authenticate you whenever you are working with GCS from R. Start by writing the following in the console:
 

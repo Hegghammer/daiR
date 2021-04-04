@@ -17,10 +17,10 @@ test_that("tables_from_dai_response() warns of response not containing tables", 
   wrong <- dai_user()
   expect_error(tables_from_dai_response(wrong), "Object not a positive dai_sync response.")
 
-  blank <- dai_sync(testthat::test_path("examples", "blank.tiff"))
+  blank <- dai_sync_tab(testthat::test_path("examples", "blank.tiff"))
   expect_error(tables_from_dai_response(blank), "DAI found no text. Was the page blank?")
 
-  no_tables <- dai_sync(testthat::test_path("examples", "sample.pdf"))
+  no_tables <- dai_sync_tab(testthat::test_path("examples", "sample.pdf"))
   expect_error(tables_from_dai_response(no_tables), "DAI found no tables in the document.")
 })
 
@@ -29,7 +29,7 @@ test_that("tables_from_dai_response() returns dataframes from dai response conta
   skip_if_offline()
 
   file <- testthat::test_path("examples", "table.pdf")
-  response <- dai_sync(file)
+  response <- dai_sync_tab(file)
   tables <- tables_from_dai_response(response)
   expect_true(is.list(tables))
   expect_true(all(sapply(tables, is.data.frame)))
