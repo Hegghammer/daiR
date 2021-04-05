@@ -4,13 +4,13 @@
 [![CRAN status](https://www.r-pkg.org/badges/version/daiR)](https://CRAN.R-project.org/package=daiR)
 <!-- badges: end -->
 
-**daiR** is an R package for [Google Document AI](https://cloud.google.com/document-ai), a powerful server-based OCR processor with support for some 60 languages. The package provides a wrapper for the Document AI API and comes with additional tools for output file parsing and text reconstruction.
+**daiR** is an R package for [Google Document AI](https://cloud.google.com/document-ai), a powerful server-based OCR processor with support for over 60 languages. The package provides a wrapper for the Document AI API and comes with additional tools for output file parsing and text reconstruction.
 
 <img src="man/figures/frontpage_image.png" width="500" class="center">
 
 ## Use
 
-Quick OCR a document of up to 5 pages:
+Quick OCR short documents:
 
 ```R
 ## NOT RUN
@@ -20,7 +20,7 @@ text <- text_from_dai_response(response)
 cat(text)
 ```
 
-Batch process any number of documents via Google Storage:
+Batch process asynchronously via Google Storage:
 
 ```R
 ## NOT RUN

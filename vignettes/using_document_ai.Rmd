@@ -49,15 +49,15 @@ To use Document AI, we need to complete a few more steps.
 First, we must activate the API. Go to the [Google Cloud Console](https://console.cloud.google.com/) and open the navigation menu on the left hand side. Click on "APIs and services". Then click on "Enable APIs and Services", type "document ai" in the search field, click on "cloud document ai API", and then "Enable". 
 
 ### Step 2: Create a processor
-Open the navigation menu on the left again. Scroll down, almost to the bottom, till you see "Document AI" (under the group heading "Artifial intelligence"). Click "Document AI".
+Open the navigation menu on the left again. Scroll down, almost to the bottom, till you see "Document AI" (under the group heading "Artifial intelligence"). Click on "Document AI".
 
-Now click the blue button labelled "Create processor". On the next page, choose the "Document OCR" processor type. A pane should open on your right where you can choose a name for the processor. Call it what you like; the name is mainly for your own reference. Select the location from which you will be using it, then click create.
+Now click the blue button labelled "Create processor". On the next page, choose the "Document OCR" processor type. A pane should open on your right where you can choose a name for the processor. Call it what you like; the name is mainly for your own reference. Select a location (where you want your files to be processed), then click create.
 
 You should now see a page listing the processor's Name, ID, Status and other attributes. The main thing you want here is the **ID**. Select it and copy it to the clipboard.  
 
 ### Step 3: Store the processor id as an environment variable
 
-Open your `.Renviron` file by calling `usethis::edit_r_environ()`. Add `DAI_PROCESSOR_ID="<paste your processor id here"` on a separate line. Save `.Renviron` and restart RStudio.   
+Open your `.Renviron` file by calling `usethis::edit_r_environ()`. Add `DAI_PROCESSOR_ID="<your processor id>"` on a separate line. Save `.Renviron` and restart RStudio.   
 
 That's it. If these things are in place, you will be auto-authenticated and ready to go when you attach (load) the `daiR` package.^[After attaching, you can check that the token was obtained with the function `dai_has_token()` or by viewing the `.auth` object directly. If credentials are missing, it's likely because `daiR` could not find the `GCS_AUTH_FILE` variable in your `.Renviron` file. Return to the vignette on "Setting up Google Storage" and make sure steps 5 and 6 are covered. Alternatively, you can, if you prefer, obtain an access token by another method and feed it into the token parameter of the `dai_sync()` and `dai_async()` functions.]
 
@@ -69,7 +69,7 @@ Now let's try this thing out.
 
 ## Synchronous processing
 
-The quickest and easiest way to OCR with DAI is through synchronous processing. You simply pass a single-page pdf or image file to the processor and get the result into your R environment within seconds.
+The quickest and easiest way to OCR with DAI is through synchronous processing. You simply pass an image file or a pdf (of up to 5 pages) to the processor and get the result into your R environment within seconds.
 
 We can try with a sample pdf from the CIA's Freedom of Information Act Electronic Reading Room: 
 
@@ -93,19 +93,16 @@ text <- text_from_dai_response(response)
 cat(text)
 ```
 
-Synchronous processing is very convenient, but has two limitations. One is that OCR accuracy may be slightly reduced compared with asynchronous processing, because `dai_sync()` converts the source file to a lightweight, grayscale image before passing it to DAI. The other is scaling; If you have a large pdf or many files, it is usually easier to process them asynchronously.    
+Synchronous processing is very convenient, but has two limitations. One is that OCR accuracy may be slightly reduced compared with asynchronous processing, because `dai_sync()` converts the source file to a lightweight, grayscale image before passing it to DAI. The other is scaling; If you have a large pdf or many files, it is usually easier to process them asynchronously.
 
 ## Asynchronous processing
 
-In asynchronous (offline) processing, you don't send DAI the actual document, but rather its location on Google Storage so that DAI can process it "in its own time". While slower than synchronous OCR, it allows for batch processing. The `daiR` function `dai_async()` is vectorized, so you can effectively send thousands of documents off for processing with a single line of code. In the following, we will just use a single document, but the filename can be replaced with a vector of almost any length.   
+In asynchronous (offline) processing, you don't send DAI the actual document, but rather its location on Google Storage so that DAI can process it "in its own time". While slower than synchronous OCR, it allows for batch processing. The `daiR` function `dai_async()` is vectorized, so you can effectively send thousands of documents off for processing with a single line of code. (The limit is 10,000 pages in active processing at a time.) For this vignette we'll just use a single document; the same as in the previous example.
 
 The first step is to upload the source file(s) to a Google Storage bucket where DAI can find it.^[Note that if you do not have a `GCS_DEFAULT_BUCKET` variable in your .Renviron file, you will need to either set a default bucket for the current session with `gcs_global_bucket("<a bucket name>")` or supply a `bucket = "<a bucket name>"` parameter explicitly inside `gcs_upload()`.]
 
 ```{r, eval=FALSE}
 library(googleCloudStorageR)
-```
-
-```{r, eval=FALSE}
 resp <- gcs_upload("CIA.pdf")
 ```
 
@@ -121,13 +118,13 @@ We're now ready to send it off to Document AI with `daiR`'s workhorse function, 
 resp <- dai_async("CIA.pdf")
 ```
 
-A few words about this function. Its core parameter, `files` (in this case, `"CIA.pdf"`), tells DAI which file(s) to process. `files` can be either a single filepath or a vector or list of filepaths. You can process either .pdf, .gif, or .tiff files. Your `files` vector can contain a mixture of these three file formats.
+A few words about this function. Its core parameter, `files`, tells DAI what to process. You can submit either .pdf, .gif, or .tiff files, and your `files` vector can contain a mixture of these three file formats.
 
 You can also specify a `dest_folder`: the name of the bucket folder where you want the output. It defaults to the root of the bucket, but you can specify another subfolder. If the folder does not exist already, it will be created.
 
-The function also takes a location parameter (`loc`), which defaults to "eu" but can be set to "us". This has nothing to do with where you are based, but with which of Google's servers will process your files. The parameter `skip_rev` can be ignored by most; it is passing documents to human review in business workflows. The remaining parameters default to things that are defined by your environment variables, but can be overridden with other values if you wish.   
+The function also takes a location parameter (`loc`), which defaults to "eu" but can be set to "us". It has nothing to do with where you are based, but with which of Google's servers will process your files. The parameter `skip_rev` can be ignored by most; it is for passing selected documents to human review in business workflows. The remaining parameters default to things that are defined by your environment variables (provided you followed the recommendations above).   
 
-Back to our processing. If your call returned "status: 200", it was accepted by the API. Note, however, that this does not necessarily mean that the processing was successful, because the API has no way of knowing right away if the filepaths you provided exist in your bucket. If there were errors in your filepaths, your HTTP request would get a 200, but your files would not actually process. They would turn up as empty files in the folder you provided. So if you see json files of around 70 bytes each in the destination folder, you know there was something wrong with your filenames.
+Back to our processing. If your call returned "status: 200", it was accepted by the API. This does not necessarily mean that the processing was successful, because the API has no way of knowing right away if the filepaths you provided exist in your bucket. If there were errors in your filepaths, your HTTP request would get a 200, but your files would not actually process. They would turn up as empty files in the folder you provided. So if you see json files of around 70 bytes each in the destination folder, you know there was something wrong with your filenames.
 
 You can check the status of a job with `dai_status()`. Just pass the response object from your `dai_async()` into the parentheses, and it will tell you whether the job is finished. It won't tell you how much time remains, but in my experience, processing takes about 5-20 seconds per page. 
 
