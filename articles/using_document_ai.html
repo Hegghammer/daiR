@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0</span>
       </span>
     </div>
 
@@ -119,7 +119,7 @@
 
     
     
-<p><strong>Last updated 9 March 2021</strong><br><br><br></p>
+<p><strong>Last updated 4 April 2021</strong><br><br><br></p>
 <div id="about-document-ai" class="section level2">
 <h2 class="hasAnchor">
 <a href="#about-document-ai" class="anchor"></a>About Document AI</h2>
@@ -140,97 +140,95 @@
 <li>A Google Cloud Services (GCS) <strong>project</strong> linked to your billing account and with the Document AI API enabled.</li>
 <li>A <strong>service account</strong> with the role “Owner”.</li>
 <li>A <strong>json file</strong> with the service account key, the path to which is stored in an environment variable called <code>GCS_AUTH_FILE</code>.</li>
+<li>The name of your default bucket stored in an environment variable called <code>GCS_DEFAULT_BUCKET</code>.</li>
 </ol>
-<p>I also recommend storing the name of your default Google Storage bucket in your .Renviron file as a variable named <code>GCS_DEFAULT_BUCKET</code>, as described in the previous vignette. It will save you from having to supply the bucket name explicitly in every call to Document AI.</p>
-<p>If these things are in place, there is nothing you need to do in <code>daiR</code> to authenticate. The package will obtain an access token for you on attachment.</p>
+<p>To use Document AI, we need to complete a few more steps.</p>
+<div id="step-1-activate-document-ai" class="section level3">
+<h3 class="hasAnchor">
+<a href="#step-1-activate-document-ai" class="anchor"></a>Step 1: Activate Document AI</h3>
+<p>First, we must activate the API. Go to the <a href="https://console.cloud.google.com/">Google Cloud Console</a> and open the navigation menu on the left hand side. Click on “APIs and services”. Then click on “Enable APIs and Services”, type “document ai” in the search field, click on “cloud document ai API”, and then “Enable”.</p>
+</div>
+<div id="step-2-create-a-processor" class="section level3">
+<h3 class="hasAnchor">
+<a href="#step-2-create-a-processor" class="anchor"></a>Step 2: Create a processor</h3>
+<p>Open the navigation menu on the left again. Scroll down, almost to the bottom, till you see “Document AI” (under the group heading “Artifial intelligence”). Click “Document AI”.</p>
+<p>Now click the blue button labelled “Create processor”. On the next page, choose the “Document OCR” processor type. A pane should open on your right where you can choose a name for the processor. Call it what you like; the name is mainly for your own reference. Select the location from which you will be using it, then click create.</p>
+<p>You should now see a page listing the processor’s Name, ID, Status and other attributes. The main thing you want here is the <strong>ID</strong>. Select it and copy it to the clipboard.</p>
+</div>
+<div id="step-3-store-the-processor-id-as-an-environment-variable" class="section level3">
+<h3 class="hasAnchor">
+<a href="#step-3-store-the-processor-id-as-an-environment-variable" class="anchor"></a>Step 3: Store the processor id as an environment variable</h3>
+<p>Open your <code>.Renviron</code> file by calling <code><a href="https://usethis.r-lib.org/reference/edit.html">usethis::edit_r_environ()</a></code>. Add <code>DAI_PROCESSOR_ID="&lt;paste your processor id here"</code> on a separate line. Save <code>.Renviron</code> and restart RStudio.</p>
+<p>That’s it. If these things are in place, you will be auto-authenticated and ready to go when you attach (load) the <code>daiR</code> package.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Hegghammer/daiR">daiR</a></span><span class="op">)</span>
-<span class="co">#&gt; Welcome to daiR 0.4.0, your gateway to Google Document AI v1beta2.</span></code></pre></div>
-<p>Should you wish to verify that you have obtained an access token, you can do so with the function <code><a href="../reference/dai_has_token.html">dai_has_token()</a></code> or by viewing the <code>.auth</code> object directly:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/dai_has_token.html">dai_has_token</a></span><span class="op">(</span><span class="op">)</span> 
-<span class="va">.auth</span></code></pre></div>
-<p>If credentials are missing, it’s likely because <code>daiR</code> could not find the <code>GCS_AUTH_FILE</code> variable in your <code>.Renviron</code> file. Return to the vignette on “Setting up Google Storage” and make sure steps 6 and 7 are covered. Alternatively, you can, if you prefer, obtain an access token by <a href="https://cran.r-project.org/web/packages/googleAuthR/vignettes/google-authentication-types.html">another method</a> and feed it into the token parameter of the <code><a href="../reference/dai_sync.html">dai_sync()</a></code> and <code><a href="../reference/dai_async.html">dai_async()</a></code> functions (see below).</p>
-<p>Now we should be ready to OCR some documents.</p>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Hegghammer/daiR">daiR</a></span><span class="op">)</span></code></pre></div>
+<p>Now let’s try this thing out.</p>
+</div>
 </div>
 <div id="synchronous-processing" class="section level2">
 <h2 class="hasAnchor">
 <a href="#synchronous-processing" class="anchor"></a>Synchronous processing</h2>
 <p>The quickest and easiest way to OCR with DAI is through synchronous processing. You simply pass a single-page pdf or image file to the processor and get the result into your R environment within seconds.</p>
 <p>We can try with a sample pdf from the CIA’s Freedom of Information Act Electronic Reading Room:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html">download.file</a></span><span class="op">(</span><span class="st">"https://www.cia.gov/readingroom/docs/AGH%2C%20LASLO_0011.pdf"</span>, 
               destfile <span class="op">=</span> <span class="st">"CIA.pdf"</span>, 
               mode <span class="op">=</span> <span class="st">"wb"</span><span class="op">)</span></code></pre></div>
 <p>We send it to Document AI with <code><a href="../reference/dai_sync.html">dai_sync()</a></code> and store the HTTP response in an object, for example <code>response</code>.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">response</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_sync.html">dai_sync</a></span><span class="op">(</span><span class="st">"CIA.pdf"</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="va">response</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_sync.html">dai_sync</a></span><span class="op">(</span><span class="st">"CIA.pdf"</span><span class="op">)</span></code></pre></div>
 <p>Then we extract the text with <code><a href="../reference/text_from_dai_response.html">text_from_dai_response()</a></code>:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/text_from_dai_response.html">text_from_dai_response</a></span><span class="op">(</span><span class="va">response</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="va">text</span><span class="op">)</span></code></pre></div>
 <p>Synchronous processing is very convenient, but has two limitations. One is that OCR accuracy may be slightly reduced compared with asynchronous processing, because <code><a href="../reference/dai_sync.html">dai_sync()</a></code> converts the source file to a lightweight, grayscale image before passing it to DAI. The other is scaling; If you have a large pdf or many files, it is usually easier to process them asynchronously.</p>
 </div>
-<div id="asynchronous-single-file-processing" class="section level2">
+<div id="asynchronous-processing" class="section level2">
 <h2 class="hasAnchor">
-<a href="#asynchronous-single-file-processing" class="anchor"></a>Asynchronous single file processing</h2>
-<p>The first step in asynchronous (offline) processing is to upload the source file(s) to a Google Storage bucket where DAI can find it.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<a href="#asynchronous-processing" class="anchor"></a>Asynchronous processing</h2>
+<p>In asynchronous (offline) processing, you don’t send DAI the actual document, but rather its location on Google Storage so that DAI can process it “in its own time”. While slower than synchronous OCR, it allows for batch processing. The <code>daiR</code> function <code><a href="../reference/dai_async.html">dai_async()</a></code> is vectorized, so you can effectively send thousands of documents off for processing with a single line of code. In the following, we will just use a single document, but the filename can be replaced with a vector of almost any length.</p>
+<p>The first step is to upload the source file(s) to a Google Storage bucket where DAI can find it.<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a></p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://code.markedmondson.me/googleCloudStorageR/">googleCloudStorageR</a></span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload</a></span><span class="op">(</span><span class="st">"CIA.pdf"</span><span class="op">)</span></code></pre></div>
-<p>Note that if you do not have a <code>GCS_DEFAULT_BUCKET</code> variable in your .Renviron file, you will need to either set a default bucket for the current session with <code><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_global_bucket.html">gcs_global_bucket("&lt;a bucket name&gt;")</a></code> or supply a <code>bucket = "&lt;a bucket name&gt;"</code> parameter explicitly inside <code><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload()</a></code>.</p>
 <p>Let’s check that our file made it safely:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>We’re now ready to send it off to Document AI with <code>daiR</code>’s workhorse function, <code><a href="../reference/dai_async.html">dai_async()</a></code>, as follows:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_async.html">dai_async</a></span><span class="op">(</span><span class="st">"CIA.pdf"</span><span class="op">)</span></code></pre></div>
-<p>A few words about this function. Its core parameter, <code>files</code> (in this case, <code>"CIA.pdf"</code>), tells DAI which file(s) to process. <code>files</code> can be either a single filepath or a vector or list of filepaths. You can process either .pdf, .gif, or .tiff files.</p>
+<p>A few words about this function. Its core parameter, <code>files</code> (in this case, <code>"CIA.pdf"</code>), tells DAI which file(s) to process. <code>files</code> can be either a single filepath or a vector or list of filepaths. You can process either .pdf, .gif, or .tiff files. Your <code>files</code> vector can contain a mixture of these three file formats.</p>
 <p>You can also specify a <code>dest_folder</code>: the name of the bucket folder where you want the output. It defaults to the root of the bucket, but you can specify another subfolder. If the folder does not exist already, it will be created.</p>
-<p><code><a href="../reference/dai_async.html">dai_async()</a></code> needs a bucket name, so if you have not set a <code>GCS_DEFAULT_BUCKET</code> variable in the .Renviron file, you will have to supply the bucket name explicitly with the <code>bucket =</code> parameter.</p>
-<p>The function takes a few other parameters you can tweak if necessary: <code>filetype</code>, which defaults to “pdf”; <code>loc</code> (location), which defaults to “eu”; and <code>pps</code> (pages per shard), which defaults to the maximum of 100.</p>
-<p>Back to our processing. Our call yielded “status: 200” which is good news, as it means the HTTP request was accepted by the API. If there was something wrong with your credentials, you would have gotten a 403 (invalid request) or some other error message.</p>
-<p>Note, however, that a 200 does not necessarily mean that the processing was successful, because the API has no way of knowing right away if the filepaths you provided exist in your bucket. If there were errors in your filepaths, your HTTP request would get a 200, but your files would not actually process. They would turn up as empty files in the folder you provided. So if you see json files of around 70 bytes each in the destination folder, you know there was something wrong with your filenames.</p>
-<p>The OCR processing time depends on the length of the document. I haven’t seen official numbers, but it appears to take about 5-10 seconds per page. Let’s check the bucket again for the <code>.json</code> output file:</p>
+<p>The function also takes a location parameter (<code>loc</code>), which defaults to “eu” but can be set to “us”. This has nothing to do with where you are based, but with which of Google’s servers will process your files. The parameter <code>skip_rev</code> can be ignored by most; it is passing documents to human review in business workflows. The remaining parameters default to things that are defined by your environment variables, but can be overridden with other values if you wish.</p>
+<p>Back to our processing. If your call returned “status: 200”, it was accepted by the API. Note, however, that this does not necessarily mean that the processing was successful, because the API has no way of knowing right away if the filepaths you provided exist in your bucket. If there were errors in your filepaths, your HTTP request would get a 200, but your files would not actually process. They would turn up as empty files in the folder you provided. So if you see json files of around 70 bytes each in the destination folder, you know there was something wrong with your filenames.</p>
+<p>You can check the status of a job with <code><a href="../reference/dai_status.html">dai_status()</a></code>. Just pass the response object from your <code><a href="../reference/dai_async.html">dai_async()</a></code> into the parentheses, and it will tell you whether the job is finished. It won’t tell you how much time remains, but in my experience, processing takes about 5-20 seconds per page.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/dai_status.html">dai_status</a></span><span class="op">(</span><span class="va">resp</span><span class="op">)</span></code></pre></div>
+<p>When <code><a href="../reference/dai_status.html">dai_status()</a></code> says “SUCCEEDED”, the json output files are waiting for you in the bucket.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p>And there it is: <code>"CIA.pdf-output-page-1-to-1.json"</code>. Let’s download it and save it under a simpler name:</p>
+<p>Output file names look cryptic, but there’s a logic to them, namely: <code>"&lt;job_number&gt;/&lt;document_number&gt;/&lt;filename&gt;-&lt;shard_number&gt;.json"</code> Our file will thus take the form <code>"&lt;job_number&gt;/0/CIA-0.json"</code>, with <code>&lt;job_number&gt;</code> changing from one processing call to the next. Let us store the name in a vector for simplicity:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html">gcs_get_object</a></span><span class="op">(</span><span class="st">"CIA.pdf-output-page-1-to-1.json"</span>, 
+<code class="sourceCode R"><span class="co">## NOT RUN</span>
+<span class="va">our_file</span> <span class="op">&lt;-</span> <span class="st">"&lt;job_number&gt;/0/CIA-0.json"</span></code></pre></div>
+<p>Now let’s download it and save it under a simpler name:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"> 
+<span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html">gcs_get_object</a></span><span class="op">(</span><span class="va">our_file</span>, 
                saveToDisk <span class="op">=</span> <span class="st">"CIA.json"</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p>Finally we extract the text using <code>text_from_dai_file</code>:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/text_from_dai_file.html">text_from_dai_file</a></span><span class="op">(</span><span class="st">"CIA.json"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="va">text</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="asynchronous-batch-processing" class="section level2">
-<h2 class="hasAnchor">
-<a href="#asynchronous-batch-processing" class="anchor"></a>Asynchronous batch processing</h2>
-<p>As mentioned, <code><a href="../reference/dai_async.html">dai_async()</a></code> can take vectors of filenames as input, so batch processing is quite straightforward. To illustrate, let’s make a copy of the CIA file under another name to pretend we have more than one file.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://fs.r-lib.org">fs</a></span><span class="op">)</span>
-<span class="fu"><a href="http://fs.r-lib.org/reference/copy.html">file_copy</a></span><span class="op">(</span><span class="st">"CIA.pdf"</span>, <span class="st">"CIA2.pdf"</span><span class="op">)</span></code></pre></div>
-<p>We go back to square one and start by uploading the files to our bucket. <code><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload()</a></code> takes only one item at a time, so we need to iterate the function over a vector containing our files:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://purrr.tidyverse.org">purrr</a></span><span class="op">)</span>
-<span class="va">pdfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"CIA.pdf"</span>, <span class="st">"CIA2.pdf"</span><span class="op">)</span>
-<span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">pdfs</span>, <span class="op">~</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload</a></span><span class="op">(</span><span class="va">.x</span>, name <span class="op">=</span> <span class="va">.x</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p>Then we just pass the same vector straight to <code><a href="../reference/dai_async.html">dai_async()</a></code>:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_async.html">dai_async</a></span><span class="op">(</span><span class="va">pdfs</span><span class="op">)</span></code></pre></div>
-<p>The current version of <code><a href="../reference/dai_async.html">dai_async()</a></code> handles batch requests by submitting individual files at 10 second intervals (to respect the rate limit). If you have many files, this can hold up your R session for some time, so consider running your script as a separate <a href="https://blog.rstudio.com/2019/03/14/rstudio-1-2-jobs/">RStudio job</a>. Document AI starts OCR processing the moment it receives the first document, so you should see action in your bucket fairly soon even if you submitted a large batch.</p>
-<p>When you check your bucket for the results of a batch submission, store the output as a vector, as you’ll need it soon for the download.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">contents</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span>
-<span class="va">contents</span></code></pre></div>
-<p>Now we need to create a vector with just the <code>.json</code> files in the bucket. We do this by searching the <code>contents$name</code> vector for files ending in <code>.json</code>:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">jsons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">grep</a></span><span class="op">(</span><span class="st">"*.json$"</span>, <span class="va">contents</span><span class="op">$</span><span class="va">name</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<p>Then we iterate the <code><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html">gcs_get_object()</a></code> function over our <code>jsons</code> vector:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">jsons</span>, <span class="op">~</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html">gcs_get_object</a></span><span class="op">(</span><span class="va">.x</span>, saveToDisk <span class="op">=</span> <span class="va">.x</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p>Now the ouput files should be on your hard drive ready for parsing with <code><a href="../reference/text_from_dai_file.html">text_from_dai_file()</a></code>.</p>
+<div class="footnotes">
+<hr>
+<ol>
+<li id="fn1"><p>After attaching, you can check that the token was obtained with the function <code><a href="../reference/dai_has_token.html">dai_has_token()</a></code> or by viewing the <code>.auth</code> object directly. If credentials are missing, it’s likely because <code>daiR</code> could not find the <code>GCS_AUTH_FILE</code> variable in your <code>.Renviron</code> file. Return to the vignette on “Setting up Google Storage” and make sure steps 5 and 6 are covered. Alternatively, you can, if you prefer, obtain an access token by another method and feed it into the token parameter of the <code><a href="../reference/dai_sync.html">dai_sync()</a></code> and <code><a href="../reference/dai_async.html">dai_async()</a></code> functions.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>Note that if you do not have a <code>GCS_DEFAULT_BUCKET</code> variable in your .Renviron file, you will need to either set a default bucket for the current session with <code><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_global_bucket.html">gcs_global_bucket("&lt;a bucket name&gt;")</a></code> or supply a <code>bucket = "&lt;a bucket name&gt;"</code> parameter explicitly inside <code><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload()</a></code>.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+</ol>
 </div>
   </div>
 

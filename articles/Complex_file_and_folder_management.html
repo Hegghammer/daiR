@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0</span>
       </span>
     </div>
 
@@ -118,7 +118,7 @@
 
     
     
-<p><strong>Last updated 9 March 2021</strong><br><br><br></p>
+<p><strong>Last updated 4 April 2021</strong><br><br><br></p>
 <p>The main <code>daiR</code> vignettes use deliberately simple examples involving uploads of pdf files straight into the root of the bucket and down again. In real life you may be dealing with slightly more complex scenarios.</p>
 <div id="image-files" class="section level2">
 <h2 class="hasAnchor">
@@ -166,7 +166,7 @@
 <p>We can process these files as they are with the following command:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_async.html">dai_async</a></span><span class="op">(</span><span class="va">pdfs</span><span class="op">)</span> </code></pre></div>
-<p>In which case DAI returns <code>.json</code> files titled <code>folder1/nps.pdf-output-page-1-to-1</code> and so forth. We can download these the usual way:</p>
+<p>In which case DAI returns <code>.json</code> files titled <code>folder1/&lt;job_number&gt;/0/nps-0.json</code> and so forth. We can download these the usual way:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">content</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span>
 <span class="va">jsons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">grep</a></span><span class="op">(</span><span class="st">"*.json$"</span>, <span class="va">content</span><span class="op">$</span><span class="va">name</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>

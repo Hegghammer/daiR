@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0</span>
       </span>
     </div>
 
@@ -119,10 +119,10 @@
 
     
     
-<p><strong>Last updated 14 March 2021</strong><br><br><br></p>
+<p><strong>Last updated 4 April 2021</strong><br><br><br></p>
 <p>In optical character recognition (OCR) of historical documents, we’re often interested in extracting tables and getting the data into R in tidy format. Having been designed primarily for processing business documents, Google Document AI has very powerful table extraction capabilities. With the help of the <code>daiR</code> package, you can get these tables into R dataframes with a single line of code.</p>
-<p>When you send an image or pdf to Document AI for OCR processing, the engine automatically extracts tabular data as well as text. This means you don’t have to configure the <code><a href="../reference/dai_sync.html">dai_sync()</a></code>/<code><a href="../reference/dai_async.html">dai_async()</a></code> call specifically for table extraction.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> It also means that if you process a bunch of documents and realise only later that you need the tables, they’re already there in your old json files.</p>
-<p><code>daiR</code> has two functions for getting this table data into R: <code><a href="../reference/tables_from_dai_response.html">tables_from_dai_response()</a></code> and <code><a href="../reference/tables_from_dai_file.html">tables_from_dai_file()</a></code>. They do the same thing, but take different inputs. You use the former for response objects obtained with <code><a href="../reference/dai_sync.html">dai_sync()</a></code> and the latter for .json files obtained with <code><a href="../reference/dai_async.html">dai_async()</a></code>.</p>
+<p>To extract table data, we use the <code><a href="../reference/dai_sync_tab.html">dai_sync_tab()</a></code> and <code><a href="../reference/dai_async_tab.html">dai_async_tab()</a></code> commands. They work much like their siblings <code><a href="../reference/dai_sync.html">dai_sync()</a></code>/<code><a href="../reference/dai_async.html">dai_async()</a></code> except that their responses also include table data. In return, the <code>*sync_tab()</code> functions have weaker language support (they currently only work for English-language documents).<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
+<p>To get the table data into R, we use the functions <code><a href="../reference/tables_from_dai_response.html">tables_from_dai_response()</a></code> and <code><a href="../reference/tables_from_dai_file.html">tables_from_dai_file()</a></code>. They do the same thing, but take different inputs. You use the former for response objects obtained with <code><a href="../reference/dai_sync_tab.html">dai_sync_tab()</a></code> and the latter for .json files obtained with <code><a href="../reference/dai_async_tab.html">dai_async_tab()</a></code>.</p>
 <div id="tables-from-response-objects" class="section level2">
 <h2 class="hasAnchor">
 <a href="#tables-from-response-objects" class="anchor"></a>Tables from response objects</h2>
@@ -135,7 +135,7 @@
               destfile <span class="op">=</span> <span class="st">"tobacco.pdf"</span>,
               mode <span class="op">=</span> <span class="st">"wb"</span><span class="op">)</span>
 
-<span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_sync.html">dai_sync</a></span><span class="op">(</span><span class="st">"tobacco.pdf"</span><span class="op">)</span></code></pre></div>
+<span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_sync_tab.html">dai_sync_tab</a></span><span class="op">(</span><span class="st">"tobacco.pdf"</span><span class="op">)</span></code></pre></div>
 <p>To get the tables into R, we pass the response object (<code>resp</code>) to our extraction function:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tables</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tables_from_dai_response.html">tables_from_dai_response</a></span><span class="op">(</span><span class="va">resp</span><span class="op">)</span></code></pre></div>
@@ -153,7 +153,7 @@
 <div id="tables-from-json-files" class="section level2">
 <h2 class="hasAnchor">
 <a href="#tables-from-json-files" class="anchor"></a>Tables from json files</h2>
-<p>With json files obtained from <code><a href="../reference/dai_async.html">dai_async()</a></code> the process is very similar, except that we pass a filepath instead of a response object to the extraction function. If we processed the same document asynchronously and obtained a file named <code>"tobacco.json"</code>, we would extract the tables like this:</p>
+<p>With json files obtained from <code><a href="../reference/dai_async_tab.html">dai_async_tab()</a></code> the process is very similar, except that we pass a filepath instead of a response object to the extraction function. If we processed the same document asynchronously and obtained a file named <code>"tobacco.json"</code>, we would extract the tables like this:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tables</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tables_from_dai_file.html">tables_from_dai_file</a></span><span class="op">(</span><span class="st">"tobacco.json"</span><span class="op">)</span></code></pre></div>
 <p>That’s all there is to it.</p>
@@ -162,7 +162,7 @@
 <div class="footnotes">
 <hr>
 <ol>
-<li id="fn1"><p>Technically, the Document AI API accepts a few table-specific parameters that can help in very difficult cases. The feature is not yet implemented in <code>daiR</code>, but will be in due course.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn1"><p>Under the hood, the <code>*sync()</code> and <code>*sync_tab()</code> functions access different endpoints in the Document AI API, each with its own capabilities. I expect these capabilities to be consolidated in a single endpoint in the future, in which case the <code>*sync_tab()</code> functions will be deprecated.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
   </div>

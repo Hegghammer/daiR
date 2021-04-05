@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0</span>
       </span>
     </div>
 
@@ -112,8 +112,37 @@
 <a href="#dair-ocr-with-google-document-ai-in-r" class="anchor"></a>daiR: OCR with Google Document AI in R</h1></div>
 <!-- badges: start -->
 
-<p><strong>daiR</strong> is an R package for <a href="https://cloud.google.com/document-ai">Google Document AI</a>, a powerful server-based OCR processor. The package provides a wrapper for the Document AI API and comes with additional tools for output file parsing and text reconstruction.</p>
+<p><strong>daiR</strong> is an R package for <a href="https://cloud.google.com/document-ai">Google Document AI</a>, a powerful server-based OCR processor with support for some 60 languages. The package provides a wrapper for the Document AI API and comes with additional tools for output file parsing and text reconstruction.</p>
 <p><img src="reference/figures/frontpage_image.png" width="500" class="center"></p>
+<div id="use" class="section level2">
+<h2 class="hasAnchor">
+<a href="#use" class="anchor"></a>Use</h2>
+<p>Quick OCR a document of up to 5 pages:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## NOT RUN</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Hegghammer/daiR">daiR</a></span><span class="op">)</span>
+<span class="va">response</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dai_sync.html">dai_sync</a></span><span class="op">(</span><span class="st">"file.pdf"</span><span class="op">)</span>
+<span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/text_from_dai_response.html">text_from_dai_response</a></span><span class="op">(</span><span class="va">response</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="va">text</span><span class="op">)</span></code></pre></div>
+<p>Batch process any number of documents via Google Storage:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## NOT RUN</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://code.markedmondson.me/googleCloudStorageR/">googleCloudStorageR</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://purrr.tidyverse.org">purrr</a></span><span class="op">)</span>
+<span class="va">my_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"file1.pdf"</span>, <span class="st">"file500.tiff"</span>, <span class="st">"file1000.gif"</span><span class="op">)</span>
+<span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">my_files</span>, <span class="va">gcs_upload</span><span class="op">)</span>
+<span class="fu"><a href="reference/dai_async.html">dai_async</a></span><span class="op">(</span><span class="va">my_files</span><span class="op">)</span>
+<span class="va">contents</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span>
+<span class="va">output_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">grep</a></span><span class="op">(</span><span class="st">"json$"</span>, <span class="va">contents</span><span class="op">$</span><span class="va">name</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">output_files</span>, <span class="op">~</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html">gcs_get_object</a></span><span class="op">(</span><span class="va">.x</span>, saveToDisk <span class="op">=</span> <span class="va">.x</span><span class="op">)</span><span class="op">)</span>
+<span class="va">sample_text</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/text_from_dai_file.html">text_from_dai_file</a></span><span class="op">(</span><span class="va">output_files</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="va">sample_text</span><span class="op">)</span></code></pre></div>
+<p>Turn images of tables into R dataframes:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## NOT RUN:</span>
+<span class="va">response</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dai_sync_tab.html">dai_sync_tab</a></span><span class="op">(</span><span class="st">"tables.pdf"</span><span class="op">)</span>
+<span class="va">dfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/tables_from_dai_response.html">tables_from_dai_response</a></span><span class="op">(</span><span class="va">response</span><span class="op">)</span> </code></pre></div>
+</div>
 <div id="requirements" class="section level2">
 <h2 class="hasAnchor">
 <a href="#requirements" class="anchor"></a>Requirements</h2>
@@ -123,7 +152,7 @@
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p><code>daiR</code> is not yet on CRAN, but you can install the latest development version from Github:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"hegghammer/daiR"</span><span class="op">)</span></code></pre></div>
 </div>
 </div>

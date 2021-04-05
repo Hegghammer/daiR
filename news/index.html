@@ -83,7 +83,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0</span>
       </span>
     </div>
 
@@ -157,6 +157,11 @@
       <small>Source: <a href='https://github.com/Hegghammer/daiR/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="dair-060" class="section level1">
+<h1 class="page-header" data-toc-text="0.6.0">
+<a href="#dair-060" class="anchor"></a>daiR 0.6.0</h1>
+<p>New processing functions adapted to the new stable release of Document AI API (v1). The <code><a href="../reference/dai_sync.html">dai_sync()</a></code>/<code><a href="../reference/dai_async.html">dai_async()</a></code> functions now access the new v1 endpoint, which has foreign language support. However, the v1 endpoint currently does not support table extraction, so the old processing functions (which access the v1beta2 endpoint) are kept under the new names <code><a href="../reference/dai_sync_tab.html">dai_sync_tab()</a></code> and <code><a href="../reference/dai_async_tab.html">dai_async_tab()</a></code>. I expect this to be a temporary solution until DAI’s capabilities are consolidated in a single endpoint, at which stage the <code>*_tab()</code> functions will be phased out.</p>
+</div>
     <div id="dair-040" class="section level1">
 <h1 class="page-header" data-toc-text="0.4.0">
 <a href="#dair-040" class="anchor"></a>daiR 0.4.0</h1>

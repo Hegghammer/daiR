@@ -42,7 +42,7 @@
   
 
 <meta property="og:title" content="OCR page synchronously — dai_sync" />
-<meta property="og:description" content="Sends a single-page document to Google Document AI for synchronous (immediate) processing. Returns a response object containing the text and additional data." />
+<meta property="og:description" content="Sends a single-page document to Google Document AI v1 for synchronous (immediate) processing. Returns a response object containing the text and additional data." />
 
 
 
@@ -84,7 +84,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0</span>
       </span>
     </div>
 
@@ -160,10 +160,17 @@
     </div>
 
     <div class="ref-description">
-    <p>Sends a single-page document to Google Document AI for synchronous (immediate) processing. Returns a response object containing the text and additional data.</p>
+    <p>Sends a single-page document to Google Document AI v1 for synchronous (immediate) processing. Returns a response object containing the text and additional data.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>dai_sync</span><span class='op'>(</span><span class='va'>file</span>, proj_id <span class='op'>=</span> <span class='fu'><a href='get_project_id.html'>get_project_id</a></span><span class='op'>(</span><span class='op'>)</span>, loc <span class='op'>=</span> <span class='st'>"eu"</span>, token <span class='op'>=</span> <span class='fu'><a href='dai_token.html'>dai_token</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>dai_sync</span><span class='op'>(</span>
+  <span class='va'>file</span>,
+  proj_id <span class='op'>=</span> <span class='fu'><a href='get_project_id.html'>get_project_id</a></span><span class='op'>(</span><span class='op'>)</span>,
+  proc_id <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.getenv.html'>Sys.getenv</a></span><span class='op'>(</span><span class='st'>"DAI_PROCESSOR_ID"</span><span class='op'>)</span>,
+  skip_rev <span class='op'>=</span> <span class='st'>"true"</span>,
+  loc <span class='op'>=</span> <span class='st'>"eu"</span>,
+  token <span class='op'>=</span> <span class='fu'><a href='dai_token.html'>dai_token</a></span><span class='op'>(</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -174,11 +181,19 @@
     </tr>
     <tr>
       <th>proj_id</th>
-      <td><p>Your Google Cloud Services project id.</p></td>
+      <td><p>A Google Cloud Services project id.</p></td>
+    </tr>
+    <tr>
+      <th>proc_id</th>
+      <td><p>A Document AI processor id</p></td>
+    </tr>
+    <tr>
+      <th>skip_rev</th>
+      <td><p>Whether to skip human review; "true" or "false".</p></td>
     </tr>
     <tr>
       <th>loc</th>
-      <td><p>A two-letter region code ("eu" or "us"). Defaults to "eu".</p></td>
+      <td><p>A two-letter region code; "eu" or "us".</p></td>
     </tr>
     <tr>
       <th>token</th>
