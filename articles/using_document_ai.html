@@ -177,10 +177,10 @@
 <p>We send it to Document AI with <code><a href="../reference/dai_sync.html">dai_sync()</a></code> and store the HTTP response in an object, for example <code>response</code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
-<span class="va">response</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_sync.html">dai_sync</a></span><span class="op">(</span><span class="st">"CIA.pdf"</span><span class="op">)</span></code></pre></div>
+<span class="va">response1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_sync.html">dai_sync</a></span><span class="op">(</span><span class="st">"CIA.pdf"</span><span class="op">)</span></code></pre></div>
 <p>Then we extract the text with <code><a href="../reference/text_from_dai_response.html">text_from_dai_response()</a></code>:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/text_from_dai_response.html">text_from_dai_response</a></span><span class="op">(</span><span class="va">response</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/text_from_dai_response.html">text_from_dai_response</a></span><span class="op">(</span><span class="va">response1</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="va">text</span><span class="op">)</span></code></pre></div>
 <p>Synchronous processing is very convenient, but has two limitations. One is that OCR accuracy may be slightly reduced compared with asynchronous processing, because <code><a href="../reference/dai_sync.html">dai_sync()</a></code> converts the source file to a lightweight, grayscale image before passing it to DAI. The other is scaling; If you have a large pdf or many files, it is usually easier to process them asynchronously.</p>
 </div>
@@ -191,20 +191,20 @@
 <p>The first step is to upload the source file(s) to a Google Storage bucket where DAI can find it.<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://code.markedmondson.me/googleCloudStorageR/">googleCloudStorageR</a></span><span class="op">)</span>
-<span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload</a></span><span class="op">(</span><span class="st">"CIA.pdf"</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload</a></span><span class="op">(</span><span class="st">"CIA.pdf"</span><span class="op">)</span></code></pre></div>
 <p>Let’s check that our file made it safely:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>We’re now ready to send it off to Document AI with <code>daiR</code>’s workhorse function, <code><a href="../reference/dai_async.html">dai_async()</a></code>, as follows:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_async.html">dai_async</a></span><span class="op">(</span><span class="st">"CIA.pdf"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">response2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_async.html">dai_async</a></span><span class="op">(</span><span class="st">"CIA.pdf"</span><span class="op">)</span></code></pre></div>
 <p>A few words about this function. Its core parameter, <code>files</code>, tells DAI what to process. You can submit either .pdf, .gif, or .tiff files, and your <code>files</code> vector can contain a mixture of these three file formats.</p>
 <p>You can also specify a <code>dest_folder</code>: the name of the bucket folder where you want the output. It defaults to the root of the bucket, but you can specify another subfolder. If the folder does not exist already, it will be created.</p>
 <p>The function also takes a location parameter (<code>loc</code>), which defaults to “eu” but can be set to “us”. It has nothing to do with where you are based, but with which of Google’s servers will process your files. The parameter <code>skip_rev</code> can be ignored by most; it is for passing selected documents to human review in business workflows. The remaining parameters default to things that are defined by your environment variables (provided you followed the recommendations above).</p>
 <p>Back to our processing. If your call returned “status: 200”, it was accepted by the API. This does not necessarily mean that the processing was successful, because the API has no way of knowing right away if the filepaths you provided exist in your bucket. If there were errors in your filepaths, your HTTP request would get a 200, but your files would not actually process. They would turn up as empty files in the folder you provided. So if you see json files of around 70 bytes each in the destination folder, you know there was something wrong with your filenames.</p>
 <p>You can check the status of a job with <code><a href="../reference/dai_status.html">dai_status()</a></code>. Just pass the response object from your <code><a href="../reference/dai_async.html">dai_async()</a></code> into the parentheses, and it will tell you whether the job is finished. It won’t tell you how much time remains, but in my experience, processing takes about 5-20 seconds per page.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/dai_status.html">dai_status</a></span><span class="op">(</span><span class="va">resp</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="../reference/dai_status.html">dai_status</a></span><span class="op">(</span><span class="va">response2</span><span class="op">)</span></code></pre></div>
 <p>When <code><a href="../reference/dai_status.html">dai_status()</a></code> says “SUCCEEDED”, the json output files are waiting for you in the bucket.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
