@@ -83,13 +83,13 @@ We send it to Document AI with `dai_sync()` and store the HTTP response in an ob
 
 ```{r, eval=FALSE}
 
-response <- dai_sync("CIA.pdf")
+response1 <- dai_sync("CIA.pdf")
 ```
 
 Then we extract the text with `text_from_dai_response()`:
 
 ```{r, eval=FALSE}
-text <- text_from_dai_response(response)
+text <- text_from_dai_response(response1)
 cat(text)
 ```
 
@@ -103,7 +103,7 @@ The first step is to upload the source file(s) to a Google Storage bucket where 
 
 ```{r, eval=FALSE}
 library(googleCloudStorageR)
-resp <- gcs_upload("CIA.pdf")
+gcs_upload("CIA.pdf")
 ```
 
 Let's check that our file made it safely: 
@@ -115,7 +115,7 @@ gcs_list_objects()
 We're now ready to send it off to Document AI with `daiR`'s workhorse function, `dai_async()`, as follows: 
 
 ```{r, eval=FALSE}
-resp <- dai_async("CIA.pdf")
+response2 <- dai_async("CIA.pdf")
 ```
 
 A few words about this function. Its core parameter, `files`, tells DAI what to process. You can submit either .pdf, .gif, or .tiff files, and your `files` vector can contain a mixture of these three file formats.
@@ -129,7 +129,7 @@ Back to our processing. If your call returned "status: 200", it was accepted by 
 You can check the status of a job with `dai_status()`. Just pass the response object from your `dai_async()` into the parentheses, and it will tell you whether the job is finished. It won't tell you how much time remains, but in my experience, processing takes about 5-20 seconds per page. 
 
 ```{r, eval=FALSE}
-dai_status(resp)
+dai_status(response2)
 ```
 
 When `dai_status()` says "SUCCEEDED", the json output files are waiting for you in the bucket. 

@@ -304,7 +304,15 @@ dai_status <- function(response,
                        token = dai_token(),
                        verbose = FALSE) {
 
+  if (!(inherits(response, "response"))) {
+    stop("Input is not a valid HTTP response. Is it from dai_async() ?")
+  }
+
   parsed <- httr::content(response)
+
+  if (!("name" %in% names(parsed))) {
+    stop("Input does not contain a processing job id. Is it from dai_async() ?")
+  }
 
   name <- parsed[["name"]]
 
