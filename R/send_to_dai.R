@@ -49,7 +49,7 @@ dai_sync <- function(file,
     stop("Invalid proj_id.")
   }
 
-  if (!(is.character(proc_id) && length(proc_id) == 1)) {
+  if (!(is.character(proc_id) && length(proc_id) == 1) | proc_id == "") {
     stop("Invalid proc_id parameter.")
   }
 
@@ -177,7 +177,7 @@ dai_async <- function(files,
     dest_folder <- stringr::str_replace(dest_folder, "/$", "")
   }
 
-  if (!(is.character(bucket) && length(bucket) == 1)) {
+  if (!(is.character(bucket) && length(bucket) == 1) | bucket == "") {
     stop("Invalid bucket parameter.")
   }
 
@@ -193,7 +193,7 @@ dai_async <- function(files,
     stop("Invalid proj_id parameter.")
   }
 
-  if (!(is.character(proc_id) && length(proc_id) == 1)) {
+  if (!(is.character(proc_id) && length(proc_id) == 1) | proc_id == "") {
     stop("Invalid proc_id parameter.")
   }
 
@@ -524,7 +524,7 @@ dai_async_tab <- function(files,
     dest_folder <- stringr::str_replace(dest_folder, "/$", "")
   }
 
-  if (!(is.character(bucket) && length(bucket) == 1)) {
+  if (!(is.character(bucket) && length(bucket) == 1) | bucket == "") {
     stop("Invalid bucket parameter.")
   }
 

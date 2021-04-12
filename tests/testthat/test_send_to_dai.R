@@ -30,6 +30,8 @@ test_that("dai_sync calls out input errors (CONT)", {
   samplepdf <- testthat::test_path("examples", "sample.pdf")
   expect_error(dai_sync(file = samplepdf, loc = "USA"),
                "Invalid location parameter.")
+  expect_error(dai_sync(file = samplepdf, proc_id = ""),
+               "Invalid proc_id parameter.")
 } )
 
 test_that("dai_sync informs about unsuccessful requests", {
@@ -105,6 +107,10 @@ test_that("dai_async calls out input errors (CONT)", {
                "Invalid loc parameter.")
   expect_error(dai_async(files = "foo.pdf", loc = NULL),
                "Invalid loc parameter.")
+  expect_error(dai_async(files = "foo.pdf", bucket = ""),
+               "Invalid bucket parameter.")
+  expect_error(dai_async(files = "foo.pdf", proc_id = ""),
+               "Invalid proc_id parameter.")
 } )
 
 test_that("dai_async informs about unsuccessful requests", {

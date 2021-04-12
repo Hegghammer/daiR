@@ -67,7 +67,7 @@ create_folder <- function(fname,
     stop("Invalid folder name format.")
   }
 
-  if (!(length(bucket) == 1 && is.character(bucket))) {
+  if (!(length(bucket) == 1 && is.character(bucket)) | bucket == "") {
     stop("Invalid bucket name format.")
   }
 
