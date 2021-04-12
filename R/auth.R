@@ -22,7 +22,7 @@ dai_auth <- function(scopes = "https://www.googleapis.com/auth/cloud-platform",
     stop("Error: invalid scope URLs.")
   }
 
-  if (!(length(path) == 1 && is.character(path)) | path == ""){
+  if (!(length(path) == 1 && is.character(path)) || path == ""){
     stop("Error: invalid path parameter.")
   }
 
@@ -110,7 +110,7 @@ dai_user <- function() {
 
 get_project_id <- function(path = Sys.getenv("GCS_AUTH_FILE")) {
 
-  if (!(length(path) == 1 && is.character(path)) | path == ""){
+  if (!(length(path) == 1 && is.character(path)) || path == ""){
     stop("Error: invalid path parameter.")
   }
 
