@@ -86,8 +86,8 @@ test_that("dai_async calls out input errors", {
                "Invalid dest_folder parameter.")
   expect_error(dai_async(files = "foo.pdf", dest_folder = 12345),
                "Invalid dest_folder parameter.")
-  expect_error(dai_async(files = "foo.pdf", bucket = c("bucket1", "bucket2")),
-               "Invalid bucket parameter.")
+  #expect_error(dai_async(files = "foo.pdf", bucket = c("bucket1", "bucket2")),
+  #             "Invalid bucket parameter.")
   expect_error(dai_async(files = "foo.pdf", bucket = 12345),
                "Invalid bucket parameter.")
   expect_error(dai_async(files = "foo.pdf", bucket = NULL),
