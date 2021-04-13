@@ -92,8 +92,8 @@ test_that("dai_async calls out input errors", {
                "Invalid bucket parameter.")
   expect_error(dai_async(files = "foo.pdf", bucket = NULL),
                "Invalid bucket parameter.")
-  expect_error(dai_async(files = "foo.pdf", proj_id = c("project1", "project2")),
-               "Invalid proj_id parameter.")
+  #expect_error(dai_async(files = "foo.pdf", proj_id = c("project1", "project2")),
+  #             "Invalid proj_id parameter.")
   expect_error(dai_async(files = "foo.pdf", proj_id = 12345),
                "Invalid proj_id parameter.")
   expect_error(dai_async(files = "foo.pdf", proj_id = NULL),
