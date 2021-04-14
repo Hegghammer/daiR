@@ -97,7 +97,7 @@ Synchronous processing is very convenient, but has two limitations. One is that 
 
 ## Asynchronous processing
 
-In asynchronous (offline) processing, you don't send DAI the actual document, but rather its location on Google Storage so that DAI can process it "in its own time". While slower than synchronous OCR, it allows for batch processing. The `daiR` function `dai_async()` is vectorized so you can send multiple files with one line of code. DAI's (rate limit)[https://cloud.google.com/document-ai/quotas] is currently 50 files per request and maximum 5 batch requests in concurrent processing. But a multi-page pdf counts as one file, so a request can effectively contain hundreds or even thousands of pages (up to a maximum of 10 000 pages in concurrent processing). For this vignette, however, we'll just use a single document; the same as in the previous example.
+In asynchronous (offline) processing, you don't send DAI the actual document, but rather its location on Google Storage so that DAI can process it "in its own time". While slower than synchronous OCR, it allows for batch processing. The `daiR` function `dai_async()` is vectorized, so you can send multiple files with a single call. For this vignette, however, we'll just use a single document; the same as in the previous example.
 
 The first step is to upload the source file(s) to a Google Storage bucket where DAI can find it.^[Note that if you do not have a `GCS_DEFAULT_BUCKET` variable in your .Renviron file, you will need to either set a default bucket for the current session with `gcs_global_bucket("<a bucket name>")` or supply a `bucket = "<a bucket name>"` parameter explicitly inside `gcs_upload()`.]
 
@@ -161,6 +161,31 @@ text <- text_from_dai_file("CIA.json")
 cat(text)
 ```
 
+# Large batches
+
+Although `dai_async()` takes batches of files, it is constrained by Google's (rate limits)[https://cloud.google.com/document-ai/quotas]. For the moment, a `dai_async()` call can contain a maximum of 50 files, and you can not have more than 5 batch requests and 10 000 pages (a multi-page pdf counts as one file) undergoing processing at any one time.
+
+Therefore, if you're looking to process a very large batch, you need to spread the `dai_async()` calls out over time. There are several ways of doing this, but the simplest is probably to make a function that sends files off individually with a small wait in between. Say we have a vector called `big_batch` containing thousands of filenames. First we would make a function like this:
+
+```{r, eval=FALSE}
+process_slowly <- function(file) {
+  dai_async(file)
+  Sys.sleep(15)
+}
+```
+
+Then we would iterate it over our file vector:
+
+```{r, eval=FALSE}
+## NOT RUN
+map(big_batch, process_slowly)
+```
+
+This, of course, will hold up your console for a long time, so it may be worth doing in the background as an RStudio [job](https://blog.rstudio.com/2019/03/14/rstudio-1-2-jobs/). 
+
+Finding the optimal wait time for the `Sys-sleep()` may require some trial and error. As a rule of thumb, it should approximate the time it takes for DAI to process *one* of your files. This, in turn, depends on the size of the files, for a 100-page pdf will take a lot longer to process than a single-page one. In my experience, a 10-second interval works fine for a batch of single-page pdfs. Multi-page pdfs require proportionally more time. If your files vary in size, calibrate the wait time to the largest file, or you may get 429s (HTTP code for "rate limit exceeded") half way through the iteration.
+
+Although this procedure is relatively slow, it need not add much to the overall processing time. DAI starts processing the first files it receives right away, so when your loop ends, DAI will be mostly done with the OCR as well. 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
 #cleanup
