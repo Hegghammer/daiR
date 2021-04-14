@@ -17,7 +17,7 @@ opts_chunk$set(
 )
 ```
 
-**Last updated 4 April 2021**
+**Last updated 14 April 2021**
 \
 \
 \
@@ -163,9 +163,9 @@ cat(text)
 
 # Large batches
 
-Although `dai_async()` takes batches of files, it is constrained by Google's (rate limits)[https://cloud.google.com/document-ai/quotas]. For the moment, a `dai_async()` call can contain a maximum of 50 files, and you can not have more than 5 batch requests and 10 000 pages (a multi-page pdf counts as one file) undergoing processing at any one time.
+Although `dai_async()` takes batches of files, it is constrained by Google's [rate limits](https://cloud.google.com/document-ai/quotas). Currently, a `dai_async()` call can contain maximum 50 files (a multi-page pdf counts as one file), and you can not have more than 5 batch requests and 10 000 pages undergoing processing at any one time.
 
-Therefore, if you're looking to process a very large batch, you need to spread the `dai_async()` calls out over time. There are several ways of doing this, but the simplest is probably to make a function that sends files off individually with a small wait in between. Say we have a vector called `big_batch` containing thousands of filenames. First we would make a function like this:
+Therefore, if you're looking to process a large batch, you need to spread the `dai_async()` calls out over time. The simplest solution is to make a function that sends files off individually with a small wait in between. Say we have a vector called `big_batch` containing thousands of filenames. First we would make a function like this:
 
 ```{r, eval=FALSE}
 process_slowly <- function(file) {
@@ -181,7 +181,7 @@ Then we would iterate it over our file vector:
 map(big_batch, process_slowly)
 ```
 
-This, of course, will hold up your console for a long time, so it may be worth doing in the background as an RStudio [job](https://blog.rstudio.com/2019/03/14/rstudio-1-2-jobs/). 
+This will hold up your console for a while, so it may be worth doing in the background as an RStudio [job](https://blog.rstudio.com/2019/03/14/rstudio-1-2-jobs/). 
 
 Finding the optimal wait time for the `Sys-sleep()` may require some trial and error. As a rule of thumb, it should approximate the time it takes for DAI to process *one* of your files. This, in turn, depends on the size of the files, for a 100-page pdf will take a lot longer to process than a single-page one. In my experience, a 10-second interval works fine for a batch of single-page pdfs. Multi-page pdfs require proportionally more time. If your files vary in size, calibrate the wait time to the largest file, or you may get 429s (HTTP code for "rate limit exceeded") half way through the iteration.
 
