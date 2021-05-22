@@ -196,10 +196,24 @@ tables_from_dai_file <- function(file) {
         headervectors <- purrr::map(headers_list, file_get_row_vector)
         rowvectors <- purrr::map(rows_list, file_get_row_vector)
         table <- data.frame(matrix(nrow= 0, ncol=6))
-        for (i in rowvectors) {
-          table <- rbind(table, as.data.frame(t(i)))
+        if (length(rowvectors) == 0) {
+          table <- as.data.frame(t(headervectors[[1]]))
+        } else {
+          for (i in 1:length(rowvectors)) {
+            if (is.null(rowvectors[[i]])) {
+              if (i == 1) {
+                table_width <- length(rowvectors[[i+1]])
+              } else {
+                table_width <- length(rowvectors[[i-1]])
+              }
+              rowvectors[[i]] <- rep("", times = table_width)
+              table <- rbind(table, as.data.frame(t(rowvectors[[i]])))
+            } else {
+              table <- rbind(table, as.data.frame(t(rowvectors[[i]])))
+            }
+          }
+          table <- stats::setNames(table, headervectors[[1]])
         }
-        table <- stats::setNames(table, headervectors[[1]])
         return(table)
       }
 
