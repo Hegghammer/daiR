@@ -15,7 +15,6 @@ test_auth <- function() {
 
 test_auth()
 
-
 # Tell tester to skip test if no token
 #
 skip_if_no_token <- function() {
