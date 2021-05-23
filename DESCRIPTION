@@ -1,6 +1,6 @@
 Package: daiR
 Title: An R Package for Google Document AI
-Version: 0.6.0
+Version: 0.7.0
 Authors@R: 
     person(given = "Thomas",
            family = "Hegghammer",
@@ -14,7 +14,7 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1.9000
 Imports: httr, glue, jsonlite, magick, stringr, tabulizer, grDevices, gargle, usethis, googleCloudStorageR, utils, fs, purrr, dplyr, base64enc, pdftools, curl
-Suggests: knitr, rmarkdown, qpdf, covr, testthat (>= 3.0.0), ngram, internetarchive
+Suggests: knitr, rmarkdown, qpdf, testthat (>= 3.0.0), internetarchive, covr, ngram
 Remotes: ropensci/internetarchive
 VignetteBuilder: knitr
 URL: https://github.com/Hegghammer/daiR
