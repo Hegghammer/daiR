@@ -103,12 +103,13 @@ On first inspection, this does not look so bad. But notice the transition from t
 
 Something's not right. Could it be a column-reading error?
 
-We can find out with the function `draw_blocks()`, which extracts boundary box data from the `.json` file and draws numbered rectangles on an image of each page of the source document.  
+We can find out with the function `draw_blocks()`, which extracts boundary box data from the `.json` file and draws numbered rectangles on an image of each page of the source document. (The images come from the json file, where they are stored as base64-encoded strings.) 
 
 ```{r, eval=FALSE}
-draw_blocks("CIA_columns.pdf", "CIA_columns.json")
+draw_blocks("CIA_columns.json")
 ```
-Check your folder for a a file ending in `_blocks.png` and pull it up:
+
+Check your working directory for a a file ending in `_blocks.png` and pull it up:
 
 ```{r, echo=FALSE, out.width = "50%"}
 include_graphics("CIA_columns1_blocks.png")
@@ -183,7 +184,7 @@ gcs_get_object(our_file,
 This time we'll skip the text printout and go straight to inspecting the boundary boxes:
 
 ```{r, eval=FALSE}
-draw_blocks("peshtigo.pdf", "peshtigo.json")
+draw_blocks("peshtigo.json")
 ```
 
 ```{r, echo=FALSE, out.width = "50%"}

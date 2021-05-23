@@ -80,92 +80,71 @@ text_from_dai_file <- function(file) {
 #'
 #' This function extracts the block bounding box coordinates
 #' from the json file returned by Google Document AI
-#' and plots them on a copy of the pdf source document
-#' for human inspection.
+#' and plots them on an image of the original page.
 #'
-#' @param pdf filepath of the pdf sent for processing.
 #' @param json filepath of the json output file.
-#' @param dir path to output directory
+#' @param dir path to the desired output directory.
 #'
 #' @details Not vectorized, but documents can be multi-page.
-#' Takes only pdf documents (if you processed .gif or .tiff files,
-#' convert them to pdf first). Generates an annotated .png file
-#' for each page in the original pdf. Assumes equal page length
-#' between the pdf and the json, so if the json output was split
-#' into shards, split the pdf accordingly first.
+#' Generates an annotated .png file for each page in the original
+#' document.
 #'
 #' @export
 #' @examples
 #' \dontrun{
-#' draw_blocks("pdf_page1.pdf", "pdf_output.json")
+#' draw_blocks("pdf_output.json")
 #' }
 
-draw_blocks <- function(pdf,
-                        json,
-                        dir = tempdir()
-                        ) {
+draw_blocks <- function(json,
+                        dir = getwd()
+                       ) {
   # checks
-  if (length(pdf) > 1) {
-    stop("Invalid pdf input. This function is not vectorised.")
-  }
-
   if (length(json) > 1) {
     stop("Invalid json input. This function is not vectorised.")
-  }
-
-  if (!(is.character(pdf))) {
-    stop("Invalid pdf input.")
   }
 
   if (!(is.character(json))) {
     stop("Invalid json input.")
   }
 
-  if (!(is_pdf(pdf))){
-    stop("Input 'pdf' not a pdf.")
-  }
-
   if (!(is_json(json))){
     stop("Input 'json' not .json.")
   }
 
-  # split pdf into individual pages:
-  tabulizer::split_pdf(pdf)
-
-  # turn the json into a list
-  output_as_list <- jsonlite::fromJSON(json)
+  # parse the json
+  parsed <- jsonlite::fromJSON(json)
 
   # extract a list with pagewise sets of block boundary boxes
-  pages_blocks <- output_as_list$pages$blocks
+  pages_blocks <- parsed$pages$blocks
 
   pagewise_block_sets <- purrr::map(pages_blocks, ~.x[["layout"]][["boundingPoly"]][["normalizedVertices"]])
 
-  # create a vector with the individual pdf pages
-  pdf_no_suffix <- stringr::str_sub(basename(pdf),
-                                    end = -5)
-
-  individual_pdfs <- list.files(tempdir(), pattern = glue::glue("{pdf_no_suffix}\\d+.pdf"), full.names = TRUE)
-
-  # set counter for pdf vector
-  counter <- 1
+  # Get vector of base64-encoded images
+  page_imgs <- parsed[["pages"]][["image"]][["content"]]
 
   # loop over the pagewise sets
-  for (i in pagewise_block_sets){
+  for (i in 1:length(pagewise_block_sets)){
 
-    # read pdf into magick
-    pdf_magick <- magick::image_read_pdf(individual_pdfs[counter])
+    # decode base64
+    path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
+    outconn <- file(path,"wb")
+    base64enc::base64decode(page_imgs[i], outconn)
+    close(outconn)
+
+    # read image into magick
+    img_decoded <- magick::image_read(path)
 
     # get image dimensions
-    info <- magick::image_info(pdf_magick)
+    info <- magick::image_info(img_decoded)
 
     # prepare for plotting on image
-    img <- magick::image_draw(pdf_magick)
+    canvas <- magick::image_draw(img_decoded)
 
     # set counter for box number
-    counter2 <- 1
+    counter <- 1
 
     #loop over boxes on the page
-    for(box in i){
+    for(box in pagewise_block_sets[[i]]){
 
       # transform from relative to absolute coordinates
       box$x1 <- box$x * info$width
@@ -177,33 +156,29 @@ draw_blocks <- function(pdf,
                         y = box$y1,
                         border = "red",
                         lwd = 3
-                        )
+      )
 
       graphics::text(x = box$x1[1],
-           y = box$y1[1],
-           label = counter2,
-           cex = 2,
-           col = "blue",
-           family = "Liberation Sans"
-           )
+                     y = box$y1[1],
+                     label = counter,
+                     cex = 2,
+                     col = "blue",
+                     family = "Liberation Sans"
+      )
 
-      counter2 <- counter2 + 1
+      counter <- counter + 1
     }
 
     # write annotated image to file
-    prefix <- stringr::str_sub(basename(individual_pdfs[counter]),
-                               end=-5
-                               )
 
-    filename <- glue::glue("{prefix}_blocks.png")
+    filename <- glue::glue("page{i}_blocks.png")
 
-    path <- file.path(dir, filename)
+    dest <- file.path(dir, filename)
 
-    magick::image_write(img, format = "png", path)
+    magick::image_write(canvas, format = "png", dest)
 
     grDevices::dev.off()
 
-    counter <- counter + 1
   }
 
   pages <- length(pages_blocks)
@@ -215,91 +190,71 @@ draw_blocks <- function(pdf,
 #'
 #' This function extracts the paragraph bounding box coordinates
 #' from the json file returned by Google Document AI
-#' and plots them on a copy of the source document
-#' for human inspection.
+#' and plots them on an image of the original page.
 #'
-#' @param pdf filepath of the pdf sent for processing.
 #' @param json filepath of the json output file.
-#' @param dir path to output directory
+#' @param dir path to the desired output directory.
 #'
 #' @details Not vectorized, but documents can be multi-page.
-#' Takes only pdf documents (if you processed .gif or .tiff files,
-#' convert them to pdf first). Generates an annotated .png file
-#' for each page in the original pdf. Assumes equal page length
-#' between the pdf and the json, so if the json output was split
-#' into shards, split the pdf accordingly first.
+#' Generates an annotated .png file for each page in the original
+#' document.
 #'
 #' @export
 #' @examples
 #' \dontrun{
-#' draw_paragraphs("pdf_page1.pdf", "pdf_output.json")
+#' draw_paragraphs("pdf_output.json")
 #' }
 
-draw_paragraphs <- function(pdf,
-                            json,
-                            dir = tempdir()
-                            ) {
+draw_paragraphs <- function(json,
+                            dir = getwd()
+                           ) {
   # checks
-  if (length(pdf) > 1) {
-    stop("Invalid pdf input. This function is not vectorised.")
-  }
-
   if (length(json) > 1) {
     stop("Invalid json input. This function is not vectorised.")
-  }
-
-  if (!(is.character(pdf))) {
-    stop("Invalid pdf input.")
   }
 
   if (!(is.character(json))) {
     stop("Invalid json input.")
   }
 
-  if (!(is_pdf(pdf))){
-    stop("Input 'pdf' not a pdf.")
-  }
-
   if (!(is_json(json))){
     stop("Input 'json' not .json.")
   }
 
-  # split pdf into individual pages:
-  tabulizer::split_pdf(pdf)
+  # parse the json
+  parsed <- jsonlite::fromJSON(json)
 
-  # turn the json into a list
-  output_as_list <- jsonlite::fromJSON(json)
-
-  # extract a list with pagewise sets of token boundary boxes
-  pages_paras <- output_as_list$pages$paragraphs
+  # extract a list with pagewise sets of paragraph boundary boxes
+  pages_paras <- parsed$pages$paragraphs
 
   pagewise_para_sets <- purrr::map(pages_paras, ~.x[["layout"]][["boundingPoly"]][["normalizedVertices"]])
 
-  # create a vector with the individual pdf pages
-  pdf_no_suffix <- stringr::str_sub(basename(pdf), end = -5)
-
-  individual_pdfs <- list.files(tempdir(), pattern = glue::glue("{pdf_no_suffix}\\d+.pdf"), full.names = TRUE)
-
-  # set counter for pdf vector
-  counter <- 1
+  # Get vector of base64-encoded images
+  page_imgs <- parsed[["pages"]][["image"]][["content"]]
 
   # loop over the pagewise sets
-  for (i in pagewise_para_sets){
+  for (i in 1:length(pagewise_para_sets)){
 
-    # read pdf into magick
-    pdf_magick <- magick::image_read_pdf(individual_pdfs[counter])
+    # decode base64
+    path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
+    outconn <- file(path,"wb")
+    base64enc::base64decode(page_imgs[i], outconn)
+    close(outconn)
+
+    # read image into magick
+    img_decoded <- magick::image_read(path)
 
     # get image dimensions
-    info <- magick::image_info(pdf_magick)
+    info <- magick::image_info(img_decoded)
 
     # prepare for plotting on image
-    img <- magick::image_draw(pdf_magick)
+    canvas <- magick::image_draw(img_decoded)
 
     # set counter for box number
-    counter2 <- 1
+    counter <- 1
 
     #loop over boxes on the page
-    for(box in i){
+    for(box in pagewise_para_sets[[i]]){
 
       # transform from relative to absolute coordinates
       box$x1 <- box$x * info$width
@@ -310,33 +265,30 @@ draw_paragraphs <- function(pdf,
       graphics::polygon(x = box$x1,
                         y = box$y1,
                         border = "red",
-                        lwd = 0.8)
+                        lwd = 3
+      )
 
       graphics::text(x = box$x1[1],
-           y = box$y1[1],
-           label = counter2,
-           cex = 0.6,
-           col = "blue",
-           family = "Liberation Sans"
-           )
+                     y = box$y1[1],
+                     label = counter,
+                     cex = 2,
+                     col = "blue",
+                     family = "Liberation Sans"
+      )
 
-      counter2 <- counter2 + 1
+      counter <- counter + 1
     }
 
     # write annotated image to file
-    prefix <- stringr::str_sub(basename(individual_pdfs[counter]),
-                               end=-5
-                               )
 
-    filename <- glue::glue("{prefix}_paragraphs.png")
+    filename <- glue::glue("page{i}_paragraphs.png")
 
-    path <- file.path(dir, filename)
+    dest <- file.path(dir, filename)
 
-    magick::image_write(img, format = "png", path)
+    magick::image_write(canvas, format = "png", dest)
 
     grDevices::dev.off()
 
-    counter <- counter + 1
   }
 
   pages <- length(pages_paras)
@@ -348,93 +300,72 @@ draw_paragraphs <- function(pdf,
 #'
 #' This function extracts the line bounding box coordinates
 #' from the json file returned by Google Document AI
-#' and plots them on a copy of the source document
-#' for human inspection.
+#' and plots them on an image of the original page.
 #'
-#' @param pdf filepath of the pdf sent for processing.
 #' @param json filepath of the json output file.
-#' @param dir path to output directory
+#' @param dir path to the desired output directory.
 #'
 #' @details Not vectorized, but documents can be multi-page.
-#' Takes only pdf documents (if you processed .gif or .tiff files,
-#' convert them to pdf first). Generates an annotated .png file
-#' for each page in the original pdf. Assumes equal page length
-#' between the pdf and the json, so if the json output was split
-#' into shards, split the pdf accordingly first.
+#' Generates an annotated .png file for each page in the original
+#' document.
 #'
 #' @export
 #' @examples
 #' \dontrun{
-#' draw_lines("pdf_page1.pdf", "pdf_output.json")
+#' draw_lines("pdf_output.json")
 #' }
 
-draw_lines <- function(pdf,
-                       json,
-                       dir = tempdir()
-                       ) {
+draw_lines <- function(json,
+                       dir = getwd()
+) {
 
   # checks
-  if (length(pdf) > 1) {
-    stop("Invalid pdf input. This function is not vectorised.")
-  }
-
   if (length(json) > 1) {
     stop("Invalid json input. This function is not vectorised.")
-  }
-
-  if (!(is.character(pdf))) {
-    stop("Invalid pdf input.")
   }
 
   if (!(is.character(json))) {
     stop("Invalid json input.")
   }
 
-  if (!(is_pdf(pdf))){
-    stop("Input 'pdf' not a pdf.")
-  }
-
   if (!(is_json(json))){
     stop("Input 'json' not .json.")
   }
 
-  # split pdf into individual pages:
-  tabulizer::split_pdf(pdf)
+  # parse the json
+  parsed <- jsonlite::fromJSON(json)
 
-  # turn the json into a list
-  output_as_list <- jsonlite::fromJSON(json)
-
-  # extract a list with pagewise sets of token boundary boxes
-  pages_lines <- output_as_list$pages$lines
+  # extract a list with pagewise sets of line boundary boxes
+  pages_lines <- parsed$pages$lines
 
   pagewise_line_sets <- purrr::map(pages_lines, ~.x[["layout"]][["boundingPoly"]][["normalizedVertices"]])
 
-  # create a vector with the individual pdf pages
-  pdf_no_suffix <- stringr::str_sub(basename(pdf),
-                                    end = -5)
-
-  individual_pdfs <- list.files(tempdir(), pattern = glue::glue("{pdf_no_suffix}\\d+.pdf"), full.names = TRUE)
-
-  # set counter for pdf vector
-  counter <- 1
+  # Get vector of base64-encoded images
+  page_imgs <- parsed[["pages"]][["image"]][["content"]]
 
   # loop over the pagewise sets
-  for (i in pagewise_line_sets){
+  for (i in 1:length(pagewise_line_sets)){
 
-    # read pdf into magick
-    pdf_magick <- magick::image_read_pdf(individual_pdfs[counter])
+    # decode base64
+    path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
+    outconn <- file(path,"wb")
+    base64enc::base64decode(page_imgs[i], outconn)
+    close(outconn)
+
+    # read image into magick
+    img_decoded <- magick::image_read(path)
 
     # get image dimensions
-    info <- magick::image_info(pdf_magick)
+    info <- magick::image_info(img_decoded)
 
     # prepare for plotting on image
-    img <- magick::image_draw(pdf_magick)
+    canvas <- magick::image_draw(img_decoded)
 
     # set counter for box number
-    counter2 <- 1
+    counter <- 1
 
     #loop over boxes on the page
-    for(box in i){
+    for(box in pagewise_line_sets[[i]]){
 
       # transform from relative to absolute coordinates
       box$x1 <- box$x * info$width
@@ -445,33 +376,30 @@ draw_lines <- function(pdf,
       graphics::polygon(x = box$x1,
                         y = box$y1,
                         border = "red",
-                        lwd = 0.8)
+                        lwd = 3
+      )
 
       graphics::text(x = box$x1[1],
-           y = box$y1[1],
-           label = counter2,
-           cex = 0.6,
-           col = "blue",
-           family = "Liberation Sans"
-           )
+                     y = box$y1[1],
+                     label = counter,
+                     cex = 2,
+                     col = "blue",
+                     family = "Liberation Sans"
+      )
 
-      counter2 <- counter2 + 1
+      counter <- counter + 1
     }
 
     # write annotated image to file
-    prefix <- stringr::str_sub(basename(individual_pdfs[counter]),
-                               end=-5
-                               )
 
-    filename <- glue::glue("{prefix}_lines.png")
+    filename <- glue::glue("page{i}_lines.png")
 
-    path <- file.path(dir, filename)
+    dest <- file.path(dir, filename)
 
-    magick::image_write(img, format = "png", path)
+    magick::image_write(canvas, format = "png", dest)
 
     grDevices::dev.off()
 
-    counter <- counter + 1
   }
 
   pages <- length(pages_lines)
@@ -483,92 +411,72 @@ draw_lines <- function(pdf,
 #'
 #' This function extracts the token bounding box coordinates
 #' from the json file returned by Google Document AI
-#' and plots them on a copy of the source document
-#' for human inspection.
+#' and plots them on an image of the original page.
 #'
-#' @param pdf filepath of the pdf sent for processing.
 #' @param json filepath of the json output file.
-#' @param dir path to output directory
+#' @param dir path to the desired output directory.
 #'
 #' @details Not vectorized, but documents can be multi-page.
-#' Takes only pdf documents (if you processed .gif or .tiff files,
-#' convert them to pdf first). Generates an annotated .png file
-#' for each page in the original pdf. Assumes equal page length
-#' between the pdf and the json, so if the json output was split
-#' into shards, split the pdf accordingly first.
+#' Generates an annotated .png file for each page in the original
+#' document.
 #'
 #' @export
 #' @examples
 #' \dontrun{
-#' draw_tokens("pdf_page1.pdf", "pdf_output.json")
+#' draw_tokens("pdf_output.json")
 #' }
 
-draw_tokens <- function(pdf,
-                        json,
-                        dir = tempdir()
-                        ) {
+draw_tokens <- function(json,
+                        dir = getwd()
+) {
 
   # checks
-  if (length(pdf) > 1) {
-    stop("Invalid pdf input. This function is not vectorised.")
-  }
-
   if (length(json) > 1) {
     stop("Invalid json input. This function is not vectorised.")
-  }
-
-  if (!(is.character(pdf))) {
-    stop("Invalid pdf input.")
   }
 
   if (!(is.character(json))) {
     stop("Invalid json input.")
   }
 
-  if (!(is_pdf(pdf))){
-    stop("Input 'pdf' not a pdf.")
-  }
-
   if (!(is_json(json))){
     stop("Input 'json' not .json.")
   }
 
-  # split pdf into individual pages:
-  tabulizer::split_pdf(pdf)
-
-  # turn the json into a list
-  output_as_list <- jsonlite::fromJSON(json)
+  # parse the json
+  parsed <- jsonlite::fromJSON(json)
 
   # extract a list with pagewise sets of token boundary boxes
-  pages_tokens <- output_as_list$pages$tokens
+  pages_tokens <- parsed$pages$tokens
 
   pagewise_token_sets <- purrr::map(pages_tokens, ~.x[["layout"]][["boundingPoly"]][["normalizedVertices"]])
 
-  # create a vector with the individual pdf pages
-  pdf_no_suffix <- stringr::str_sub(basename(pdf), end = -5)
-
-  individual_pdfs <- list.files(tempdir(), pattern = glue::glue("{pdf_no_suffix}\\d+.pdf"), full.names = TRUE)
-
-  # set counter for pdf vector
-  counter <- 1
+  # Get vector of base64-encoded images
+  page_imgs <- parsed[["pages"]][["image"]][["content"]]
 
   # loop over the pagewise sets
-  for (i in pagewise_token_sets){
+  for (i in 1:length(pagewise_token_sets)){
 
-    # read pdf into magick
-    pdf_magick <- magick::image_read_pdf(individual_pdfs[counter])
+    # decode base64
+    path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
+    outconn <- file(path,"wb")
+    base64enc::base64decode(page_imgs[i], outconn)
+    close(outconn)
+
+    # read image into magick
+    img_decoded <- magick::image_read(path)
 
     # get image dimensions
-    info <- magick::image_info(pdf_magick)
+    info <- magick::image_info(img_decoded)
 
     # prepare for plotting on image
-    img <- magick::image_draw(pdf_magick)
+    canvas <- magick::image_draw(img_decoded)
 
     # set counter for box number
-    counter2 <- 1
+    counter <- 1
 
     #loop over boxes on the page
-    for(box in i){
+    for(box in pagewise_token_sets[[i]]){
 
       # transform from relative to absolute coordinates
       box$x1 <- box$x * info$width
@@ -579,33 +487,30 @@ draw_tokens <- function(pdf,
       graphics::polygon(x = box$x1,
                         y = box$y1,
                         border = "red",
-                        lwd = 0.8)
+                        lwd = 3
+      )
 
       graphics::text(x = box$x1[1],
-           y = box$y1[1],
-           label = counter2,
-           cex = 0.6,
-           col = "blue",
-           family = "Liberation Sans"
-           )
+                     y = box$y1[1],
+                     label = counter,
+                     cex = 2,
+                     col = "blue",
+                     family = "Liberation Sans"
+      )
 
-      counter2 <- counter2 + 1
+      counter <- counter + 1
     }
 
     # write annotated image to file
-    prefix <- stringr::str_sub(basename(individual_pdfs[counter]),
-                               end=-5
-                               )
 
-    filename <- glue::glue("{prefix}_tokens.png")
+    filename <- glue::glue("page{i}_tokens.png")
 
-    path <- file.path(dir, filename)
+    dest <- file.path(dir, filename)
 
-    magick::image_write(img, format = "png", path)
+    magick::image_write(canvas, format = "png", dest)
 
     grDevices::dev.off()
 
-    counter <- counter + 1
   }
 
   pages <- length(pages_tokens)
