@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.0</span>
       </span>
     </div>
 
@@ -164,10 +164,10 @@
 <p>… they might reduce public support for the new Dubcek administration. Czech consumer in connection with these price increases.</p>
 </blockquote>
 <p>Something’s not right. Could it be a column-reading error?</p>
-<p>We can find out with the function <code><a href="../reference/draw_blocks.html">draw_blocks()</a></code>, which extracts boundary box data from the <code>.json</code> file and draws numbered rectangles on an image of each page of the source document.</p>
+<p>We can find out with the function <code><a href="../reference/draw_blocks.html">draw_blocks()</a></code>, which extracts boundary box data from the <code>.json</code> file and draws numbered rectangles on an image of each page of the source document. (The images come from the json file, where they are stored as base64-encoded strings.)</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/draw_blocks.html">draw_blocks</a></span><span class="op">(</span><span class="st">"CIA_columns.pdf"</span>, <span class="st">"CIA_columns.json"</span><span class="op">)</span></code></pre></div>
-<p>Check your folder for a a file ending in <code>_blocks.png</code> and pull it up:</p>
+<code class="sourceCode R"><span class="fu"><a href="../reference/draw_blocks.html">draw_blocks</a></span><span class="op">(</span><span class="st">"CIA_columns.json"</span><span class="op">)</span></code></pre></div>
+<p>Check your working directory for a a file ending in <code>_blocks.png</code> and pull it up:</p>
 <p><img src="CIA_columns1_blocks.png" width="50%"></p>
 <p>We can immediately see that the blocks are in the wrong order. How to fix this?</p>
 <p>Fortunately, the <code>.json</code> file from DAI comes with a ton of data that allow us to programmatically reorder the text. The key is to generate a token dataframe with page location data and then filter and reorder as necessary. We create the dataframe with <code><a href="../reference/build_token_df.html">build_token_df()</a></code>:</p>
@@ -213,7 +213,7 @@
                saveToDisk <span class="op">=</span> <span class="st">"peshtigo.json"</span><span class="op">)</span></code></pre></div>
 <p>This time we’ll skip the text printout and go straight to inspecting the boundary boxes:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/draw_blocks.html">draw_blocks</a></span><span class="op">(</span><span class="st">"peshtigo.pdf"</span>, <span class="st">"peshtigo.json"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="../reference/draw_blocks.html">draw_blocks</a></span><span class="op">(</span><span class="st">"peshtigo.json"</span><span class="op">)</span></code></pre></div>
 <p><img src="peshtigo1_blocks.png" width="50%"></p>
 <p>As we can see, this time DAI has failed to distinguish between the two main columns. We can verify this by checking the beginning of the text:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
