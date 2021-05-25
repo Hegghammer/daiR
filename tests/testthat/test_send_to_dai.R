@@ -7,20 +7,13 @@ test_that("dai_sync calls out input errors", {
   expect_error(dai_sync(file = TRUE), "Invalid file input.")
   expect_error(dai_sync(file = 123), "Invalid file input.")
   expect_error(dai_sync(file = c("foo.pdf", "bar.pdf")), "Invalid file input.")
-  expect_error(dai_sync(file = "foo.txt"),
-               "Unsupported file format. See documentation for details.")
-  expect_error(dai_sync(file = "foo.docx"),
-               "Unsupported file format. See documentation for details.")
-  expect_error(dai_sync(file = "foo.mp4"),
-               "Unsupported file format. See documentation for details.")
-  expect_error(dai_sync(file = "foo"),
-               "Unsupported file format. See documentation for details.")
-  expect_error(dai_sync(file = "foo.pdf"),
-               "Input file not a real pdf. Is the file in your working directory?")
-  expect_error(dai_sync(file = "foo.png", proj_id = 012345),
-               "Invalid proj_id.")
-  expect_error(dai_sync(file = "foo.png", proj_id = c("Project1", "Project2")),
-               "Invalid proj_id.")
+  expect_error(dai_sync(file = "foo.txt"), "Unsupported file format. See documentation for details.")
+  expect_error(dai_sync(file = "foo.docx"), "Unsupported file format. See documentation for details.")
+  expect_error(dai_sync(file = "foo.mp4"), "Unsupported file format. See documentation for details.")
+  expect_error(dai_sync(file = "foo"), "Unsupported file format. See documentation for details.")
+  expect_error(dai_sync(file = "foo.pdf"), "Input file not a real pdf. Is the file in your working directory?")
+  expect_error(dai_sync(file = "foo.png", proj_id = 012345), "Invalid proj_id.")
+  expect_error(dai_sync(file = "foo.png", proj_id = c("Project1", "Project2")), "Invalid proj_id.")
 } )
 
 test_that("dai_sync calls out input errors (CONT)", {
@@ -66,38 +59,22 @@ test_that("dai_async calls out input errors", {
   expect_error(dai_async(files = mtcars), "Invalid files parameter.")
   expect_error(dai_async(files = as.matrix(mtcars)), "Invalid files parameter.")
   expect_error(dai_async(files = TRUE), "Invalid files parameter.")
-  expect_error(dai_async(files = NULL), "Invalid files parameter.")
   expect_error(dai_async(files = 123), "Invalid files parameter.")
   expect_error(dai_async(files = "foo.png"), "Files contain unsupported file types. Only .pdf, .gif, and .tiff accepted.")
-  expect_error(dai_async(files = "foo.pdf", dest_folder = c("folder1", "folder2")),
-               "Invalid dest_folder parameter.")
-  expect_error(dai_async(files = "foo.pdf", dest_folder = 12345),
-               "Invalid dest_folder parameter.")
-  expect_error(dai_async(files = "foo.pdf", bucket = c("bucket1", "bucket2")),
-               "Invalid bucket parameter.")
-  expect_error(dai_async(files = "foo.pdf", bucket = 12345),
-               "Invalid bucket parameter.")
-  expect_error(dai_async(files = "foo.pdf", bucket = NULL),
-               "Invalid bucket parameter.")
-  expect_error(dai_async(files = "foo.pdf", proj_id = c("project1", "project2")),
-               "Invalid proj_id parameter.")
-  expect_error(dai_async(files = "foo.pdf", proj_id = 12345),
-               "Invalid proj_id parameter.")
-  expect_error(dai_async(files = "foo.pdf", proj_id = NULL),
-               "Invalid proj_id parameter.")
+  expect_error(dai_async(files = "foo.pdf", dest_folder = c("folder1", "folder2")), "Invalid dest_folder parameter.")
+  expect_error(dai_async(files = "foo.pdf", dest_folder = 12345), "Invalid dest_folder parameter.")
+  expect_error(dai_async(files = "foo.pdf", bucket = c("bucket1", "bucket2")), "Invalid bucket parameter.")
+  expect_error(dai_async(files = "foo.pdf", bucket = 12345), "Invalid bucket parameter.")
+  expect_error(dai_async(files = "foo.pdf", proj_id = c("project1", "project2")), "Invalid proj_id parameter.")
+  expect_error(dai_async(files = "foo.pdf", proj_id = 12345), "Invalid proj_id parameter.")
 } )
 
 test_that("dai_async calls out input errors (CONT)", {
   skip_if_no_token() # bc from here down it calls get_project_id()
   skip_if_offline()
-  expect_error(dai_async(files = "foo.pdf", loc = "USA"),
-               "Invalid loc parameter.")
-  expect_error(dai_async(files = "foo.pdf", loc = NULL),
-               "Invalid loc parameter.")
-  expect_error(dai_async(files = "foo.pdf", bucket = ""),
-               "Invalid bucket parameter.")
-  expect_error(dai_async(files = "foo.pdf", proc_id = ""),
-               "Invalid proc_id parameter.")
+  expect_error(dai_async(files = "foo.pdf", loc = "USA"), "Invalid loc parameter.")
+  expect_error(dai_async(files = "foo.pdf", bucket = ""), "Invalid bucket parameter.")
+  expect_error(dai_async(files = "foo.pdf", proc_id = ""), "Invalid proc_id parameter.")
 } )
 
 test_that("dai_async informs about unsuccessful requests", {
@@ -130,7 +107,6 @@ test_that("dai_async sends succesful requests with input in different formats", 
 ## DAI_STATUS-------------------------------------------------------------------
 
 test_that("dai_status calls out input errors", {
-  expect_error(dai_status(NULL), "Input is not a valid HTTP response.")
   expect_error(dai_status(123), "Input is not a valid HTTP response.")
   expect_error(dai_status(mtcars), "Input is not a valid HTTP response.")
   expect_error(dai_status(as.matrix(mtcars)), "Input is not a valid HTTP response.")
@@ -151,7 +127,6 @@ test_that("dai_sync_tab calls out input errors", {
   expect_error(dai_sync_tab(file = mtcars), "Invalid file input.")
   expect_error(dai_sync_tab(file = as.matrix(mtcars)), "Invalid file input.")
   expect_error(dai_sync_tab(file = TRUE), "Invalid file input.")
-  expect_error(dai_sync_tab(file = NULL), "Invalid file input.")
   expect_error(dai_sync_tab(file = 123), "Invalid file input.")
   expect_error(dai_sync_tab(file = c("foo.png", "bar.png"), "Invalid file input."))
   expect_error(dai_sync_tab(file = list("foo.png", "bar.png"), "Invalid file input."))
@@ -163,7 +138,6 @@ test_that("dai_sync_tab calls out input errors", {
   expect_error(dai_sync_tab(file = "foo.png", proj_id = mtcars), "Invalid proj_id.")
   expect_error(dai_sync_tab(file = "foo.png", proj_id = as.matrix(mtcars)), "Invalid proj_id.")
   expect_error(dai_sync_tab(file = "foo.png", proj_id = TRUE), "Invalid proj_id.")
-  expect_error(dai_sync_tab(file = "foo.png", proj_id = NULL), "Invalid proj_id.")
   expect_error(dai_sync_tab(file = "foo.png", proj_id = 123), "Invalid proj_id.")
   expect_error(dai_sync_tab(file = "foo.png", proj_id = c("abc", "def")), "Invalid proj_id.")
   expect_error(dai_sync_tab(file = "foo.png", proj_id = list("abc", "def")), "Invalid proj_id.")
@@ -197,26 +171,22 @@ test_that("dai_async_tab calls out input errors", {
   expect_error(dai_async_tab(files = mtcars), "Invalid files parameter.")
   expect_error(dai_async_tab(files = as.matrix(mtcars)), "Invalid files parameter.")
   expect_error(dai_async_tab(files = TRUE), "Invalid files parameter.")
-  expect_error(dai_async_tab(files = NULL), "Invalid files parameter.")
   expect_error(dai_async_tab(files = 123), "Invalid files parameter.")
   expect_error(dai_async_tab(files = "foo.png"), "Input file type not supported.")
-  expect_error(dai_async_tab(files = "foo.pdf", filetype = mtcars, "Invalid filetype parameter.")) # wrong filetype format
+  expect_error(dai_async_tab(files = "foo.pdf", filetype = mtcars, "Invalid filetype parameter."))
   expect_error(dai_async_tab(files = "foo.pdf", filetype = as.matrix(mtcars), "Invalid filetype parameter."))
   expect_error(dai_async_tab(files = "foo.pdf", filetype = TRUE, "Invalid filetype parameter."))
-  expect_error(dai_async_tab(files = "foo.pdf", filetype = NULL, "Invalid filetype parameter."))
   expect_error(dai_async_tab(files = "foo.pdf", filetype = 123, "Invalid filetype parameter."))
   expect_error(dai_async_tab(files = "foo.pdf", filetype = c("gif", "pdf"), "Invalid filetype parameter."))
   expect_error(dai_async_tab(files = "foo.pdf", filetype = list("gif", "pdf"), "Invalid filetype parameter."))
-  expect_error(dai_async_tab(files = "foo.pdf", filetype = "gif", "Mismatch between filetype parameter and actual format of files.")) # mismatch
-  expect_error(dai_async_tab(files = "foo.gif", filetype = "tiff", "Mismatch between filetype parameter and actual format of files.")) # mismatch
+  expect_error(dai_async_tab(files = "foo.pdf", filetype = "gif", "Mismatch between filetype parameter and actual format of files."))
+  expect_error(dai_async_tab(files = "foo.gif", filetype = "tiff", "Mismatch between filetype parameter and actual format of files."))
   expect_error(dai_async_tab(files = "foo.pdf", dest_folder = c("folder1", "folder2")), "Invalid dest_folder parameter.")
   expect_error(dai_async_tab(files = "foo.pdf", dest_folder = 12345), "Invalid dest_folder parameter.")
   expect_error(dai_async_tab(files = "foo.pdf", bucket = c("bucket1", "bucket2")), "Invalid bucket parameter.")
   expect_error(dai_async_tab(files = "foo.pdf", bucket = 12345), "Invalid bucket parameter.")
-  expect_error(dai_async_tab(files = "foo.pdf", bucket = NULL), "Invalid bucket parameter.")
   expect_error(dai_async_tab(files = "foo.pdf", proj_id = c("project1", "project2")), "Invalid proj_id parameter.")
   expect_error(dai_async_tab(files = "foo.pdf", proj_id = 12345), "Invalid proj_id parameter.")
-  expect_error(dai_async_tab(files = "foo.pdf", proj_id = NULL), "Invalid proj_id parameter.")
   expect_error(dai_async_tab(files = "foo.pdf", loc = 123), "Invalid loc parameter.")
   expect_error(dai_async_tab(files = "foo.pdf", loc = c("eu", "us")), "Invalid loc parameter.")
   expect_error(dai_async_tab(files = "foo.pdf", loc = "usa"), "Invalid loc parameter.")

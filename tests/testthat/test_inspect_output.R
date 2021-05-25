@@ -14,13 +14,10 @@ test_that("text_from_dai_response() warns of input errors", {
 test_that("text_from_dai_response() warns of response not containing text", {
   skip_if_no_token()
   skip_if_offline()
-
   wrong <- dai_async("random.pdf")
   expect_error(text_from_dai_response(wrong), "Input not recognized. Is it from dai_async?")
-
   wrong2 <- dai_user()
   expect_error(text_from_dai_response(wrong2), "Input not recognized. Is it from dai_async?")
-
   blank <- dai_sync(testthat::test_path("examples", "blank.tiff"))
   expect_error(text_from_dai_response(blank), "DAI found no text. Was the page blank?")
 })
@@ -28,7 +25,6 @@ test_that("text_from_dai_response() warns of response not containing text", {
 test_that("text_from_dai_response() gets text from DAI response from example file", {
   skip_if_no_token()
   skip_if_offline()
-
   file <- testthat::test_path("examples", "image.jpg")
   response <- dai_sync(file)
   text <- text_from_dai_response(response)
@@ -98,17 +94,6 @@ test_that("draw_blocks() produces a correctly named png file", {
   unlink(expected_filepaths, force = TRUE)
 })
 
-test_that("draw_blocks() draws actual boxes on the png", {
-  skip_on_ci()
-  skip_if_not_installed("grDevices")
-  skip_if_not_installed("magick")
-  realjson <- testthat::test_path("examples", "sample_v1.json")
-  draw_blocks(realjson, dir = tempdir())
-  filepath <- file.path(tempdir(), "page1_blocks.png")
-  expect_snapshot_file(filepath, basename(filepath))
-  unlink(filepath, force = TRUE)
-})
-
 ## DRAW_PARAGRAPHS -------------------------------------------------------------
 
 test_that("draw_paragraphs() warns of input errors", {
@@ -138,17 +123,6 @@ test_that("draw_paragraphs() produces a correctly named new png file", {
     expect_true(file.exists(expected_filepaths[j]))
   }
   unlink(expected_filepaths, force = TRUE)
-})
-
-test_that("draw_paragraphs() draws actual boxes on the png", {
-  skip_on_ci()
-  skip_if_not_installed("grDevices")
-  skip_if_not_installed("magick")
-  realjson <- testthat::test_path("examples", "sample_v1.json")
-  draw_paragraphs(realjson, dir = tempdir())
-  filepath <- file.path(tempdir(), "page1_paragraphs.png")
-  expect_snapshot_file(filepath, basename(filepath))
-  unlink(filepath, force = TRUE)
 })
 
 ## DRAW_LINES ------------------------------------------------------------------
@@ -182,16 +156,7 @@ test_that("draw_lines() produces a correctly named new png file", {
   unlink(expected_filepaths, force = TRUE)
 })
 
-test_that("draw_lines() draws actual boxes on the png", {
-  skip_on_ci()
-  skip_if_not_installed("grDevices")
-  skip_if_not_installed("magick")
-  realjson <- testthat::test_path("examples", "sample_v1.json")
-  draw_lines(realjson, dir = tempdir())
-  filepath <- file.path(tempdir(), "page1_lines.png")
-  expect_snapshot_file(filepath, basename(filepath))
-  unlink(filepath, force = TRUE)
-})
+
 
 ## DRAW_TOKENS -----------------------------------------------------------------
 
@@ -224,13 +189,3 @@ test_that("draw_tokens() produces a correctly named new png file", {
   unlink(expected_filepaths, force = TRUE)
 })
 
-test_that("draw_tokens() draws actual boxes on the png", {
-  skip_on_ci()
-  skip_if_not_installed("grDevices")
-  skip_if_not_installed("magick")
-  realjson <- testthat::test_path("examples", "sample_v1.json")
-  draw_tokens(realjson, dir = tempdir())
-  filepath <- file.path(tempdir(), "page1_tokens.png")
-  expect_snapshot_file(filepath, basename(filepath))
-  unlink(filepath, force = TRUE)
-})
