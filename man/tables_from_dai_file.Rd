@@ -23,5 +23,4 @@ the submitted document and returns them as a list of dataframes.
 \dontrun{
 tables <- tables_from_dai_file("document.json")
 }
-
 }

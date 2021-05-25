@@ -7,7 +7,7 @@
 text_from_dai_file(file)
 }
 \arguments{
-\item{file}{filepath of a json file from DAI}
+\item{file}{filepath of a json file from DAI.}
 }
 \value{
 a string.

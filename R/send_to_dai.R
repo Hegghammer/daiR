@@ -531,7 +531,7 @@ dai_async_tab <- function(files,
     dest_folder <- stringr::str_replace(dest_folder, "/$", "")
     }
 
-  if (!(is.character(bucket) && length(bucket) == 1)|| bucket == "") {
+  if (!(is.character(bucket) && length(bucket) == 1)) {
     stop("Invalid bucket parameter.")
     }
 
