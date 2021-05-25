@@ -32,50 +32,52 @@ dai_sync <- function(file,
   # Check inputs
   if (!(is.character(file) && length(file) == 1)) {
     stop("Invalid file input.")
-  }
+    }
 
   extension <- tolower(stringr::str_extract(file, "(?<=\\.)\\w{3,4}$"))
   supported <- c("bmp", "gif", "jpeg", "jpg", "pdf", "png", "tiff")
 
   if (!(extension %in% supported)) {
     stop("Unsupported file format. See documentation for details.")
-  }
+    }
 
   if (extension == "pdf" && !(is_pdf(file))) {
     stop("Input file not a real pdf. Is the file in your working directory?")
-  }
+    }
 
   if (!(is.character(proj_id) && length(proj_id) == 1)) {
     stop("Invalid proj_id.")
-  }
+    }
 
   if (!(is.character(proc_id) && length(proc_id) == 1) || proc_id == "") {
     stop("Invalid proc_id parameter.")
-  }
+    }
 
   skip_rev <- tolower(skip_rev)
 
   if (!(skip_rev %in% c("true", "false") && length(skip_rev) == 1)) {
     stop("Invalid skip_rev parameter.")
-  }
+    }
 
   loc <- tolower(loc)
 
   if (!(loc %in% c("eu", "us"))) {
     stop("Invalid location parameter.")
-  }
+    }
 
   # Encode
   if (extension == "pdf"){
     encoded_file <- pdf_to_binbase(file)
-  } else {
-    encoded_file <- img_to_binbase(file)
-  }
+    } else {
+      encoded_file <- img_to_binbase(file)
+    }
+
 
   ## Create json request body
   req <- list("skipHumanReview" = skip_rev,
               "rawDocument" = list("content" = encoded_file,
-                                   "mimeType" = "image/tiff")
+                                   "mimeType" = "image/tiff"
+                                   )
               )
 
   bod <- jsonlite::toJSON(req, auto_unbox = TRUE)
@@ -95,19 +97,16 @@ dai_sync <- function(file,
                          body = bod
                          )
 
-  time <- response[[7]]
-  status <- response[[2]]
-
-  if (status == 200){
-    message(glue::glue("File submitted at {time}. HTTP status: 200 - OK."))
-  } else {
-    parsed <- httr::content(response)
-    error_msg <- parsed[["error"]][["message"]]
-    message(glue::glue('File submitted at {time}. HTTP status: {status} - unsuccessful.\nError: "{error_msg}"'))
-  }
+  if (response$status_code == 200) {
+    message(glue::glue("File submitted at {response$date}. HTTP status: 200 - OK."))
+    } else {
+      parsed <- httr::content(response)
+      message(glue::glue('File submitted at {response$date}. HTTP status: {response$status_code} - unsuccessful.\nError: "{parsed$error$message}"'))
+    }
 
   return(response)
-}
+
+  }
 
 #' OCR documents asynchronously
 #'
@@ -151,98 +150,103 @@ dai_async <- function(files,
                       skip_rev = "true",
                       loc = "eu",
                       token = dai_token()
-) {
+                      ) {
 
   # Check and modify inputs
   if (!(is.character(files) && length(files) >= 1)) {
     stop("Invalid files parameter.")
-  }
+    }
 
   extensions <- tolower(stringr::str_extract_all(files, "(?<=\\.)\\w{3,4}$"))
   supported <- c("pdf", "gif", "tiff")
 
   if (!(all(unique(extensions) %in% supported))) {
     stop("Files contain unsupported file types. Only .pdf, .gif, and .tiff accepted.")
-  }
+    }
 
   if (length(dest_folder) > 1) {
     stop("Invalid dest_folder parameter.")
-  }
+    }
 
   if (length(dest_folder) == 1 && !(is.character(dest_folder))) {
     stop("Invalid dest_folder parameter.")
-  }
+    }
 
   if (length(dest_folder) == 1 && grepl("/$", dest_folder)) {
     dest_folder <- stringr::str_replace(dest_folder, "/$", "")
-  }
+    }
 
   if (!(is.character(bucket) && length(bucket) == 1) || bucket == "") {
     stop("Invalid bucket parameter.")
-  }
+    }
 
   if (grepl("^gs://", bucket)) {
     bucket <- stringr::str_replace(bucket, "^gs://", "")
-  }
+    }
 
   if ((grepl("/$", bucket))) {
     bucket <- stringr::str_replace(bucket, "/$", "")
-  }
+    }
 
   if (!(is.character(proj_id) && length(proj_id) == 1)) {
     stop("Invalid proj_id parameter.")
-  }
+    }
 
   if (!(is.character(proc_id) && length(proc_id) == 1) || proc_id == "") {
     stop("Invalid proc_id parameter.")
-  }
+    }
 
   skip_rev <- tolower(skip_rev)
 
   if (!(skip_rev %in% c("true", "false") && length(skip_rev) == 1)) {
     stop("Invalid skip_rev parameter.")
-  }
+    }
 
   loc <- tolower(loc)
 
   if (!(loc %in% c("eu", "us") && length(loc) == 1)) {
     stop("Invalid loc parameter.")
-  }
+    }
 
   # format list of documents
   doc_list <- list()
 
-  for (file in files){
+  for (file in files) {
 
     filetype <- stringr::str_extract(file, "(?<=\\.)\\w{3,4}$")
 
     if (filetype == "pdf") {
       mime <- "application/pdf"
-    } else if (filetype == "gif") {
-      mime <- "image/gif"
-    } else {
-      mime <- "image/tiff"
-    }
+      } else if (filetype == "gif") {
+        mime <- "image/gif"
+        } else {
+          mime <- "image/tiff"
+        }
 
     uri <- glue::glue("gs://{bucket}/{file}")
 
     entry <- list(list("gcsUri" = uri,
-                       "mimeType" = mime))
+                       "mimeType" = mime
+                       )
+                  )
 
     doc_list  <- append(doc_list, entry)
-  }
+
+    }
 
   # format dest folder uri
   if (is.null(dest_folder)) {
     dest_folder_uri <- glue::glue("gs://{bucket}/")
-  } else {
-    dest_folder_uri <- glue::glue("gs://{bucket}/{dest_folder}/")
-  }
+    } else {
+      dest_folder_uri <- glue::glue("gs://{bucket}/{dest_folder}/")
+    }
+
 
   ## create json request body
   req <- list("inputDocuments" = list("gcsDocuments" = list("documents" = doc_list )),
-              "documentOutputConfig" = list("gcsOutputConfig" = list("gcsUri" = dest_folder_uri)), # a directory
-              "skipHumanReview" = skip_rev)
+              "documentOutputConfig" = list("gcsOutputConfig" = list("gcsUri" = dest_folder_uri)),
+              "skipHumanReview" = skip_rev
+              )
 
 
   bod <- jsonlite::toJSON(req, auto_unbox = TRUE)
@@ -260,22 +264,18 @@ dai_async <- function(files,
   response <- httr::POST(url,
                          httr::config(token = token),
                          body = bod
-  )
+                         )
 
-  status <- response[[2]]
-
-  time <- response[[7]]
-
-  if (status == 200){
-    message(glue::glue("{length(files)} files submitted at {time}. HTTP status: 200 - OK."))
-  } else {
-    parsed <- httr::content(response)
-    error_msg <- parsed[["error"]][["message"]]
-    message(glue::glue('{length(files)} files submitted at {time}. HTTP status: {status} - unsuccessful.\nError: "{error_msg}"'))
-  }
+  if (response$status_code == 200) {
+    message(glue::glue("{length(files)} files submitted at {response$date}. HTTP status: 200 - OK."))
+    } else {
+      parsed <- httr::content(response)
+      message(glue::glue('{length(files)} files submitted at {response$date}. HTTP status: {response$status_code} - unsuccessful.\nError: "{parsed$error$message}"'))
+    }
 
   return(response)
-}
+
+  }
 
 
 #' Check the status of an asynchronous processing job
@@ -302,19 +302,28 @@ dai_async <- function(files,
 dai_status <- function(response,
                        loc = "eu",
                        token = dai_token(),
-                       verbose = FALSE) {
+                       verbose = FALSE
+                       ) {
 
   if (!(inherits(response, "response"))) {
-    stop("Input is not a valid HTTP response. Is it from dai_async() ?")
-  }
+    stop("Input is not a valid HTTP response.")
+    }
 
   parsed <- httr::content(response)
 
   if (!("name" %in% names(parsed))) {
-    stop("Input does not contain a processing job id. Is it from dai_async() ?")
-  }
+    stop("Input does not contain a processing job id. Make sure it is from dai_async.")
+    }
 
-  name <- parsed[["name"]]
+  if (!(loc %in% c("eu", "us") && length(loc) == 1)) {
+    stop("Invalid location parameter.")
+    }
+
+  if (!(verbose %in% c(TRUE, FALSE) && length(verbose))) {
+    stop("Parameter verbose can only be TRUE or FALSE.")
+    }
+
+  name <- parsed$name
 
   base_url <- glue::glue("https://{loc}-documentai.googleapis.com/v1/")
 
@@ -324,19 +333,17 @@ dai_status <- function(response,
 
   resp_par <- httr::content(resp)
 
-  status <- resp_par[["metadata"]][["state"]]
+  status <- resp_par$metadata$state
 
-  job_no <- stringr::str_extract(parsed[["name"]], "(?<=/)\\d+$")
+  job_no <- stringr::str_extract(name, "(?<=/)\\d+$")
 
-  ts_submit <- response[["date"]]
-
-  message(glue::glue('Status for job {job_no} submitted {ts_submit}: "{status}."'))
+  message(glue::glue('Status for job {job_no} submitted {response$date}: "{status}."'))
 
   if (isTRUE(verbose)) {
     return(resp)
   }
-}
 
+}
 
 #' OCR page synchronously and extract table data
 #'
@@ -360,50 +367,51 @@ dai_status <- function(response,
 #' my_page_scan <- "001.png"
 #' response <- dai_sync(my_page_scan)
 #' }
+
 dai_sync_tab <- function(file,
                      proj_id = get_project_id(),
                      loc = "eu",
                      token = dai_token()
-) {
+                     ) {
 
   # Check
   if (!(is.character(file) && length(file) == 1)) {
     stop("Invalid file input.")
-  }
+    }
 
   extension <- tolower(stringr::str_extract(file, "(?<=\\.)\\w{3,4}$"))
   supported <- c("bmp", "gif", "jpeg", "jpg", "pdf", "png", "tiff")
 
   if (!(extension %in% supported)) {
     stop("Unsupported file format. See documentation for details.")
-  }
+    }
 
   if (extension == "pdf" && !(is_pdf(file))) {
     stop("Input file not a real pdf. Is the file in your working directory?")
-  }
+    }
 
   if (!(is.character(proj_id) && length(proj_id) == 1)) {
     stop("Invalid proj_id.")
-  }
+    }
 
   loc <- tolower(loc)
 
-  if (!(loc %in% c("eu", "us"))) {
+  if (!(loc %in% c("eu", "us") && length(loc) == 1)) {
     stop("Invalid location parameter.")
-  }
+    }
 
   # Encode
-  if (extension == "pdf"){
+  if (extension == "pdf") {
     encoded_file <- pdf_to_binbase(file)
-  } else {
-    encoded_file <- img_to_binbase(file)
-  }
+    } else {
+      encoded_file <- img_to_binbase(file)
+      }
 
   ## Create json request body
   req <- list("inputConfig" = list("mimeType" = "image/tiff",
                                    "contents" = encoded_file
-  )
-  )
+                                   )
+              )
 
   bod <- jsonlite::toJSON(req, auto_unbox = TRUE)
 
@@ -420,18 +428,17 @@ dai_sync_tab <- function(file,
   response <- httr::POST(url,
                          httr::config(token = token),
                          body = bod
-  )
-  time <- response[[7]]
-  status <- response[[2]]
+                         )
 
-  if (status == 200){
-    message(glue::glue("File submitted at {time}. HTTP status: 200 - OK."))
-  } else {
-    message(glue::glue("File submitted at {time}. HTTP status: {status} - unsuccessful."))
-  }
+  if (response$status_code == 200) {
+    message(glue::glue("File submitted at {response$date}. HTTP status: 200 - OK."))
+    } else {
+      message(glue::glue("File submitted at {response$date}. HTTP status: {response$status_code} - unsuccessful."))
+    }
 
   return(response)
-}
+
+  }
 
 #' OCR documents asynchronously and extract table data
 #'
@@ -475,110 +482,110 @@ dai_async_tab <- function(files,
                       loc = "eu",
                       token = dai_token(),
                       pps = 100
-) {
+                      ) {
 
   # Check and modify
 
   if (!(is.character(files) && length(files) >= 1)) {
     stop("Invalid files parameter.")
-  }
+    }
 
   extensions <- tolower(stringr::str_extract_all(files, "(?<=\\.)\\w{3,4}$"))
   supported <- c("pdf", "gif", "tiff")
 
   if (!(all(unique(extensions) %in% supported))) {
     stop("Input file type not supported.")
-  }
+    }
 
   if (length(unique(extensions)) > 1) {
     stop("Elements in files vector not all of the same type.")
-  }
+    }
 
   filetype <- tolower(filetype)
 
   if (!(filetype %in% supported && length(filetype) == 1)) {
     stop("Invalid filetype parameter.")
-  }
+    }
 
   if (!(filetype == unique(extensions))) {
     stop("Mismatch between filetype parameter and actual format of files.")
-  }
+    }
 
   if (filetype == "pdf") {
     mime <- "application/pdf"
-  } else if (filetype == "gif") {
-    mime <- "image/gif"
-  } else {
-    mime <- "image/tiff"
-  }
+    } else if (filetype == "gif") {
+      mime <- "image/gif"
+      } else {
+        mime <- "image/tiff"
+      }
 
   if (length(dest_folder) > 1) {
     stop("Invalid dest_folder parameter.")
-  }
+    }
 
   if (length(dest_folder) == 1 && !(is.character(dest_folder))) {
     stop("Invalid dest_folder parameter.")
-  }
+    }
 
   if (length(dest_folder) == 1 && grepl("/$", dest_folder)) {
     dest_folder <- stringr::str_replace(dest_folder, "/$", "")
-  }
+    }
 
   if (!(is.character(bucket) && length(bucket) == 1)|| bucket == "") {
     stop("Invalid bucket parameter.")
-  }
+    }
 
   if (grepl("^gs://", bucket)) {
     bucket <- stringr::str_replace(bucket, "^gs://", "")
-  }
+    }
 
   if ((grepl("/$", bucket))) {
     bucket <- stringr::str_replace(bucket, "/$", "")
-  }
+    }
 
   if (!(is.character(proj_id) && length(proj_id) == 1)) {
     stop("Invalid proj_id parameter.")
-  }
+    }
 
   loc <- tolower(loc)
 
   if (!(loc %in% c("eu", "us") && length(loc) == 1)) {
     stop("Invalid loc parameter.")
-  }
+    }
 
   if (!(is.numeric(pps) && round(pps) == pps && length(pps) == 1)) {
     stop("Invalid pps parameter.")
-  }
+    }
 
   if (pps < 1 || pps > 100) {
     stop("Invalid pps parameter.")
-  }
+    }
 
   # setup to return response list if several files
   response <- list()
 
   counter <- 1
 
-  for (file in files){
+  for (file in files) {
 
     # build uris
     file_uri <- glue::glue("gs://{bucket}/{file}")
 
     if (is.null(dest_folder)) {
       dest_uri <- glue::glue("gs://{bucket}/{file}")
-    } else {
-      dest_uri <- glue::glue("gs://{bucket}/{dest_folder}/{file}")
-    }
+      } else {
+        dest_uri <- glue::glue("gs://{bucket}/{dest_folder}/{file}")
+      }
 
     ## create json request body
     req <- list("requests" = list("inputConfig" = list("mimeType" = mime,
                                                        "gcsSource" = list("uri" = file_uri)
-    ),
-    "outputConfig" = list("pagesPerShard" = pps,
-                          "gcsDestination" = list("uri" = dest_uri)
-    )
-    )
-    )
+                                                       ),
+                                  "outputConfig" = list("pagesPerShard" = pps,
+                                                        "gcsDestination" = list("uri" = dest_uri)
+                                                        )
+                                  )
+                )
 
     bod <- jsonlite::toJSON(req, auto_unbox = TRUE)
 
@@ -595,17 +602,13 @@ dai_async_tab <- function(files,
     resp <- httr::POST(url,
                        httr::config(token = token),
                        body = bod
-    )
+                       )
 
-    status <- resp[[2]]
-
-    time <- resp[[7]]
-
-    if (status == 200){
-      message(glue::glue("File {counter} of {length(files)} submitted at {time}. HTTP status: 200 - OK."))
-    } else {
-      message(glue::glue("File {counter} of {length(files)} submitted at {time}. HTTP status: {status} - unsuccessful."))
-    }
+    if (resp$status_code == 200) {
+      message(glue::glue("File {counter} of {length(files)} submitted at {resp$date}. HTTP status: 200 - OK."))
+      } else {
+        message(glue::glue("File {counter} of {length(files)} submitted at {resp$date}. HTTP status: {resp$status_code} - unsuccessful."))
+      }
 
     resp <- list(resp)
 
@@ -615,6 +618,8 @@ dai_async_tab <- function(files,
 
     Sys.sleep(10)
 
-  }
+    }
+
   return(response)
-}
+
+  }

@@ -346,7 +346,7 @@ test_that("reassign_tokens() returns a revised token dataframe", {
 
   # now check
   expect_true(is.data.frame(tdf_new))
-  # expect_equal(nrow(tdf_new), nrow(tdf_old)) Not necessarily equal bc a word
+  #expect_equal(nrow(tdf_new), nrow(tdf_old)) # Not necessarily equal bc a word
   # split in middle (as result of random split) can be counted twice
   expect_true(identical(colnames(tdf_new), colnames(tdf_old)))
   expect_false(isTRUE(all.equal(tdf_new, tdf_old)))

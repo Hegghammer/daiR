@@ -108,7 +108,35 @@ test_that("is_pdf() calls out non-pdfs", {
 
 ## IS_JSON ----------------------------------------------------------------------
 
-# TODO
+test_that("is_json() calls out non-jsons", {
+  image <- testthat::test_path("examples", "image.jpg")
+  pdf <- testthat::test_path("examples", "sample.pdf")
+  txt <- file.path(tempdir(), "foo.txt")
+  write("Lorem ipsum", txt)
+  csv <- file.path(tempdir(), "bar.csv")
+  write("Lorem,ipsum", csv)
+  empty <- tempfile(fileext = ".json")
+  fs::file_create(empty)
+  nonexist <- "nonexist.json"
+  expect_false(is_json(image))
+  expect_false(is_json(pdf))
+  expect_false(is_json(txt))
+  expect_false(is_json(csv))
+  expect_false(is_json(empty))
+  expect_false(is_json(nonexist))
+  unlink(c(txt, csv, empty), force = TRUE)
+} )
+
+test_that("is_json() recognizes jsons", {
+  json1 <- testthat::test_path("examples", "output.json")
+  json2 <- testthat::test_path("examples", "output_blank.json")
+  json3 <- testthat::test_path("examples", "sample_v1.json")
+  json4 <- testthat::test_path("examples", "sample3pg.json")
+  expect_true(is_json(json1))
+  expect_true(is_json(json2))
+  expect_true(is_json(json3))
+  expect_true(is_json(json4))
+} )
 
 ## PDF_TO_BINBASE --------------------------------------------------------------
 

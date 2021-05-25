@@ -67,6 +67,14 @@ test_that("dai_token works", {
 
 ## DAI_HAS_TOKEN ---------------------------------------------------------------
 
+test_that("dai_has_token works", {
+  skip_if_no_token()
+  skip_if_offline()
+  dai_deauth()
+  expect_false(dai_has_token())
+  test_auth()
+  expect_true(dai_has_token())
+})
 
 ## DAI_USER --------------------------------------------------------------------
 
@@ -99,3 +107,5 @@ test_that("dai_deauth works", {
   expect_false(dai_has_token())
   test_auth()
 })
+
+

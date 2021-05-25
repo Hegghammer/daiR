@@ -12,19 +12,19 @@
 
 dai_auth <- function(scopes = "https://www.googleapis.com/auth/cloud-platform",
                      path = Sys.getenv("GCS_AUTH_FILE")
-) {
+                     ) {
 
   if (!(length(scopes) >= 1 && is.character(scopes))) {
     stop("Error: invalid scopes parameter.")
-  }
+    }
 
   if (!(all(grepl("^https://www.googleapis.com/auth/", scopes)))) {
     stop("Error: invalid scope URLs.")
-  }
+    }
 
-  if (!(length(path) == 1 && is.character(path)) || path == ""){
+  if (!(length(path) == 1 && is.character(path)) || path == "") {
     stop("Error: invalid path parameter.")
-  }
+    }
 
   cred <- gargle::credentials_service_account(scopes = scopes, path = path)
 
@@ -34,11 +34,10 @@ dai_auth <- function(scopes = "https://www.googleapis.com/auth/cloud-platform",
 
   if (dai_has_token()) {
   message("Token obtained and stored in .auth.")
-  } else {
+    } else {
   message("Token not obtained. Have you provided a valid service account key file?")
+    }
   }
-
-}
 
 #' Produce token
 #'
@@ -54,14 +53,15 @@ dai_token <- function() {
 
   if (isFALSE(.auth$auth_active)) {
     return(NULL)
-  }
+    }
 
   if (!dai_has_token()) {
     dai_auth()
-  }
+    }
 
   return(.auth$cred)
-}
+
+  }
 
 #' Check that token is available
 #'
@@ -74,8 +74,9 @@ dai_token <- function() {
 
 dai_has_token <- function() {
 
-  inherits(.auth$cred, "Token2.0")
-}
+    inherits(.auth$cred, "Token2.0")
+
+  }
 
 
 #' Get user info associated with service account key
@@ -94,7 +95,8 @@ dai_user <- function() {
                     httr::config(token = dai_token()))
 
   return(response)
-}
+
+  }
 
 #' Get project id from service account file
 #'
@@ -112,14 +114,15 @@ get_project_id <- function(path = Sys.getenv("GCS_AUTH_FILE")) {
 
   if (!(length(path) == 1 && is.character(path)) || path == ""){
     stop("Error: invalid path parameter.")
-  }
+    }
 
   json <- jsonlite::fromJSON(path)
 
-  project_id <- json[[2]]
+  project_id <- json$project_id
 
   return(project_id)
-}
+
+  }
 
 #' Delete token from environment
 #'
@@ -136,4 +139,5 @@ dai_deauth <- function() {
   .auth$clear_cred()
 
   invisible()
-}
+
+  }

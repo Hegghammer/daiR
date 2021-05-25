@@ -2,13 +2,13 @@
 ## TEXT_FROM_DAI_RESPONSE ------------------------------------------------------
 
 test_that("text_from_dai_response() warns of input errors", {
-  expect_error(text_from_dai_response(NULL), "Object is not a valid HTTP response.")
-  expect_error(text_from_dai_response(12345), "Object is not a valid HTTP response.")
-  expect_error(text_from_dai_response(mtcars), "Object is not a valid HTTP response.")
-  expect_error(text_from_dai_response(as.matrix(mtcars)), "Object is not a valid HTTP response.")
-  expect_error(text_from_dai_response("string"), "Object is not a valid HTTP response.")
-  expect_error(text_from_dai_response(c("string", "vector")), "Object is not a valid HTTP response.")
-  expect_error(text_from_dai_response(list("a", "list")), "Object is not a valid HTTP response.")
+  expect_error(text_from_dai_response(NULL), "Input is not a valid HTTP response.")
+  expect_error(text_from_dai_response(12345), "Input is not a valid HTTP response.")
+  expect_error(text_from_dai_response(mtcars), "Input is not a valid HTTP response.")
+  expect_error(text_from_dai_response(as.matrix(mtcars)), "Input is not a valid HTTP response.")
+  expect_error(text_from_dai_response("string"), "Input is not a valid HTTP response.")
+  expect_error(text_from_dai_response(c("string", "vector")), "Input is not a valid HTTP response.")
+  expect_error(text_from_dai_response(list("a", "list")), "Input is not a valid HTTP response.")
 })
 
 test_that("text_from_dai_response() warns of response not containing text", {
@@ -33,17 +33,6 @@ test_that("text_from_dai_response() gets text from DAI response from example fil
   response <- dai_sync(file)
   text <- text_from_dai_response(response)
   expect_type(text, "character")
-})
-
-test_that("text_from_dai_response() gets text from DAI response from random, real pdf", {
-  skip_on_ci()
-  skip_if_offline()
-
-  file <- get_random_pdf()
-  response <- dai_sync(file)
-  text <- text_from_dai_response(response)
-  expect_type(text, "character")
-  unlink(file, force = TRUE)
 })
 
 ## TEXT_FROM_DAI_FILE ----------------------------------------------------------
@@ -76,53 +65,6 @@ test_that("text_from_dai_file() gets text from example json file", {
   expect_type(text, "character")
 })
 
-test_that("text_from_dai_file() gets text from json file from random, real pdf", {
-  skip_if_no_token()
-  skip_on_ci()
-  skip_if_offline()
-
-  # get random file
-  filepath <- get_random_pdf()
-
-  # upload to bucket
-  filename <- basename(filepath)
-  googleCloudStorageR::gcs_upload(file = filepath,
-                                  bucket = Sys.getenv("GCS_DEFAULT_BUCKET"),
-                                  name = filename)
-
-  # process
-  response <- dai_async(filename)
-
-  # wait
-  message("Waiting for DAI to generate json...")
-  processed <- FALSE
-  count <- 0
-  while (count < 100 && isFALSE(processed)){
-    Sys.sleep(2)
-    content <- googleCloudStorageR::gcs_list_objects(bucket = Sys.getenv("GCS_DEFAULT_BUCKET"))
-    search_term <- glue::glue("^{filename}-output")
-    if (any(grepl(search_term, content$name))) {
-      processed <- TRUE
-    }
-    count <- count + 1
-  }
-
-  # get json
-  message("Retrieving json...")
-  full_json_name <- grep(search_term, content$name, value = TRUE)
-  short_json_name <- glue::glue("{stringr::str_sub(filename, end=-5)}.json")
-  json_path <- file.path(tempdir(), short_json_name)
-  googleCloudStorageR::gcs_get_object(full_json_name,
-                                      bucket = Sys.getenv("GCS_DEFAULT_BUCKET"),
-                                      saveToDisk = json_path)
-
-  text <- text_from_dai_file(json_path)
-  expect_type(text, "character")
-
-  # clean
-  unlink(json_path, force = TRUE)
-
-})
 
 ## DRAW_BLOCKS -----------------------------------------------------------------
 
@@ -137,6 +79,7 @@ test_that("draw_blocks() warns of input errors", {
 })
 
 test_that("draw_blocks() produces a correctly named png file", {
+  skip_on_ci()
   skip_if_not_installed("grDevices")
   skip_if_not_installed("magick")
   realjson <- testthat::test_path("examples", "sample_v1.json")
@@ -160,7 +103,7 @@ test_that("draw_blocks() draws actual boxes on the png", {
   skip_if_not_installed("grDevices")
   skip_if_not_installed("magick")
   realjson <- testthat::test_path("examples", "sample_v1.json")
-  draw_blocks(realjson)
+  draw_blocks(realjson, dir = tempdir())
   filepath <- file.path(tempdir(), "page1_blocks.png")
   expect_snapshot_file(filepath, basename(filepath))
   unlink(filepath, force = TRUE)
@@ -202,7 +145,7 @@ test_that("draw_paragraphs() draws actual boxes on the png", {
   skip_if_not_installed("grDevices")
   skip_if_not_installed("magick")
   realjson <- testthat::test_path("examples", "sample_v1.json")
-  draw_paragraphs(realjson)
+  draw_paragraphs(realjson, dir = tempdir())
   filepath <- file.path(tempdir(), "page1_paragraphs.png")
   expect_snapshot_file(filepath, basename(filepath))
   unlink(filepath, force = TRUE)
@@ -244,7 +187,7 @@ test_that("draw_lines() draws actual boxes on the png", {
   skip_if_not_installed("grDevices")
   skip_if_not_installed("magick")
   realjson <- testthat::test_path("examples", "sample_v1.json")
-  draw_lines(realjson)
+  draw_lines(realjson, dir = tempdir())
   filepath <- file.path(tempdir(), "page1_lines.png")
   expect_snapshot_file(filepath, basename(filepath))
   unlink(filepath, force = TRUE)
@@ -286,7 +229,7 @@ test_that("draw_tokens() draws actual boxes on the png", {
   skip_if_not_installed("grDevices")
   skip_if_not_installed("magick")
   realjson <- testthat::test_path("examples", "sample_v1.json")
-  draw_tokens(realjson)
+  draw_tokens(realjson, dir = tempdir())
   filepath <- file.path(tempdir(), "page1_tokens.png")
   expect_snapshot_file(filepath, basename(filepath))
   unlink(filepath, force = TRUE)

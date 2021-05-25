@@ -4,7 +4,7 @@
 \alias{text_from_dai_response}
 \title{Get document text from a Document AI response object}
 \usage{
-text_from_dai_response(object)
+text_from_dai_response(response)
 }
 \arguments{
 \item{object}{a json response object from DAI}
