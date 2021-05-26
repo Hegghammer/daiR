@@ -50,7 +50,7 @@ dai_sync <- function(file,
     }
 
   if (!(is.character(proc_id) && length(proc_id) == 1) || proc_id == "") {
-    stop("Invalid proc_id parameter.")
+    stop("Invalid proc_id.")
     }
 
   skip_rev <- tolower(skip_rev)
