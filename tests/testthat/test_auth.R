@@ -11,9 +11,9 @@ test_that("dai_auth calls out input errors", {
 })
 
 test_that("dai_auth authenticates with correct credentials", {
+  skip_on_ci()
   skip_if_no_token()
   skip_if_offline()
-
   dai_deauth()
   test_auth()
   expect_true(dai_has_token())
@@ -22,13 +22,11 @@ test_that("dai_auth authenticates with correct credentials", {
 test_that("dai_auth sets scopes as instructed", {
   skip_on_ci()
   skip_if_offline()
-
   dai_deauth()
   scope1 <- "https://www.googleapis.com/auth/cloud-platform"
   dai_auth(scopes = scope1)
   token <- dai_token()
   expect_match(token[["params"]][["scope"]], glue::glue("^{scope1}.*"))
-
   dai_deauth()
   scope2 <- "https://www.googleapis.com/auth/books"
   scope3 <- "https://www.googleapis.com/auth/documents"
@@ -39,6 +37,7 @@ test_that("dai_auth sets scopes as instructed", {
 })
 
 test_that("dai_auth does not authenticate with wrong credentials", {
+  skip_on_ci()
   skip_if_no_token()
   skip_if_offline()
   dai_deauth()
@@ -51,7 +50,7 @@ test_that("dai_auth does not authenticate with wrong credentials", {
 ## DAI_TOKEN -------------------------------------------------------------------
 
 test_that("dai_token works", {
-  skip_on
+  skip_on_ci()
   skip_if_no_token()
   skip_if_offline()
   dai_deauth()
