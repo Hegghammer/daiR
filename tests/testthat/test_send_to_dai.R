@@ -14,16 +14,7 @@ test_that("dai_sync calls out input errors", {
   expect_error(dai_sync(file = "foo.pdf"), "Input file not a real pdf. Is the file in your working directory?")
   expect_error(dai_sync(file = "foo.png", proj_id = 012345), "Invalid proj_id.")
   expect_error(dai_sync(file = "foo.png", proj_id = c("Project1", "Project2")), "Invalid proj_id.")
-} )
-
-test_that("dai_sync calls out input errors (CONT)", {
-  skip_if_no_token() # bc from here down it calls get_project_id()
-  skip_if_offline()
-  samplepdf <- testthat::test_path("examples", "sample.pdf")
-  expect_error(dai_sync(file = samplepdf, loc = "USA"),
-               "Invalid location parameter.")
-  expect_error(dai_sync(file = samplepdf, proc_id = ""),
-               "Invalid proc_id parameter.")
+  expect_error(dai_sync(file = "foo.png", proj_id = "abc", loc = "USA"), "Invalid location parameter.")
 } )
 
 test_that("dai_sync informs about unsuccessful requests", {
@@ -67,14 +58,8 @@ test_that("dai_async calls out input errors", {
   expect_error(dai_async(files = "foo.pdf", bucket = 12345), "Invalid bucket parameter.")
   expect_error(dai_async(files = "foo.pdf", proj_id = c("project1", "project2")), "Invalid proj_id parameter.")
   expect_error(dai_async(files = "foo.pdf", proj_id = 12345), "Invalid proj_id parameter.")
-} )
-
-test_that("dai_async calls out input errors (CONT)", {
-  skip_if_no_token() # bc from here down it calls get_project_id()
-  skip_if_offline()
-  expect_error(dai_async(files = "foo.pdf", loc = "USA"), "Invalid loc parameter.")
-  expect_error(dai_async(files = "foo.pdf", bucket = ""), "Invalid bucket parameter.")
-  expect_error(dai_async(files = "foo.pdf", proc_id = ""), "Invalid proc_id parameter.")
+  expect_error(dai_async(files = "foo.pdf", proj_id = "abc", proc_id = "def", skip_rev = TRUE), "Invalid skip_rev parameter.")
+  expect_error(dai_async(files = "foo.pdf", proj_id = "abc", proc_id = "def", loc = "USA"), "Invalid loc parameter.")
 } )
 
 test_that("dai_async informs about unsuccessful requests", {
@@ -187,13 +172,13 @@ test_that("dai_async_tab calls out input errors", {
   expect_error(dai_async_tab(files = "foo.pdf", bucket = 12345), "Invalid bucket parameter.")
   expect_error(dai_async_tab(files = "foo.pdf", proj_id = c("project1", "project2")), "Invalid proj_id parameter.")
   expect_error(dai_async_tab(files = "foo.pdf", proj_id = 12345), "Invalid proj_id parameter.")
-  expect_error(dai_async_tab(files = "foo.pdf", loc = 123), "Invalid loc parameter.")
-  expect_error(dai_async_tab(files = "foo.pdf", loc = c("eu", "us")), "Invalid loc parameter.")
-  expect_error(dai_async_tab(files = "foo.pdf", loc = "usa"), "Invalid loc parameter.")
-  expect_error(dai_async_tab(files = "foo.pdf", pps = "five"), "Invalid pps parameter.")
-  expect_error(dai_async_tab(files = "foo.pdf", pps = 200), "Invalid pps parameter.")
-  expect_error(dai_async_tab(files = "foo.pdf", pps = 0), "Invalid pps parameter.")
-  expect_error(dai_async_tab(files = "foo.pdf", pps = 10-50), "Invalid pps parameter.")
+  expect_error(dai_async_tab(files = "foo.pdf", proj_id = "abc", loc = 123), "Invalid loc parameter.")
+  expect_error(dai_async_tab(files = "foo.pdf", proj_id = "abc", loc = c("eu", "us")), "Invalid loc parameter.")
+  expect_error(dai_async_tab(files = "foo.pdf", proj_id = "abc", loc = "usa"), "Invalid loc parameter.")
+  expect_error(dai_async_tab(files = "foo.pdf", proj_id = "abc", pps = "five"), "Invalid pps parameter.")
+  expect_error(dai_async_tab(files = "foo.pdf", proj_id = "abc", pps = 200), "Invalid pps parameter.")
+  expect_error(dai_async_tab(files = "foo.pdf", proj_id = "abc", pps = 0), "Invalid pps parameter.")
+  expect_error(dai_async_tab(files = "foo.pdf", proj_id = "abc", pps = 10-50), "Invalid pps parameter.")
 } )
 
 test_that("dai_async_tab sends succesful requests with input in different formats", {

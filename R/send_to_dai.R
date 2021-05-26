@@ -196,8 +196,6 @@ dai_async <- function(files,
     stop("Invalid proc_id parameter.")
     }
 
-  skip_rev <- tolower(skip_rev)
-
   if (!(skip_rev %in% c("true", "false") && length(skip_rev) == 1)) {
     stop("Invalid skip_rev parameter.")
     }
