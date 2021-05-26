@@ -11,15 +11,13 @@ test_that("tables_from_dai_response() warns of input errors", {
 })
 
 test_that("tables_from_dai_response() warns of response not containing tables", {
+  skip_on_ci()
   skip_if_no_token()
   skip_if_offline()
-
   wrong <- dai_user()
   expect_error(tables_from_dai_response(wrong), "Object not a positive dai_sync response.")
-
   blank <- dai_sync_tab(testthat::test_path("examples", "blank.tiff"))
   expect_error(tables_from_dai_response(blank), "DAI found no text. Was the page blank?")
-
   no_tables <- dai_sync_tab(testthat::test_path("examples", "sample.pdf"))
   expect_error(tables_from_dai_response(no_tables), "DAI found no tables in the document.")
 })
