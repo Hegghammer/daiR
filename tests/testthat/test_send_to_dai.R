@@ -135,11 +135,12 @@ test_that("dai_sync_tab informs about unsuccessful requests", {
   skip_if_no_token()
   skip_if_offline()
   file <- testthat::test_path("examples", "image.jpg")
-  response <- dai_sync_tab(file, token = NULL)
+  response <- dai_sync_tab(file, proj_id = "abc", token = NULL)
   expect_equal(response[["status_code"]], 403)
 })
 
 test_that("dai_sync_tab sends succesful requests with jpgs and pdfs", {
+  skip_on_ci()
   skip_if_no_token()
   skip_if_offline()
   file1 <- testthat::test_path("examples", "image.jpg")
@@ -182,6 +183,7 @@ test_that("dai_async_tab calls out input errors", {
 } )
 
 test_that("dai_async_tab sends succesful requests with input in different formats", {
+  skip_on_ci()
   skip_if_no_token()
   skip_if_offline()
   response <- dai_async_tab("foo.pdf")
