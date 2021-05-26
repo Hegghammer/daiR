@@ -19,6 +19,7 @@ test_that("dai_sync calls out input errors", {
 } )
 
 test_that("dai_sync informs about unsuccessful requests", {
+  skip_on_ci()
   skip_if_no_token()
   skip_if_offline()
   file <- testthat::test_path("examples", "image.jpg")
@@ -28,6 +29,7 @@ test_that("dai_sync informs about unsuccessful requests", {
 })
 
 test_that("dai_sync gets text from an example file", {
+  skip_on_ci()
   skip_if_no_token()
   skip_if_offline()
 
@@ -64,6 +66,7 @@ test_that("dai_async calls out input errors", {
 } )
 
 test_that("dai_async informs about unsuccessful requests", {
+  skip_on_ci()
   skip_if_no_token()
   skip_if_offline()
   response <- dai_async("foo.pdf", token = NULL)
@@ -72,6 +75,7 @@ test_that("dai_async informs about unsuccessful requests", {
 })
 
 test_that("dai_async sends succesful requests with input in different formats", {
+  skip_on_ci()
   skip_if_no_token()
   skip_if_offline()
   response <- dai_async("foo.pdf")
@@ -101,11 +105,14 @@ test_that("dai_status calls out input errors", {
   expect_error(dai_status(list("a", "list")), "Input is not a valid HTTP response.?")
   wrong <- dai_user()
   expect_error(dai_status(response = wrong), "Input does not contain a processing job id. Make sure it is from dai_async.")
-  resp <- dai_async("foo.pdf")
-  expect_error(dai_status(response = resp, loc = 123), "Invalid location parameter.")
-  expect_error(dai_status(response = resp, loc = "USA"), "Invalid location parameter.")
 } )
 
+test_that("dai_status calls out input errors", {
+skip_on_ci()
+resp <- dai_async("foo.pdf")
+expect_error(dai_status(response = resp, loc = 123), "Invalid location parameter.")
+expect_error(dai_status(response = resp, loc = "USA"), "Invalid location parameter.")
+} )
 ## DAI_SYNC_TAB-----------------------------------------------------------------
 
 test_that("dai_sync_tab calls out input errors", {
