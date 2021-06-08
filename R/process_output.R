@@ -236,7 +236,7 @@ build_block_df <- function(json) {
 #' @param page The number of the page where the split will be made. Defaults to 1.
 #' @param block The number of the block to be split.
 #' @param cut_point A number between 0 and 100, where 0 is the existing left/top limit and 100 is the existing right/bottom limit.
-#' @param direction "V" for vertical split or "H" for horizonal split. Defaults to "V"
+#' @param direction "V" for vertical split or "H" for horizontal split. Defaults to "V".
 #'
 #' @return A dataframe
 #' @export

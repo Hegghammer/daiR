@@ -34,7 +34,7 @@ The biggest hurdle to using any Google API is authentication, which is daunting 
 
 A full explanation of Google API authentication could fill a book, but suffice to say here that there are several different ways to authenticate to GCS from R. In the following I will walk you through one such way, the one I think is the simplest and most robust if you are primarily planning to use Google Storage and Google Document AI and to do so in an interactive setting. 
 
-The procedure outlined below relies on service accounts and json key files. It involves a little bit more hands-on configuration than some of the setup wizards in other Google API wrappers, but the solution is robust and secure. My thinking is: if you are computer-literate enough to consider working programmatically with an API, you are also able to find your way around the Google Cloud Console. But know that there are [several](https://cran.r-project.org/package=gargle/vignettes/get-api-credentials.html) [other](https://cran.r-project.org/package=googleAuthR/vignettes/google-authentication-types.html) authenticatication strategies; which is better depends on where and how you intend to use the R wrapper.
+The procedure outlined below relies on service accounts and json key files. It involves a little bit more hands-on configuration than some of the setup wizards in other Google API wrappers, but the solution is robust and secure. My thinking is: if you are computer-literate enough to consider working programmatically with an API, you are also able to find your way around the Google Cloud Console. But know that there are [several](https://cran.r-project.org/package=gargle/vignettes/get-api-credentials.html) [other](https://cran.r-project.org/package=googleAuthR/vignettes/google-authentication-types.html) authentication strategies; which is better depends on where and how you intend to use the R wrapper.
 
 ### Step 1: Get a Gmail account
 
@@ -72,7 +72,7 @@ All this is necessary for you to be able to access Google Storage and other Goog
 
 ### Step 4: Set up a service account
 
-Now we need to create a service account. Bring out the navigation menu on the left hand side by clicking the little circle with the three horizonal lines in the top left of the screen. Click on "APIs and services." Then click on "credentials" in the left pane. You should see this: 
+Now we need to create a service account. Bring out the navigation menu on the left hand side by clicking the little circle with the three horizontal lines in the top left of the screen. Click on "APIs and services." Then click on "credentials" in the left pane. You should see this: 
 
 ```{r, echo=FALSE, out.width = "50%"}
 include_graphics("storage4.PNG")

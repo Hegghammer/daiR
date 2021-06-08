@@ -49,7 +49,7 @@ To use Document AI, we need to complete a few more steps.
 First, we must activate the API. Go to the [Google Cloud Console](https://console.cloud.google.com/) and open the navigation menu on the left hand side. Click on "APIs and services". Then click on "Enable APIs and Services", type "document ai" in the search field, click on "cloud document ai API", and then "Enable". 
 
 ### Step 2: Create a processor
-Open the navigation menu on the left again. Scroll down, almost to the bottom, till you see "Document AI" (under the group heading "Artifial intelligence"). Click on "Document AI".
+Open the navigation menu on the left again. Scroll down, almost to the bottom, till you see "Document AI" (under the group heading "Artificial intelligence"). Click on "Document AI".
 
 Now click the blue button labelled "Create processor". On the next page, choose the "Document OCR" processor type. A pane should open on your right where you can choose a name for the processor. Call it what you like; the name is mainly for your own reference. Select a location (where you want your files to be processed), then click create.
 
