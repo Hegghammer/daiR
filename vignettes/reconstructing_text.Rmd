@@ -215,7 +215,7 @@ block_df <- build_block_df("peshtigo.json")
 Then we use the function `split_block()` to cut block 12 vertically in half. This function takes as input a block dataframe, the page and number of the block to split, and a parameter `cut_point`, which is a number from 1 to 99 for the relative location of the cut point. `split_block()` returns a new block dataframe that includes the new block and revised coordinates for the old one. 
 
 ```{r, eval=FALSE}
-new_block_df <- split_block(df = block_df, block = 12, cut_point = 50)
+new_block_df <- split_block(block_df, block = 12, cut_point = 50)
 ```
 
 If we had more blocks to split, we could repeat the procedure as many times as necessary. We just have to make sure to feed the latest version of the block dataframe into the `split_block()` function. 
