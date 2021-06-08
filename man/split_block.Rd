@@ -15,7 +15,7 @@ split_block(block_df, page = 1, block, cut_point, direction = "v")
 
 \item{cut_point}{A number between 0 and 100, where 0 is the existing left/top limit and 100 is the existing right/bottom limit.}
 
-\item{direction}{"V" for vertical split or "H" for horizonal split. Defaults to "V"}
+\item{direction}{"V" for vertical split or "H" for horizontal split. Defaults to "V".}
 }
 \value{
 A dataframe

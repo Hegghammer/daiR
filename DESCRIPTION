@@ -11,7 +11,7 @@ Description: An R client for the Google Document AI API with additional tools fo
     file parsing and text reconstruction. Google Document AI is a powerful server-based 
     OCR processor that extracts text and tables from images and pdf files with high 
     accuracy. daiR gives R users programmatic access to this processor and adds several 
-    tools to handle and visualize the json output from Document AI. See the daiR 
+    tools to handle and visualize the JSON output from Document AI. See the daiR 
     website for more information and examples.
 Depends: R (>= 3.1.0)
 License: MIT + file LICENSE
@@ -23,7 +23,9 @@ Imports:
     base64enc,
     curl,
     fs,
+    gargle,
     glue,
+    googleCloudStorageR,
     grDevices,
     httr,
     jsonlite,
@@ -34,8 +36,6 @@ Imports:
 Suggests: 
     covr,
     dplyr,
-    gargle,
-    googleCloudStorageR,
     knitr,
     ngram,
     qpdf,
