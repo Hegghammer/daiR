@@ -1,5 +1,5 @@
 Package: daiR
-Title: An R Package for Google Document AI
+Title: An R Package For Google Document AI
 Version: 0.7.0
 Authors@R: 
     person(given = "Thomas",
@@ -7,16 +7,44 @@ Authors@R:
            role = c("aut", "cre"),
            email = "hegghammer@gmail.com",
            comment = c(ORCID = "0000-0001-6253-1518"))
-Description: Google Document AI is a powerful server-based OCR processor. This package provides a wrapper for the Document AI API and additional tools for output file parsing and text reconstruction.
+Description: An R client for the Google Document AI API with additional tools for output 
+    file parsing and text reconstruction. Google Document AI is a powerful server-based 
+    OCR processor that extracts text and tables from images and pdf files with high 
+    accuracy. daiR gives R users programmatic access to this processor and adds several 
+    tools to handle and visualize the json output from Document AI. See the daiR 
+    website for more information and examples.
+Depends: R (>= 3.1.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1.9000
-Imports: httr, glue, jsonlite, magick, stringr, tabulizer, grDevices, gargle, usethis, googleCloudStorageR, utils, fs, purrr, dplyr, base64enc, pdftools, curl
-Suggests: knitr, rmarkdown, qpdf, testthat (>= 3.0.0), internetarchive, covr, ngram, sodium
-Remotes: ropensci/internetarchive
+RoxygenNote: 7.1.1
+Imports: 
+    base64enc,
+    curl,
+    fs,
+    glue,
+    grDevices,
+    httr,
+    jsonlite,
+    magick,
+    pdftools,
+    purrr,
+    stringr
+Suggests: 
+    covr,
+    dplyr,
+    gargle,
+    googleCloudStorageR,
+    knitr,
+    ngram,
+    qpdf,
+    rmarkdown,
+    sodium,
+    testthat (>= 3.0.0),
+    usethis,
+    utils
 VignetteBuilder: knitr
-URL: https://github.com/Hegghammer/daiR
+URL: https://github.com/Hegghammer/daiR, https://dair.info
 BugReports: https://github.com/Hegghammer/daiR/issues
 Config/testthat/edition: 3

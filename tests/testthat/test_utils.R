@@ -19,7 +19,6 @@ test_that("image_to_pdf() returns a pdf file", {
 } )
 
 test_that("image_to_pdf() handles different formats and multiple files", {
-
   output <- file.path(tempdir(), "output.pdf")
 
   # create function to check that a file renders
@@ -70,6 +69,7 @@ test_that("create_folder() warns of input errors", {
 } )
 
 test_that("create_folder() works", {
+  skip_on_cran()
   skip_on_ci()
   skip_if_offline()
 

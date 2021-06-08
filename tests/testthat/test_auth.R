@@ -11,6 +11,7 @@ test_that("dai_auth calls out input errors", {
 })
 
 test_that("dai_auth authenticates with correct credentials", {
+  skip_on_cran()
   skip_on_ci()
   skip_if_no_token()
   skip_if_offline()
@@ -20,6 +21,7 @@ test_that("dai_auth authenticates with correct credentials", {
 })
 
 test_that("dai_auth sets scopes as instructed", {
+  skip_on_cran()
   skip_on_ci()
   skip_if_offline()
   dai_deauth()
@@ -37,6 +39,7 @@ test_that("dai_auth sets scopes as instructed", {
 })
 
 test_that("dai_auth does not authenticate with wrong credentials", {
+  skip_on_cran()
   skip_on_ci()
   skip_if_no_token()
   skip_if_offline()
@@ -50,6 +53,7 @@ test_that("dai_auth does not authenticate with wrong credentials", {
 ## DAI_TOKEN -------------------------------------------------------------------
 
 test_that("dai_token works", {
+  skip_on_cran()
   skip_on_ci()
   skip_if_no_token()
   skip_if_offline()
@@ -68,6 +72,7 @@ test_that("dai_token works", {
 ## DAI_HAS_TOKEN ---------------------------------------------------------------
 
 test_that("dai_has_token works", {
+  skip_on_cran()
   skip_on_ci()
   skip_if_no_token()
   skip_if_offline()
@@ -80,6 +85,7 @@ test_that("dai_has_token works", {
 ## DAI_USER --------------------------------------------------------------------
 
 test_that("dai_user works", {
+  skip_on_cran()
   skip_on_ci()
   skip_if_no_token()
   skip_if_offline()
@@ -103,6 +109,7 @@ test_that("get_project_id calls out input errors", {
 ## DAI_DEAUTH ------------------------------------------------------------------
 
 test_that("dai_deauth works", {
+  skip_on_cran()
   skip_on_ci()
   skip_if_no_token()
   skip_if_offline()
@@ -110,5 +117,3 @@ test_that("dai_deauth works", {
   expect_false(dai_has_token())
   test_auth()
 })
-
-

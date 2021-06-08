@@ -12,6 +12,7 @@ test_that("text_from_dai_response() warns of input errors", {
 })
 
 test_that("text_from_dai_response() warns of response not containing text", {
+  skip_on_cran()
   skip_on_ci()
   skip_if_no_token()
   skip_if_offline()
@@ -24,6 +25,7 @@ test_that("text_from_dai_response() warns of response not containing text", {
 })
 
 test_that("text_from_dai_response() gets text from DAI response from example file", {
+  skip_on_cran()
   skip_on_ci()
   skip_if_no_token()
   skip_if_offline()
@@ -63,7 +65,6 @@ test_that("text_from_dai_file() gets text from example json file", {
   expect_type(text, "character")
 })
 
-
 ## DRAW_BLOCKS -----------------------------------------------------------------
 
 test_that("draw_blocks() warns of input errors", {
@@ -77,6 +78,7 @@ test_that("draw_blocks() warns of input errors", {
 })
 
 test_that("draw_blocks() produces a correctly named png file", {
+  skip_on_cran()
   skip_on_ci()
   skip_if_not_installed("grDevices")
   skip_if_not_installed("magick")
@@ -109,6 +111,7 @@ test_that("draw_paragraphs() warns of input errors", {
 })
 
 test_that("draw_paragraphs() produces a correctly named new png file", {
+  skip_on_cran()
   skip_if_not_installed("grDevices")
   skip_if_not_installed("magick")
   realjson <- testthat::test_path("examples", "sample_v1.json")
@@ -140,6 +143,7 @@ test_that("draw_lines() warns of input errors", {
 })
 
 test_that("draw_lines() produces a correctly named new png file", {
+  skip_on_cran()
   skip_if_not_installed("grDevices")
   skip_if_not_installed("magick")
   realjson <- testthat::test_path("examples", "sample_v1.json")
@@ -158,8 +162,6 @@ test_that("draw_lines() produces a correctly named new png file", {
   unlink(expected_filepaths, force = TRUE)
 })
 
-
-
 ## DRAW_TOKENS -----------------------------------------------------------------
 
 test_that("draw_tokens() warns of input errors", {
@@ -173,6 +175,7 @@ test_that("draw_tokens() warns of input errors", {
 })
 
 test_that("draw_tokens() produces a correctly named new png file", {
+  skip_on_cran()
   skip_if_not_installed("grDevices")
   skip_if_not_installed("magick")
   realjson <- testthat::test_path("examples", "sample_v1.json")
@@ -190,4 +193,3 @@ test_that("draw_tokens() produces a correctly named new png file", {
   }
   unlink(expected_filepaths, force = TRUE)
 })
-

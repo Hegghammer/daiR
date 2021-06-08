@@ -1,10 +1,13 @@
+^\.git$
+^\.github$
+^\.gitignore$
+^\.Rhistory$
+^codecov\.yml$
 ^daiR\.Rproj$
 ^\.Rproj\.user$
 ^\.httr-oauth$
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
-^index.md$
-^cran-comments.md$
-^\.github$
-^codecov\.yml$
+^index\.md$
+^cran-comments\.md$
