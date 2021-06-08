@@ -1,6 +1,6 @@
 Package: daiR
 Title: An R Package for Google Document AI
-Version: 0.7.0
+Version: 0.8.0
 Authors@R: 
     person(given = "Thomas",
            family = "Hegghammer",

@@ -11,6 +11,8 @@ test_that("image_to_pdf() warns of input errors", {
 } )
 
 test_that("image_to_pdf() returns a pdf file", {
+  skip_on_cran()
+  skip_on_ci()
   output <- file.path(tempdir(), "output.pdf")
   image <- testthat::test_path("examples", "image.jpg")
   image_to_pdf(image, output)
@@ -19,6 +21,8 @@ test_that("image_to_pdf() returns a pdf file", {
 } )
 
 test_that("image_to_pdf() handles different formats and multiple files", {
+  skip_on_cran()
+  skip_on_ci()
   output <- file.path(tempdir(), "output.pdf")
 
   # create function to check that a file renders
@@ -141,11 +145,15 @@ test_that("is_json() recognizes jsons", {
 ## PDF_TO_BINBASE --------------------------------------------------------------
 
 test_that("pdf_to_binbase() rejects non-pdfs", {
+  skip_on_cran()
+  skip_on_ci()
   image <- testthat::test_path("examples", "image.jpg")
   expect_error(pdf_to_binbase(image), "Input file not a pdf.")
 })
 
 test_that("pdf_to_binbase() produces a base64 string", {
+  skip_on_cran()
+  skip_on_ci()
   image <- testthat::test_path("examples", "image.jpg")
   output <- file.path(tempdir(), "output.pdf")
   image_to_pdf(image, output)
@@ -158,6 +166,8 @@ test_that("pdf_to_binbase() produces a base64 string", {
 ## IMG_TO_BINBASE --------------------------------------------------------------
 
 test_that("img_to_binbase() rejects pdfs", {
+  skip_on_cran()
+  skip_on_ci()
   image <- testthat::test_path("examples", "image.jpg")
   output <- file.path(tempdir(), "output.pdf")
   image_to_pdf(image, output)
@@ -166,6 +176,8 @@ test_that("img_to_binbase() rejects pdfs", {
 })
 
 test_that("img_to_binbase() produces a base64 string", {
+  skip_on_cran()
+  skip_on_ci()
   image <- testthat::test_path("examples", "image.jpg")
   base <- img_to_binbase(image)
   expect_type(base, "character")

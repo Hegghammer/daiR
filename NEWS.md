@@ -1,3 +1,7 @@
+# daiR 0.8.0 
+
+- Initial CRAN version.
+
 # daiR 0.7.0
 
 - Revised draw_blocks(), draw_paragraphs(), draw_lines(), and draw_tokens() functions. These functions no longer require supplying a pdf file, as they get the images from a base64-encoded string in the json file. 

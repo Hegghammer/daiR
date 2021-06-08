@@ -2,6 +2,8 @@
 ## DAI_SYNC --------------------------------------------------------------------
 
 test_that("dai_sync calls out input errors", {
+  skip_on_cran()
+  skip_on_ci()
   expect_error(dai_sync(file = mtcars), "Invalid file input.")
   expect_error(dai_sync(file = as.matrix(mtcars)), "Invalid file input.")
   expect_error(dai_sync(file = TRUE), "Invalid file input.")
@@ -52,6 +54,8 @@ test_that("dai_sync gets text from an example file", {
 ## DAI_ASYNC --------------------------------------------------------------------
 
 test_that("dai_async calls out input errors", {
+  skip_on_cran()
+  skip_on_ci()
   expect_error(dai_async(files = mtcars), "Invalid files parameter.")
   expect_error(dai_async(files = as.matrix(mtcars)), "Invalid files parameter.")
   expect_error(dai_async(files = TRUE), "Invalid files parameter.")
@@ -123,6 +127,8 @@ test_that("dai_status calls out input errors", {
 ## DAI_SYNC_TAB-----------------------------------------------------------------
 
 test_that("dai_sync_tab calls out input errors", {
+  skip_on_cran()
+  skip_on_ci()
   expect_error(dai_sync_tab(file = mtcars), "Invalid file input.")
   expect_error(dai_sync_tab(file = as.matrix(mtcars)), "Invalid file input.")
   expect_error(dai_sync_tab(file = TRUE), "Invalid file input.")
@@ -170,6 +176,8 @@ test_that("dai_sync_tab sends succesful requests with jpgs and pdfs", {
 ## DAI_ASYNC_TAB----------------------------------------------------------------
 
 test_that("dai_async_tab calls out input errors", {
+  skip_on_cran()
+  skip_on_ci()
   expect_error(dai_async_tab(files = mtcars), "Invalid files parameter.")
   expect_error(dai_async_tab(files = as.matrix(mtcars)), "Invalid files parameter.")
   expect_error(dai_async_tab(files = TRUE), "Invalid files parameter.")
