@@ -101,6 +101,8 @@ test_that("dai_async sends succesful requests with input in different formats", 
 ## DAI_STATUS-------------------------------------------------------------------
 
 test_that("dai_status calls out input errors", {
+  skip_on_cran()
+  skip_on_ci()
   expect_error(dai_status(123), "Input is not a valid HTTP response.")
   expect_error(dai_status(mtcars), "Input is not a valid HTTP response.")
   expect_error(dai_status(as.matrix(mtcars)), "Input is not a valid HTTP response.")
