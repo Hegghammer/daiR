@@ -59,7 +59,9 @@ You should now see a page listing the processor's Name, ID, Status and other att
 
 Open your `.Renviron` file by calling `usethis::edit_r_environ()`. Add `DAI_PROCESSOR_ID="<your processor id>"` on a separate line. Save `.Renviron` and restart RStudio.   
 
-That's it. If these things are in place, you will be auto-authenticated and ready to go when you attach (load) the `daiR` package.^[After attaching, you can check that the token was obtained with the function `dai_has_token()` or by viewing the `.auth` object directly. If credentials are missing, it's likely because `daiR` could not find the `GCS_AUTH_FILE` variable in your `.Renviron` file. Return to the vignette on "Setting up Google Storage" and make sure steps 5 and 6 are covered. Alternatively, you can, if you prefer, obtain an access token by another method and feed it into the token parameter of the `dai_sync()` and `dai_async()` functions.]
+That's it. If these things are in place, you can start processing right after loading the package.
+
+**A note on access tokens**: Unlike some other GCS wrappers, daiR does not authenticate on startup and store access tokens in the environment. Instead it generates tokens on a per-call basis. If you prefer to generate one token per session, you can use `dai_token()` to store your token in an object and pass that object directly into the API call functions using the latter's `token =` parameter. This also means you can use auth functions from pretty much any other GCS wrapper to generate your token.
 
 ```{r, eval=FALSE}
 library(daiR)

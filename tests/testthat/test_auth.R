@@ -13,7 +13,7 @@ test_that("dai_auth authenticates with correct credentials", {
   skip_on_cran()
   skip_on_ci()
   skip_if_offline()
-  expect_message(dai_auth(), "Valid access token available.")
+  expect_message(dai_auth(), "Access token available.")
 })
 
 
