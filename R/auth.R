@@ -2,8 +2,8 @@
 #'
 #' @description Checks whether the user can obtain an access token for
 #' Google Cloud Services (GCS) using a service account key stored on file.
-#' @param scopes GCS auth scopes for the token
 #' @param path path to a JSON file with a service account key
+#' @param scopes GCS auth scopes for the token
 #' @return no return value, called for side effects
 #' @details daiR takes a very parsimonious approach to authentication,
 #' with the native auth functions only supporting service account files.
@@ -20,24 +20,16 @@
 dai_auth <- function(path = Sys.getenv("GCS_AUTH_FILE"),
                      scopes = "https://www.googleapis.com/auth/cloud-platform") {
 
-  if (!(length(scopes) >= 1 && is.character(scopes))) {
-    stop("Error: invalid scopes parameter.")
+  if (!is_json(path)) {
+    token <- NULL
+  } else {
+    token <- gargle::credentials_service_account(scopes = scopes, path = path)
   }
-
-  if (!(all(grepl("^https://www.googleapis.com/auth/", scopes)))) {
-    stop("Error: invalid scope URLs.")
-  }
-
-  if (!(length(path) == 1 && is.character(path)) || path == "") {
-    stop("Error: invalid path parameter.")
-  }
-
-  token <- gargle::credentials_service_account(scopes = scopes, path = path)
 
   if (inherits(token, "Token2.0")) {
-    message("Valid token available.")
+    message("Access token available.")
   } else {
-    message("Token not available. Have you provided a valid service account key file?")
+    message("Access token not available. Have you provided a valid service account key file?")
   }
 }
 
@@ -46,7 +38,7 @@ dai_auth <- function(path = Sys.getenv("GCS_AUTH_FILE"),
 #' @description Produces an access token for Google Cloud Services (GCS)
 #' @param scopes GCS auth scopes for the token
 #' @param path path to a JSON file with a service account key
-#' @return a GCS access token object.
+#' @return a GCS access token object (if credentials are valid) or a message (if not).
 #' @export
 #'
 #' @examples
@@ -57,21 +49,17 @@ dai_auth <- function(path = Sys.getenv("GCS_AUTH_FILE"),
 dai_token <- function(path = Sys.getenv("GCS_AUTH_FILE"),
                       scopes = "https://www.googleapis.com/auth/cloud-platform") {
 
-  if (!(length(scopes) >= 1 && is.character(scopes))) {
-    stop("Error: invalid scopes parameter.")
+  if (!is_json(path)) {
+    token <- NULL
+  } else {
+    token <- gargle::credentials_service_account(scopes = scopes, path = path)
   }
 
-  if (!(all(grepl("^https://www.googleapis.com/auth/", scopes)))) {
-    stop("Error: invalid scope URLs.")
+  if (!inherits(token, "Token2.0")) {
+    message("Invalid GCS credentials. No token produced.")
+  } else {
+    return(token)
   }
-
-  if (!(length(path) == 1 && is.character(path)) || path == "") {
-    stop("Error: invalid path parameter.")
-  }
-
-  token <- gargle::credentials_service_account(scopes = scopes, path = path)
-
-  return(token)
 }
 
 #' Get user information

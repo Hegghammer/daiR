@@ -15,7 +15,7 @@ dai_token(
 \item{scopes}{GCS auth scopes for the token}
 }
 \value{
-a GCS access token object.
+a GCS access token object (if credentials are valid) or a message (if not).
 }
 \description{
 Produces an access token for Google Cloud Services (GCS)
