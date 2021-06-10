@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get service account token — dai_auth • daiR</title>
+<title>Check authentication — dai_auth • daiR</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -48,8 +48,9 @@
   <link href="../extra.css" rel="stylesheet">
   
 
-<meta property="og:title" content="Get service account token — dai_auth" />
-<meta property="og:description" content="Get service account token" />
+<meta property="og:title" content="Check authentication — dai_auth" />
+<meta property="og:description" content="Checks whether the user can obtain an access token for
+Google Cloud Services (GCS) using a service account key stored on file." />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -92,7 +93,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.0</span>
       </span>
     </div>
 
@@ -162,33 +163,44 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get service account token</h1>
+    <h1>Check authentication</h1>
     <small class="dont-index">Source: <a href='https://github.com/Hegghammer/daiR/blob/master/R/auth.R'><code>R/auth.R</code></a></small>
     <div class="hidden name"><code>dai_auth.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Get service account token</p>
+    <p>Checks whether the user can obtain an access token for
+Google Cloud Services (GCS) using a service account key stored on file.</p>
     </div>
 
     <pre class="usage"><span class='fu'>dai_auth</span><span class='op'>(</span>
-  scopes <span class='op'>=</span> <span class='st'>"https://www.googleapis.com/auth/cloud-platform"</span>,
-  path <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.getenv.html'>Sys.getenv</a></span><span class='op'>(</span><span class='st'>"GCS_AUTH_FILE"</span><span class='op'>)</span>
+  path <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.getenv.html'>Sys.getenv</a></span><span class='op'>(</span><span class='st'>"GCS_AUTH_FILE"</span><span class='op'>)</span>,
+  scopes <span class='op'>=</span> <span class='st'>"https://www.googleapis.com/auth/cloud-platform"</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>scopes</th>
-      <td><p>GCS auth scopes for the token.</p></td>
+      <th>path</th>
+      <td><p>path to a JSON file with a service account key</p></td>
     </tr>
     <tr>
-      <th>path</th>
-      <td><p>path to a json file with a service account key.</p></td>
+      <th>scopes</th>
+      <td><p>GCS auth scopes for the token</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>no return value, called for side effects</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>daiR takes a very parsimonious approach to authentication,
+with the native auth functions only supporting service account files.
+Those who prefer other authentication methods can pass those directly
+to the <code>token</code> parameter in the various functions that call the
+Document AI API.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>

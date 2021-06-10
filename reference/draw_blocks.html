@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Inspect block bounding boxes in Google Document AI json output — draw_blocks • daiR</title>
+<title>Inspect block bounding boxes — draw_blocks • daiR</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -48,10 +48,11 @@
   <link href="../extra.css" rel="stylesheet">
   
 
-<meta property="og:title" content="Inspect block bounding boxes in Google Document AI json output — draw_blocks" />
-<meta property="og:description" content="This function extracts the block bounding box coordinates
-from the json file returned by Google Document AI
-and plots them on an image of the original page." />
+<meta property="og:title" content="Inspect block bounding boxes — draw_blocks" />
+<meta property="og:description" content="Plots the block bounding boxes identified by
+Document AI (DAI) onto images of the submitted document.
+Generates an annotated .png file for each page in the original
+document." />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -94,7 +95,7 @@ and plots them on an image of the original page." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.0</span>
       </span>
     </div>
 
@@ -164,15 +165,16 @@ and plots them on an image of the original page." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Inspect block bounding boxes in Google Document AI json output</h1>
+    <h1>Inspect block bounding boxes</h1>
     <small class="dont-index">Source: <a href='https://github.com/Hegghammer/daiR/blob/master/R/inspect_output.R'><code>R/inspect_output.R</code></a></small>
     <div class="hidden name"><code>draw_blocks.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function extracts the block bounding box coordinates
-from the json file returned by Google Document AI
-and plots them on an image of the original page.</p>
+    <p>Plots the block bounding boxes identified by
+Document AI (DAI) onto images of the submitted document.
+Generates an annotated .png file for each page in the original
+document.</p>
     </div>
 
     <pre class="usage"><span class='fu'>draw_blocks</span><span class='op'>(</span><span class='va'>json</span>, dir <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/getwd.html'>getwd</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre>
@@ -182,23 +184,24 @@ and plots them on an image of the original page.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>json</th>
-      <td><p>filepath of the json output file.</p></td>
+      <td><p>filepath of a JSON file obtained using <code><a href='dai_async.html'>dai_async()</a></code></p></td>
     </tr>
     <tr>
       <th>dir</th>
-      <td><p>path to the desired output directory.</p></td>
+      <td><p>path to the desired output directory</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>no return value, called for side effects</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Not vectorized, but documents can be multi-page.
-Generates an annotated .png file for each page in the original
-document.</p>
+    <p>Not vectorized, but documents can be multi-page.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='fu'>draw_blocks</span><span class='op'>(</span><span class='st'>"pdf_output.json"</span><span class='op'>)</span>
+<span class='fu'>draw_blocks</span><span class='op'>(</span><span class='st'>"pdf_output.json"</span>, dir <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 <span class='op'>}</span>
 </div></pre>
   </div>

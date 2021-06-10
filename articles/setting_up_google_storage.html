@@ -45,7 +45,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.0</span>
       </span>
     </div>
 
@@ -221,8 +221,9 @@
 <a href="#uploading-files" class="anchor"></a>Uploading files</h3>
 <p>This we do with <code><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload()</a></code>. If the file is in your working directory, just write the filename; otherwise provide the full file path. If you want, you can store the file under another name in Google Storage with the <code>name</code> parameter. Otherwise, just leave the parameter out.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html">write.csv</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="st">"mtcars.csv"</span><span class="op">)</span>
-<span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload</a></span><span class="op">(</span><span class="st">"mtcars.csv"</span>, name <span class="op">=</span> <span class="st">"car.csv"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">sample_csv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"mtcars.csv"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/write.table.html">write.csv</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="va">sample_csv</span><span class="op">)</span>
+<span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload</a></span><span class="op">(</span><span class="va">sample_csv</span>, name <span class="op">=</span> <span class="st">"mtcars.csv"</span><span class="op">)</span></code></pre></div>
 <p><code>resp</code> here is just a container for the response that the API returns, to prevent it from printing in the console.</p>
 <p>Now let’s check the contents:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -232,8 +233,9 @@
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://purrr.tidyverse.org">purrr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://fs.r-lib.org">fs</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/write.table.html">write.csv</a></span><span class="op">(</span><span class="va">iris</span>, <span class="st">"iris.csv"</span><span class="op">)</span>
-<span class="va">my_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://fs.r-lib.org/reference/dir_ls.html">dir_ls</a></span><span class="op">(</span>glob <span class="op">=</span> <span class="st">"*.csv"</span><span class="op">)</span>
+<span class="va">sample_csv2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"iris.csv"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/write.table.html">write.csv</a></span><span class="op">(</span><span class="va">iris</span>, <span class="va">sample_csv2</span><span class="op">)</span>
+<span class="va">my_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://fs.r-lib.org/reference/dir_ls.html">dir_ls</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span>, glob <span class="op">=</span> <span class="st">"*.csv"</span><span class="op">)</span>
 <span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">my_files</span>, <span class="op">~</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload</a></span><span class="op">(</span><span class="va">.x</span>, name <span class="op">=</span> <span class="va">.x</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>Let’s check the contents again:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
@@ -248,18 +250,21 @@
 <a href="#downloading-files" class="anchor"></a>Downloading files</h3>
 <p>Downloads are performed with gcs_get_object(). Here, too, you can save it under a different name, but this time the parameter is <code>saveToDisk</code>.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html">gcs_get_object</a></span><span class="op">(</span><span class="st">"car.csv"</span>, saveToDisk <span class="op">=</span> <span class="st">"mtcars_duplicate.csv"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">dest_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"mtcars_duplicate.csv"</span><span class="op">)</span>
+<span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html">gcs_get_object</a></span><span class="op">(</span><span class="st">"mtcars.csv"</span>, saveToDisk <span class="op">=</span> <span class="va">dest_path</span><span class="op">)</span></code></pre></div>
 <p>To download multiple files we need to loop or map. Let’s say we wanted to download all the files in the bucket:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">contents</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span>
-<span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">contents</span><span class="op">$</span><span class="va">name</span>, <span class="op">~</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html">gcs_get_object</a></span><span class="op">(</span><span class="va">.x</span>, saveToDisk <span class="op">=</span> <span class="va">.x</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">contents</span><span class="op">$</span><span class="va">name</span>, <span class="op">~</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html">gcs_get_object</a></span><span class="op">(</span><span class="va">.x</span>, 
+                                            saveToDisk <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">.x</span><span class="op">)</span>, 
+                                            overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="deleting" class="section level3">
 <h3 class="hasAnchor">
 <a href="#deleting" class="anchor"></a>Deleting</h3>
 <p>We can delete files in the bucket with <code><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_delete_object.html">gcs_delete_object()</a></code>:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_delete_object.html">gcs_delete_object</a></span><span class="op">(</span><span class="st">"car.csv"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_delete_object.html">gcs_delete_object</a></span><span class="op">(</span><span class="st">"mtcars.csv"</span><span class="op">)</span></code></pre></div>
 <p>To delete several, we again need to loop or map. Let’s try to delete everything in the bucket:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">contents</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span>

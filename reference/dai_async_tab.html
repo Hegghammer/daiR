@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>OCR documents asynchronously and extract table data — dai_async_tab • daiR</title>
+<title>OCR asynchronously and get table data — dai_async_tab • daiR</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -48,8 +48,12 @@
   <link href="../extra.css" rel="stylesheet">
   
 
-<meta property="og:title" content="OCR documents asynchronously and extract table data — dai_async_tab" />
-<meta property="og:description" content="This function sends files from your Google Storage bucket to Google Document AI v1beta2 for asynchronous (offline) processing. The output is delivered to your bucket as json files. This function accesses a different endpoint than the main dai_async() function, one that has less language support, but extracts table data (which dai_async() currently does not). This function will be deprecated if/when the v1 endpoint incorporates table extraction." />
+<meta property="og:title" content="OCR asynchronously and get table data — dai_async_tab" />
+<meta property="og:description" content="Sends files from a Google Cloud Services (GCS) Storage
+bucket to the GCS Document AI v1beta2 API for asynchronous (offline)
+processing. The output is delivered to the same bucket as JSON files
+containing the OCRed text and additional information, including
+table-related data." />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -92,7 +96,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.0</span>
       </span>
     </div>
 
@@ -162,13 +166,17 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>OCR documents asynchronously and extract table data</h1>
+    <h1>OCR asynchronously and get table data</h1>
     <small class="dont-index">Source: <a href='https://github.com/Hegghammer/daiR/blob/master/R/send_to_dai.R'><code>R/send_to_dai.R</code></a></small>
     <div class="hidden name"><code>dai_async_tab.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function sends files from your Google Storage bucket to Google Document AI v1beta2 for asynchronous (offline) processing. The output is delivered to your bucket as json files. This function accesses a different endpoint than the main <code><a href='dai_async.html'>dai_async()</a></code> function, one that has less language support, but extracts table data (which <code><a href='dai_async.html'>dai_async()</a></code> currently does not). This function will be deprecated if/when the v1 endpoint incorporates table extraction.</p>
+    <p>Sends files from a Google Cloud Services (GCS) Storage
+bucket to the GCS Document AI v1beta2 API for asynchronous (offline)
+processing. The output is delivered to the same bucket as JSON files
+containing the OCRed text and additional information, including
+table-related data.</p>
     </div>
 
     <pre class="usage"><span class='fu'>dai_async_tab</span><span class='op'>(</span>
@@ -187,60 +195,76 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>files</th>
-      <td><p>A vector or list of pdf filepaths in a Google Cloud Storage bucket. Filepaths must include all parent bucket folder(s) except the bucket name.</p></td>
+      <td><p>A vector or list of pdf filepaths in a GCS Storage bucket.
+Filepaths must include all parent bucket folder(s) except the bucket name.</p></td>
     </tr>
     <tr>
       <th>filetype</th>
-      <td><p>Either "pdf", "gif", or "tiff". If <code>files</code> is a vector, all elements must be of the same type.</p></td>
+      <td><p>Either "pdf", "gif", or "tiff". If <code>files</code> is a
+vector, all elements must be of the same type.</p></td>
     </tr>
     <tr>
       <th>dest_folder</th>
-      <td><p>The name of the bucket subfolder where you want the json output.</p></td>
+      <td><p>The name of the bucket subfolder where you want the
+JSON output.</p></td>
     </tr>
     <tr>
       <th>bucket</th>
-      <td><p>The name of your bucket. Not necessary if you have set a default bucket with googleCloudStorageR::gcs_global_bucket().</p></td>
+      <td><p>The name of the GCS Storage bucket. Not necessary if
+you have set a default bucket as a .Renviron variable named
+<code>GCS_DEFAULT_BUCKET</code> as described in the package vignette</p></td>
     </tr>
     <tr>
       <th>proj_id</th>
-      <td><p>Your Google Cloud Services project id.</p></td>
+      <td><p>a GCS project id</p></td>
     </tr>
     <tr>
       <th>loc</th>
-      <td><p>A two-letter region code ("eu" or "us"). Defaults to "eu".</p></td>
+      <td><p>a two-letter region code ("eu" or "us")</p></td>
     </tr>
     <tr>
       <th>token</th>
-      <td><p>An authentication token generated by <code><a href='dai_auth.html'>dai_auth()</a></code> or another auth function.</p></td>
+      <td><p>an access token generated by <code><a href='dai_auth.html'>dai_auth()</a></code> or another
+auth function.</p></td>
     </tr>
     <tr>
       <th>pps</th>
-      <td><p>An integer from 1 to 100 for the desired number of pages per shard in the JSON output. Defaults to 100.</p></td>
+      <td><p>an integer from 1 to 100 for the desired number of pages per
+shard in the JSON output</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list of HTTP responses.</p>
+    <p>A list of HTTP responses</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Requires a Google Cloud access token (<code>google_token</code>) and a certain amount of configuration in RStudio; see vignettes for details. For long pdf documents, the json output is divided into separate files (shards) of 20 pages each. Maximum pdf document length is 2000 pages. The maximum number of pages in active processing is 10,000. The function waits 10 seconds between each document submission, so I recommend using RStudio's "Jobs" functionality if you are processing a lot of files.</p>
-<p>NOTE: The function in its current form is a placeholder for a future function that allows for real batch processing (as opposed to an iterated single submission).</p>
+    <p>This function accesses a different API endpoint than the main
+<code><a href='dai_async.html'>dai_async()</a></code> function, one that has less language support, but
+returns table data in addition to parsed text (which <code><a href='dai_async.html'>dai_async()</a></code>
+currently does not). This function may be deprecated if/when the v1
+API endpoint incorporates table extraction. Use of this service
+requires a GCS access token and some configuration of the .Renviron file;
+see vignettes for details. Note that this API endpoint does not require
+a Document AI processor id. Maximum pdf document length is 2,000 pages,
+and the maximum number of pages in active processing is 10,000. Also note
+that this function does not provide 'true' batch processing; instead it
+successively submits single requests at 10-second intervals.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 <span class='co'># with daiR configured on your system, several parameters are automatically provided,</span>
 <span class='co'># and you can pass simple calls, such as:</span>
-<span class='fu'><a href='dai_async.html'>dai_async</a></span><span class='op'>(</span><span class='st'>"my_document.pdf"</span><span class='op'>)</span>
+<span class='fu'>dai_async_tab</span><span class='op'>(</span><span class='st'>"my_document.pdf"</span><span class='op'>)</span>
 
 <span class='co'># NB: Include all parent bucket folders (but not the bucket name) in the filepath:</span>
-<span class='fu'><a href='dai_async.html'>dai_async</a></span><span class='op'>(</span><span class='st'>"for_processing/pdfs/my_document.pdf"</span><span class='op'>)</span>
+<span class='fu'>dai_async_tab</span><span class='op'>(</span><span class='st'>"for_processing/pdfs/my_document.pdf"</span><span class='op'>)</span>
 
 <span class='co'># Bulk process by passing a vector of filepaths in the files argument:</span>
-<span class='fu'><a href='dai_async.html'>dai_async</a></span><span class='op'>(</span><span class='va'>my_files</span><span class='op'>)</span>
+<span class='fu'>dai_async_tab</span><span class='op'>(</span><span class='va'>my_files</span><span class='op'>)</span>
 
 <span class='co'># Specify a bucket subfolder for the json output:</span>
-<span class='fu'><a href='dai_async.html'>dai_async</a></span><span class='op'>(</span><span class='va'>my_files</span>, dest_folder <span class='op'>=</span> <span class='st'>"processed"</span><span class='op'>)</span>
+<span class='fu'>dai_async_tab</span><span class='op'>(</span><span class='va'>my_files</span>, dest_folder <span class='op'>=</span> <span class='st'>"processed"</span><span class='op'>)</span>
 <span class='op'>}</span>
 </div></pre>
   </div>

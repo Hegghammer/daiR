@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get tables from a Document AI json file — tables_from_dai_file • daiR</title>
+<title>Get tables from output file — tables_from_dai_file • daiR</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -48,8 +48,9 @@
   <link href="../extra.css" rel="stylesheet">
   
 
-<meta property="og:title" content="Get tables from a Document AI json file — tables_from_dai_file" />
-<meta property="og:description" content="Get tables from a Document AI json file" />
+<meta property="og:title" content="Get tables from output file — tables_from_dai_file" />
+<meta property="og:description" content="Extracts all the tables that Document AI (DAI)
+identified in an asynchronous processing request." />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -92,7 +93,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.0</span>
       </span>
     </div>
 
@@ -162,13 +163,14 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get tables from a Document AI json file</h1>
+    <h1>Get tables from output file</h1>
     <small class="dont-index">Source: <a href='https://github.com/Hegghammer/daiR/blob/master/R/get_tables.R'><code>R/get_tables.R</code></a></small>
     <div class="hidden name"><code>tables_from_dai_file.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Get tables from a Document AI json file</p>
+    <p>Extracts all the tables that Document AI (DAI)
+identified in an asynchronous processing request.</p>
     </div>
 
     <pre class="usage"><span class='fu'>tables_from_dai_file</span><span class='op'>(</span><span class='va'>file</span><span class='op'>)</span></pre>
@@ -178,17 +180,13 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>file</th>
-      <td><p>filepath of a json file from DAI</p></td>
+      <td><p>filepath of a JSON file obtained using <code><a href='dai_async_tab.html'>dai_async_tab()</a></code></p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a list of dataframes</p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>Extracts all the tables that DAI identified in
-the submitted document and returns them as a list of dataframes.</p>
+    <p>a list of data frames</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>

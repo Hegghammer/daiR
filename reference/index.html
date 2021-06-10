@@ -91,7 +91,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.0</span>
       </span>
     </div>
 
@@ -189,37 +189,25 @@
         <td>
           <p><code><a href="dai_auth.html">dai_auth()</a></code> </p>
         </td>
-        <td><p>Get service account token</p></td>
+        <td><p>Check authentication</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="dai_token.html">dai_token()</a></code> </p>
         </td>
-        <td><p>Produce token</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dai_has_token.html">dai_has_token()</a></code> </p>
-        </td>
-        <td><p>Check that token is available</p></td>
+        <td><p>Produce access token</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="dai_user.html">dai_user()</a></code> </p>
         </td>
-        <td><p>Get user info associated with service account key</p></td>
+        <td><p>Get user information</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="get_project_id.html">get_project_id()</a></code> </p>
         </td>
-        <td><p>Get project id from service account file</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dai_deauth.html">dai_deauth()</a></code> </p>
-        </td>
-        <td><p>Delete token from environment</p></td>
+        <td><p>Get project id</p></td>
       </tr>
     </tbody><tbody>
       <tr>
@@ -238,7 +226,7 @@
         <td>
           <p><code><a href="dai_sync.html">dai_sync()</a></code> </p>
         </td>
-        <td><p>OCR page synchronously</p></td>
+        <td><p>OCR document synchronously</p></td>
       </tr><tr>
         
         <td>
@@ -250,19 +238,19 @@
         <td>
           <p><code><a href="dai_status.html">dai_status()</a></code> </p>
         </td>
-        <td><p>Check the status of an asynchronous processing job</p></td>
+        <td><p>Check job status</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="dai_sync_tab.html">dai_sync_tab()</a></code> </p>
         </td>
-        <td><p>OCR page synchronously and extract table data</p></td>
+        <td><p>OCR synchronously and get table data</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="dai_async_tab.html">dai_async_tab()</a></code> </p>
         </td>
-        <td><p>OCR documents asynchronously and extract table data</p></td>
+        <td><p>OCR asynchronously and get table data</p></td>
       </tr>
     </tbody><tbody>
       <tr>
@@ -281,37 +269,37 @@
         <td>
           <p><code><a href="text_from_dai_response.html">text_from_dai_response()</a></code> </p>
         </td>
-        <td><p>Get document text from a Document AI response object</p></td>
+        <td><p>Get text from HTTP response object</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="text_from_dai_file.html">text_from_dai_file()</a></code> </p>
         </td>
-        <td><p>Get document text from a Document AI json file</p></td>
+        <td><p>Get text from output file</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="draw_blocks.html">draw_blocks()</a></code> </p>
         </td>
-        <td><p>Inspect block bounding boxes in Google Document AI json output</p></td>
+        <td><p>Inspect block bounding boxes</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="draw_paragraphs.html">draw_paragraphs()</a></code> </p>
         </td>
-        <td><p>Inspect paragraph boxes in Google Document AI json output</p></td>
+        <td><p>Inspect paragraph bounding boxes</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="draw_lines.html">draw_lines()</a></code> </p>
         </td>
-        <td><p>Inspect line bounding boxes in Google Document AI json output</p></td>
+        <td><p>Inspect line bounding boxes</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="draw_tokens.html">draw_tokens()</a></code> </p>
         </td>
-        <td><p>Inspect token bounding boxes in Google Document AI json output</p></td>
+        <td><p>Inspect token bounding boxes</p></td>
       </tr>
     </tbody><tbody>
       <tr>
@@ -330,13 +318,13 @@
         <td>
           <p><code><a href="build_token_df.html">build_token_df()</a></code> </p>
         </td>
-        <td><p>Build dataframe with token location data</p></td>
+        <td><p>Build token dataframe</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="build_block_df.html">build_block_df()</a></code> </p>
         </td>
-        <td><p>Build dataframe with block location data</p></td>
+        <td><p>Build block dataframe</p></td>
       </tr><tr>
         
         <td>
@@ -383,33 +371,27 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="create_folder.html">create_folder()</a></code> </p>
-        </td>
-        <td><p>Create folder in Google Storage</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="is_pdf.html">is_pdf()</a></code> </p>
         </td>
-        <td><p>Check that a file is pdf</p></td>
+        <td><p>Check that a file is PDF</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="is_json.html">is_json()</a></code> </p>
         </td>
-        <td><p>Check that a file is json</p></td>
+        <td><p>Check that a file is JSON</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="pdf_to_binbase.html">pdf_to_binbase()</a></code> </p>
         </td>
-        <td><p>Convert pdf to base64-encoded binary tiff</p></td>
+        <td><p>PDF to base64 tiff</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="img_to_binbase.html">img_to_binbase()</a></code> </p>
         </td>
-        <td><p>Convert image file to base64-encoded binary tiff</p></td>
+        <td><p>Image to base64 tiff</p></td>
       </tr>
     </tbody>
     </table>

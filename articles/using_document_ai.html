@@ -45,7 +45,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.0</span>
       </span>
     </div>
 
@@ -178,13 +178,14 @@
 <p>The quickest and easiest way to OCR with DAI is through synchronous processing. You simply pass an image file or a pdf (of up to 5 pages) to the processor and get the result into your R environment within seconds.</p>
 <p>We can try with a sample pdf from the CIA’s Freedom of Information Act Electronic Reading Room:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html">download.file</a></span><span class="op">(</span><span class="st">"https://www.cia.gov/readingroom/docs/AGH%2C%20LASLO_0011.pdf"</span>, 
-              destfile <span class="op">=</span> <span class="st">"CIA.pdf"</span>, 
+<code class="sourceCode R"><span class="va">dest_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"CIA.pdf"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/download.file.html">download.file</a></span><span class="op">(</span><span class="st">"https://www.cia.gov/readingroom/docs/AGH%2C%20LASLO_0011.pdf"</span>, 
+              destfile <span class="op">=</span> <span class="va">dest_path</span>, 
               mode <span class="op">=</span> <span class="st">"wb"</span><span class="op">)</span></code></pre></div>
 <p>We send it to Document AI with <code><a href="../reference/dai_sync.html">dai_sync()</a></code> and store the HTTP response in an object, for example <code>response</code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
-<span class="va">response1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_sync.html">dai_sync</a></span><span class="op">(</span><span class="st">"CIA.pdf"</span><span class="op">)</span></code></pre></div>
+<span class="va">response1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_sync.html">dai_sync</a></span><span class="op">(</span><span class="va">dest_path</span><span class="op">)</span></code></pre></div>
 <p>Then we extract the text with <code><a href="../reference/text_from_dai_response.html">text_from_dai_response()</a></code>:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/text_from_dai_response.html">text_from_dai_response</a></span><span class="op">(</span><span class="va">response1</span><span class="op">)</span>
@@ -198,7 +199,7 @@
 <p>The first step is to upload the source file(s) to a Google Storage bucket where DAI can find it.<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://code.markedmondson.me/googleCloudStorageR/">googleCloudStorageR</a></span><span class="op">)</span>
-<span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload</a></span><span class="op">(</span><span class="st">"CIA.pdf"</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload</a></span><span class="op">(</span><span class="va">dest_path</span><span class="op">)</span></code></pre></div>
 <p>Let’s check that our file made it safely:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
@@ -221,12 +222,13 @@
 <span class="va">our_file</span> <span class="op">&lt;-</span> <span class="st">"&lt;job_number&gt;/0/CIA-0.json"</span></code></pre></div>
 <p>Now let’s download it and save it under a simpler name:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"> 
+<code class="sourceCode R"><span class="va">dest_path2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"CIA.json"</span><span class="op">)</span>
 <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html">gcs_get_object</a></span><span class="op">(</span><span class="va">our_file</span>, 
-               saveToDisk <span class="op">=</span> <span class="st">"CIA.json"</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+               saveToDisk <span class="op">=</span> <span class="va">dest_path2</span>, 
+               overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p>Finally we extract the text using <code>text_from_dai_file</code>:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/text_from_dai_file.html">text_from_dai_file</a></span><span class="op">(</span><span class="st">"CIA.json"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/text_from_dai_file.html">text_from_dai_file</a></span><span class="op">(</span><span class="va">dest_path2</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="va">text</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="large-batches" class="section level1">
@@ -250,7 +252,7 @@
 <div class="footnotes">
 <hr>
 <ol>
-<li id="fn1"><p>After attaching, you can check that the token was obtained with the function <code><a href="../reference/dai_has_token.html">dai_has_token()</a></code> or by viewing the <code>.auth</code> object directly. If credentials are missing, it’s likely because <code>daiR</code> could not find the <code>GCS_AUTH_FILE</code> variable in your <code>.Renviron</code> file. Return to the vignette on “Setting up Google Storage” and make sure steps 5 and 6 are covered. Alternatively, you can, if you prefer, obtain an access token by another method and feed it into the token parameter of the <code><a href="../reference/dai_sync.html">dai_sync()</a></code> and <code><a href="../reference/dai_async.html">dai_async()</a></code> functions.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn1"><p>After attaching, you can check that the token was obtained with the function <code>dai_has_token()</code> or by viewing the <code>.auth</code> object directly. If credentials are missing, it’s likely because <code>daiR</code> could not find the <code>GCS_AUTH_FILE</code> variable in your <code>.Renviron</code> file. Return to the vignette on “Setting up Google Storage” and make sure steps 5 and 6 are covered. Alternatively, you can, if you prefer, obtain an access token by another method and feed it into the token parameter of the <code><a href="../reference/dai_sync.html">dai_sync()</a></code> and <code><a href="../reference/dai_async.html">dai_async()</a></code> functions.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 <li id="fn2"><p>Note that if you do not have a <code>GCS_DEFAULT_BUCKET</code> variable in your .Renviron file, you will need to either set a default bucket for the current session with <code><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_global_bucket.html">gcs_global_bucket("&lt;a bucket name&gt;")</a></code> or supply a <code>bucket = "&lt;a bucket name&gt;"</code> parameter explicitly inside <code><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload()</a></code>.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
