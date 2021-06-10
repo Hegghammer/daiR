@@ -9,10 +9,8 @@ reference:
     contents:
       - '`dai_auth`'
       - '`dai_token`'
-      - '`dai_has_token`'
       - '`dai_user`'
       - '`get_project_id`'
-      - '`dai_deauth`'
   - title: Send for processing
     desc: ~
     contents:
@@ -43,7 +41,6 @@ reference:
     desc: ~
     contents:
       - '`image_to_pdf`'
-      - '`create_folder`'
       - '`is_pdf`'
       - '`is_json`'
       - '`pdf_to_binbase`'

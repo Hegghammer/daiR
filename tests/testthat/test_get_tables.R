@@ -13,7 +13,6 @@ test_that("tables_from_dai_response() warns of input errors", {
 test_that("tables_from_dai_response() warns of response not containing tables", {
   skip_on_cran()
   skip_on_ci()
-  skip_if_no_token()
   skip_if_offline()
   wrong <- dai_user()
   expect_error(tables_from_dai_response(wrong), "Object not a positive dai_sync response.")
@@ -26,7 +25,6 @@ test_that("tables_from_dai_response() warns of response not containing tables", 
 test_that("tables_from_dai_response() returns dataframes from dai response containing tables", {
   skip_on_cran()
   skip_on_ci()
-  skip_if_no_token()
   skip_if_offline()
   file <- testthat::test_path("examples", "table.pdf")
   response <- dai_sync_tab(file)

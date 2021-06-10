@@ -2,7 +2,7 @@
 % Please edit documentation in R/auth.R
 \name{dai_user}
 \alias{dai_user}
-\title{Get user info associated with service account key}
+\title{Get user information}
 \usage{
 dai_user()
 }
@@ -10,7 +10,8 @@ dai_user()
 a list of user information elements
 }
 \description{
-Get user info associated with service account key
+Fetches the Google Cloud Services (GCS) user information
+associated with a service account key.
 }
 \examples{
 \dontrun{

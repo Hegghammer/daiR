@@ -14,7 +14,6 @@ test_that("text_from_dai_response() warns of input errors", {
 test_that("text_from_dai_response() warns of response not containing text", {
   skip_on_cran()
   skip_on_ci()
-  skip_if_no_token()
   skip_if_offline()
   wrong <- dai_async("random.pdf")
   expect_error(text_from_dai_response(wrong), "Input not recognized. Is it from dai_async?")
@@ -27,7 +26,6 @@ test_that("text_from_dai_response() warns of response not containing text", {
 test_that("text_from_dai_response() gets text from DAI response from example file", {
   skip_on_cran()
   skip_on_ci()
-  skip_if_no_token()
   skip_if_offline()
   file <- testthat::test_path("examples", "image.jpg")
   response <- dai_sync(file)

@@ -2,18 +2,19 @@
 % Please edit documentation in R/auth.R
 \name{get_project_id}
 \alias{get_project_id}
-\title{Get project id from service account file}
+\title{Get project id}
 \usage{
 get_project_id(path = Sys.getenv("GCS_AUTH_FILE"))
 }
 \arguments{
-\item{path}{path to the json file with your service account key.}
+\item{path}{path to the JSON file with your service account key}
 }
 \value{
-a string with a project id
+a string with a GCS project id
 }
 \description{
-Get project id from service account file
+Fetches the Google Cloud Services (GCS) project id
+associated with a service account key.
 }
 \examples{
 \dontrun{

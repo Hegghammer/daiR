@@ -37,8 +37,9 @@ DAI column-reading errors are of two main types. The first is to put text blocks
 To illustrate, let's feed DAI a simple two-column text. This one is from the CIA's archive of declassified intelligence documents: 
 
 ```{r, message=FALSE, eval=FALSE}
-download.file("https://www.cia.gov/readingroom/docs/1968-03-08.pdf",
-              "CIA_columns.pdf", 
+dest_path <- file.path(tempdir(), "CIA_columns.pdf")
+download.file("https://www.cia.gov/readingroom/docs/1968-03-08.pdf", 
+              destfile = dest_path, 
               mode = "wb")
 ```
 
@@ -59,7 +60,7 @@ library(googleCloudStorageR)
 ```
 
 ```{r, eval=FALSE}
-resp <- gcs_upload("CIA_columns.pdf")
+resp <- gcs_upload(dest_path)
 resp <- dai_async("CIA_columns.pdf")
 ```
 
@@ -85,15 +86,15 @@ our_file <- "<job_number>/0/CIA_columns-0.json"
 ```
 
 ```{r, eval=FALSE}
-gcs_get_object(our_file, 
-               saveToDisk = "CIA_columns.json")
+dest_path2 <- file.path(tempdir(), "CIA_columns.json")
+gcs_get_object(our_file, saveToDisk = dest_path2)
 ```
 
 
 Finally we extract the text:
 
 ```{r, eval=FALSE}
-text <- text_from_dai_file("CIA_columns.json")
+text <- text_from_dai_file(dest_path2)
 cat(text)
 ```
 
@@ -106,10 +107,10 @@ Something's not right. Could it be a column-reading error?
 We can find out with the function `draw_blocks()`, which extracts boundary box data from the `.json` file and draws numbered rectangles on an image of each page of the source document. (The images come from the json file, where they are stored as base64-encoded strings.) 
 
 ```{r, eval=FALSE}
-draw_blocks("CIA_columns.json")
+draw_blocks(dest_path2, dir = tempdir())
 ```
 
-Check your working directory for a a file ending in `_blocks.png` and pull it up:
+Check your temporary directory (type `tempdir()` for the path) for a file ending in `_blocks.png` and pull it up:
 
 ```{r, echo=FALSE, out.width = "50%"}
 include_graphics("CIA_columns1_blocks.png")
@@ -120,7 +121,7 @@ We can immediately see that the blocks are in the wrong order. How to fix this?
 Fortunately, the `.json` file from DAI comes with a ton of data that allow us to programmatically reorder the text. The key is to generate a token dataframe with page location data and then filter and reorder as necessary. We create the dataframe with `build_token_df()`:
 
 ```{r, eval=FALSE}
-token_df <- build_token_df("CIA_columns.json")
+token_df <- build_token_df(dest_path2)
 str(token_df)
 ```
 
@@ -160,10 +161,11 @@ include_graphics("peshtigo.jpg")
 We do our processing routine again:
 
 ```{r, eval=FALSE}
+dest_path3 <- file.path(tempdir(), "peshtigo.pdf")
 download.file("https://archive.org/download/themarinetteandpeshtigoeagleoct141871/The%20Marinette%20and%20Peshtigo%20Eagle%20-%20Oct%2014%201871.pdf", 
-              "peshtigo.pdf", 
+              destfile = dest_path3, 
               mode = "wb")
-resp <- gcs_upload("peshtigo.pdf")
+resp <- gcs_upload(dest_path3)
 resp <- dai_async("peshtigo.pdf")
 ```
 
@@ -176,15 +178,16 @@ our_file <- "<job_number>/0/peshtigo-0.json"
 ```
 
 ```{r, eval=FALSE}
+dest_path4 <- file.path(tempdir(), "peshtigo.json")
 gcs_get_object(our_file, 
-               saveToDisk = "peshtigo.json")
+               saveToDisk = dest_path4)
 ```
 
 
 This time we'll skip the text printout and go straight to inspecting the boundary boxes:
 
 ```{r, eval=FALSE}
-draw_blocks("peshtigo.json")
+draw_blocks(dest_path4, dir = tempdir())
 ```
 
 ```{r, echo=FALSE, out.width = "50%"}
@@ -194,7 +197,7 @@ include_graphics("peshtigo1_blocks.png")
 As we can see, this time DAI has failed to distinguish between the two main columns. We can verify this by checking the beginning of the text:
 
 ```{r, eval=FALSE}
-text <- text_from_dai_file("peshtigo.json")
+text <- text_from_dai_file(dest_path4)
 snippet <- substr(text, start = 1, stop = 1000)
 cat(snippet)
 ```
@@ -209,7 +212,7 @@ There are two main ways to obtain the coordinates of a new block: mathematically
 We can split blocks mathematically by using the location data for existing blocks in the json file. We start by building a block dataframe to keep track of the blocks. 
 
 ```{r, eval=FALSE}
-block_df <- build_block_df("peshtigo.json")
+block_df <- build_block_df(dest_path4)
 ```
 
 Then we use the function `split_block()` to cut block 12 vertically in half. This function takes as input a block dataframe, the page and number of the block to split, and a parameter `cut_point`, which is a number from 1 to 99 for the relative location of the cut point. `split_block()` returns a new block dataframe that includes the new block and revised coordinates for the old one. 
@@ -223,7 +226,7 @@ If we had more blocks to split, we could repeat the procedure as many times as n
 When we have a block dataframe that captures the layout fairly accurately, we can use the `reassign_tokens()` function to assign new block values to the words in the *token* dataframe. `reassign_tokens()` takes as input the token dataframe and the new block dataframe and returns a revised token dataframe.
 
 ```{r, eval=FALSE}
-token_df <- build_token_df("peshtigo.json")
+token_df <- build_token_df(dest_path4)
 token_df_correct <- reassign_tokens(token_df, new_block_df)  
 ```
 
@@ -283,11 +286,6 @@ cat(snippet)
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
 #cleanup
-library(purrr)
-library(fs)
-library(googleCloudStorageR)
 contents <- gcs_list_objects()
-resp <- map(contents$name, gcs_delete_object)
-files <- c("CIA_columns.pdf", "CIA_columns.json", "peshtigo.pdf", "peshtigo.json")
-resp <- map(files, possibly(file_delete, otherwise = NULL, quiet = TRUE))
+map(contents$name, gcs_delete_object)
 ```

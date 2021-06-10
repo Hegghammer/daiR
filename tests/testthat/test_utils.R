@@ -63,40 +63,6 @@ test_that("image_to_pdf() handles different formats and multiple files", {
   unlink(tmp_files, force = TRUE)
 })
 
-## CREATE_FOLDER ---------------------------------------------------------------
-
-test_that("create_folder() warns of input errors", {
-  expect_error(create_folder(fname = c("folder1", "folder2")), "Invalid folder name format.")
-  expect_error(create_folder(fname = 2021), "Invalid folder name format.")
-  expect_error(create_folder(fname = "folder", bucket = c("two_buckets", "at_once")), "Invalid bucket name format.")
-  expect_error(create_folder(fname = "folder", bucket = 2021), "Invalid bucket name format.")
-} )
-
-test_that("create_folder() works", {
-  skip_on_cran()
-  skip_on_ci()
-  skip_if_offline()
-
-  folder1 <- "foo"
-  folder2 <- "foo/"
-  folder3 <- "many/sub/folders/"
-  folder4 <- "2021_01/"
-
-  out1 <- create_folder(folder1)
-  expect_identical(out1$name, paste0(folder1, "/"))
-  out2 <- create_folder(folder2)
-  expect_identical(out2$name, folder2)
-  out3 <- create_folder(folder3)
-  expect_identical(out3$name, folder3)
-  out4 <- create_folder(folder4)
-  expect_identical(out4$name, folder4)
-
-  bucket <- Sys.getenv("GCS_DEFAULT_BUCKET")
-  out5 <- create_folder(folder1, bucket)
-  expect_identical(out5$bucket, bucket)
-  dai_auth()
-})
-
 ## IS_PDF ----------------------------------------------------------------------
 
 test_that("is_pdf() calls out non-pdfs", {

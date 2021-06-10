@@ -2,7 +2,7 @@
 
 <img align="right" src="man/figures/logo.png" width="120">
 
-**daiR** is an R package for [Google Document AI](https://cloud.google.com/document-ai), a powerful server-based OCR processor with support for over 60 languages. The package provides a wrapper for the Document AI API and comes with additional tools for output file parsing and text reconstruction. See the `daiR` [website](https://dair.info/) for more details.
+**daiR** is an R package for [Google Document AI](https://cloud.google.com/document-ai), a powerful server-based OCR processor with support for over 60 languages. The package provides an interface for the Document AI API and comes with additional tools for output file parsing and text reconstruction. See the `daiR` [website](https://dair.info/) for more details.
 
 ## Use
 
@@ -27,8 +27,8 @@ map(my_files, gcs_upload)
 dai_async(my_files)
 contents <- gcs_list_objects()
 output_files <- grep("json$", contents$name, value = TRUE)
-map(output_files, ~ gcs_get_object(.x, saveToDisk = .x))
-sample_text <- text_from_dai_file(output_files[1])
+map(output_files, ~ gcs_get_object(.x, saveToDisk = file.path(tempdir(), .x)))
+sample_text <- text_from_dai_file(file.path(tempdir(), output_files[1]))
 cat(sample_text)
 ```
 

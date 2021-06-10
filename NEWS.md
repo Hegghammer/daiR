@@ -1,6 +1,11 @@
-# daiR 0.8.0 
+
+# daiR 0.9.0 
 
 - Initial CRAN version.
+
+# daiR 0.8.0 
+
+- Simplified the auth functions to avoid modifying the global environment. Tokens are no longer held in an internal .auth object. Removed dai_has_token(), dai_deauth(), and create_folder().  
 
 # daiR 0.7.0
 

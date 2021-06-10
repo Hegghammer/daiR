@@ -2,12 +2,9 @@
 
 export(build_block_df)
 export(build_token_df)
-export(create_folder)
 export(dai_async)
 export(dai_async_tab)
 export(dai_auth)
-export(dai_deauth)
-export(dai_has_token)
 export(dai_status)
 export(dai_sync)
 export(dai_sync_tab)

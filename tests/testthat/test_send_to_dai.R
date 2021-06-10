@@ -18,37 +18,26 @@ test_that("dai_sync calls out input errors", {
   expect_error(dai_sync(file = "foo.png", proj_id = c("Project1", "Project2")), "Invalid proj_id.")
   expect_error(dai_sync(file = "foo.png", proj_id = "abc", proc_id = 123), "Invalid proc_id.")
   expect_error(dai_sync(file = "foo.png", proj_id = "abc", proc_id = "abc", loc = "USA"), "Invalid location parameter.")
-} )
+})
 
 test_that("dai_sync informs about unsuccessful requests", {
   skip_on_cran()
   skip_on_ci()
-  skip_if_no_token()
   skip_if_offline()
   file <- testthat::test_path("examples", "image.jpg")
   response <- dai_sync(file, token = NULL)
   expect_equal(response[["status_code"]], 401)
-  test_auth()
 })
 
 test_that("dai_sync gets text from an example file", {
   skip_on_cran()
   skip_on_ci()
-  skip_if_no_token()
   skip_if_offline()
-
   image <- testthat::test_path("examples", "image.jpg")
   response <- dai_sync(image)
   expect_equal(response[["status_code"]], 200)
   parsed <- httr::content(response)
   expect_type(parsed[["document"]][["text"]], "character")
-
-  pdf <- image_to_pdf(image, "foo.pdf")
-  response <- dai_sync(pdf)
-  expect_equal(response[["status_code"]], 200)
-  parsed <- httr::content(response)
-  expect_type(parsed[["document"]][["text"]], "character")
-  unlink("foo.pdf", force = TRUE)
 })
 
 ## DAI_ASYNC --------------------------------------------------------------------
@@ -74,17 +63,14 @@ test_that("dai_async calls out input errors", {
 test_that("dai_async informs about unsuccessful requests", {
   skip_on_cran()
   skip_on_ci()
-  skip_if_no_token()
   skip_if_offline()
   response <- dai_async("foo.pdf", token = NULL)
   expect_equal(response[["status_code"]], 401)
-  test_auth()
 })
 
 test_that("dai_async sends succesful requests with input in different formats", {
   skip_on_cran()
   skip_on_ci()
-  skip_if_no_token()
   skip_if_offline()
   response <- dai_async("foo.pdf")
   expect_equal(response[["status_code"]], 200)
@@ -153,7 +139,6 @@ test_that("dai_sync_tab calls out input errors", {
 
 test_that("dai_sync_tab informs about unsuccessful requests", {
   skip_on_cran()
-  skip_if_no_token()
   skip_if_offline()
   file <- testthat::test_path("examples", "image.jpg")
   response <- dai_sync_tab(file, proj_id = "abc", token = NULL)
@@ -163,7 +148,6 @@ test_that("dai_sync_tab informs about unsuccessful requests", {
 test_that("dai_sync_tab sends succesful requests with jpgs and pdfs", {
   skip_on_cran()
   skip_on_ci()
-  skip_if_no_token()
   skip_if_offline()
   file1 <- testthat::test_path("examples", "image.jpg")
   file2 <- testthat::test_path("examples", "sample.pdf")
@@ -209,7 +193,6 @@ test_that("dai_async_tab calls out input errors", {
 test_that("dai_async_tab sends succesful requests with input in different formats", {
   skip_on_cran()
   skip_on_ci()
-  skip_if_no_token()
   skip_if_offline()
   response <- dai_async_tab("foo.pdf")
   expect_equal(response[[1]][["status_code"]], 200)

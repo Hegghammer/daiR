@@ -1,18 +1,19 @@
 Package: daiR
-Title: An R Package for Google Document AI
-Version: 0.8.0
+Title: Interface with Google Cloud Document AI API
+Version: 0.9.0
 Authors@R: 
     person(given = "Thomas",
            family = "Hegghammer",
            role = c("aut", "cre"),
            email = "hegghammer@gmail.com",
            comment = c(ORCID = "0000-0001-6253-1518"))
-Description: An R client for the Google Document AI API with additional tools for output 
-    file parsing and text reconstruction. Google Document AI is a powerful server-based 
-    OCR processor that extracts text and tables from images and pdf files with high 
-    accuracy. daiR gives R users programmatic access to this processor and adds several 
-    tools to handle and visualize the JSON output from Document AI. See the daiR 
-    website for more information and examples.
+Description: R interface for the Google Cloud Document AI API 
+    <https://cloud.google.com/document-ai/> with additional tools for output file 
+    parsing and text reconstruction. Document AI is a powerful server-based 
+    OCR processor that extracts text and tables from images and pdf files with 
+    high accuracy. 'daiR' gives R users programmatic access to this processor and 
+    additional tools to handle and visualize the output. See the package website 
+    <https://dair.info/> for more information and examples.
 Depends: R (>= 3.1.0)
 License: MIT + file LICENSE
 Encoding: UTF-8

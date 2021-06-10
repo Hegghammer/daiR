@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{img_to_binbase}
 \alias{img_to_binbase}
-\title{Convert image file to base64-encoded binary tiff}
+\title{Image to base64 tiff}
 \usage{
 img_to_binbase(file)
 }
@@ -10,8 +10,13 @@ img_to_binbase(file)
 \item{file}{path to an image file}
 }
 \value{
-string containing base64-encoded binary tiff
+a base64-encoded string
 }
 \description{
-Convert image file to base64-encoded binary tiff
+Converts an image file to a base64-encoded binary .tiff file.
+}
+\examples{
+\dontrun{
+img_encoded <- pdf_to_binbase("image.png")
+}
 }

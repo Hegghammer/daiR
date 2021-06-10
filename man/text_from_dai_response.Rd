@@ -2,19 +2,19 @@
 % Please edit documentation in R/inspect_output.R
 \name{text_from_dai_response}
 \alias{text_from_dai_response}
-\title{Get document text from a Document AI response object}
+\title{Get text from HTTP response object}
 \usage{
 text_from_dai_response(response)
 }
 \arguments{
-\item{response}{a json response object from DAI.}
+\item{response}{an HTTP response object returned by \code{dai_sync()}}
 }
 \value{
-a string.
+a string
 }
 \description{
-This function extracts the text element of a json response object
-returned from dai::dai_sync()
+Extracts the text OCRed by Document AI (DAI) in a
+synchronous processing request.
 }
 \examples{
 \dontrun{

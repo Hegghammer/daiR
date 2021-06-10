@@ -2,21 +2,28 @@
 % Please edit documentation in R/process_output.R
 \name{build_block_df}
 \alias{build_block_df}
-\title{Build dataframe with block location data}
+\title{Build block dataframe}
 \usage{
 build_block_df(json)
 }
 \arguments{
-\item{json}{a json file from DAI}
+\item{json}{filepath of a JSON file obtained using \code{dai_async()}}
 }
 \value{
-a dataframe
+a block data frame
 }
 \description{
-Build dataframe with block location data
+Creates a dataframe with the block bounding boxes
+identified by Document AI (DAI) in an asynchronous request.
+Rows are blocks, in the order DAI proposes to read them. Columns
+are location variables such as page coordinates and page numbers.
+}
+\details{
+The location variables are: page number, left boundary,
+right boundary, top boundary, and bottom boundary.
 }
 \examples{
 \dontrun{
-build_block_df("pdf_output.json")
+block_df <- build_block_df("pdf_output.json")
 }
 }

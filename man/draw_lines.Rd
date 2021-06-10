@@ -2,27 +2,29 @@
 % Please edit documentation in R/inspect_output.R
 \name{draw_lines}
 \alias{draw_lines}
-\title{Inspect line bounding boxes in Google Document AI json output}
+\title{Inspect line bounding boxes}
 \usage{
 draw_lines(json, dir = getwd())
 }
 \arguments{
-\item{json}{filepath of the json output file.}
+\item{json}{filepath of a JSON file obtained using \code{dai_async()}}
 
 \item{dir}{path to the desired output directory.}
 }
-\description{
-This function extracts the line bounding box coordinates
-from the json file returned by Google Document AI
-and plots them on an image of the original page.
+\value{
+no return value, called for side effects
 }
-\details{
-Not vectorized, but documents can be multi-page.
+\description{
+Plots the line bounding boxes identified by
+Document AI (DAI) onto images of the submitted document.
 Generates an annotated .png file for each page in the original
 document.
 }
+\details{
+Not vectorized, but documents can be multi-page.
+}
 \examples{
 \dontrun{
-draw_lines("pdf_output.json")
+draw_lines("pdf_output.json", dir = tempdir())
 }
 }

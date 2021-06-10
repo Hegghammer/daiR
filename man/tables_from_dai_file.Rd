@@ -2,22 +2,19 @@
 % Please edit documentation in R/get_tables.R
 \name{tables_from_dai_file}
 \alias{tables_from_dai_file}
-\title{Get tables from a Document AI json file}
+\title{Get tables from output file}
 \usage{
 tables_from_dai_file(file)
 }
 \arguments{
-\item{file}{filepath of a json file from DAI}
+\item{file}{filepath of a JSON file obtained using \code{dai_async_tab()}}
 }
 \value{
-a list of dataframes
+a list of data frames
 }
 \description{
-Get tables from a Document AI json file
-}
-\details{
-Extracts all the tables that DAI identified in
-the submitted document and returns them as a list of dataframes.
+Extracts all the tables that Document AI (DAI)
+identified in an asynchronous processing request.
 }
 \examples{
 \dontrun{

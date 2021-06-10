@@ -161,8 +161,9 @@ At this point it's obviously empty, so let's upload something.
 This we do with `gcs_upload()`. If the file is in your working directory, just write the filename; otherwise provide the full file path. If you want, you can store the file under another name in Google Storage with the `name` parameter. Otherwise, just leave the parameter out.  
 
 ```{r, eval=FALSE}
-write.csv(mtcars, "mtcars.csv")
-resp <- gcs_upload("mtcars.csv", name = "car.csv")
+sample_csv <- file.path(tempdir(), "mtcars.csv")
+write.csv(mtcars, sample_csv)
+resp <- gcs_upload(sample_csv, name = "mtcars.csv")
 ```
 
 `resp` here is just a container for the response that the API returns, to prevent it from printing in the console. 
@@ -178,8 +179,9 @@ The Google Storage API handles only one file at a time, so for bulk uploads you 
 ```{r, eval=FALSE}
 library(purrr)
 library(fs)
-write.csv(iris, "iris.csv")
-my_files <- dir_ls(glob = "*.csv")
+sample_csv2 <- file.path(tempdir(), "iris.csv")
+write.csv(iris, sample_csv2)
+my_files <- dir_ls(tempdir(), glob = "*.csv")
 resp <- map(my_files, ~ gcs_upload(.x, name = .x))
 ```
 
@@ -199,21 +201,24 @@ gcs_upload_set_limit(upload_limit = 20000000L)
 Downloads are performed with gcs_get_object(). Here, too, you can save it under a different name, but this time the parameter is `saveToDisk`.
 
 ```{r, eval=FALSE}
-resp <- gcs_get_object("car.csv", saveToDisk = "mtcars_duplicate.csv")
+dest_path <- file.path(tempdir(), "mtcars_duplicate.csv")
+resp <- gcs_get_object("mtcars.csv", saveToDisk = dest_path)
 ```
 
 To download multiple files we need to loop or map. Let's say we wanted to download all the files in the bucket:
 
 ```{r, eval=FALSE}
 contents <- gcs_list_objects()
-resp <- map(contents$name, ~ gcs_get_object(.x, saveToDisk = .x, overwrite = TRUE))
+resp <- map(contents$name, ~ gcs_get_object(.x, 
+                                            saveToDisk = file.path(tempdir(), .x), 
+                                            overwrite = TRUE))
 ```
 
 ### Deleting
 
 We can delete files in the bucket with `gcs_delete_object()`: 
 ```{r, eval=FALSE}
-gcs_delete_object("car.csv")
+gcs_delete_object("mtcars.csv")
 ```
 
 To delete several, we again need to loop or map. Let's try to delete everything in the bucket:
@@ -227,5 +232,5 @@ And the bucket is empty. With this you should be ready to process files with Doc
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
 # cleanup
-file_delete(dir_ls(glob = "*.csv"))
+file_delete(dir_ls(tempdir(), glob = "*.csv"))
 ```

@@ -11,3 +11,4 @@
 ^pkgdown$
 ^index\.md$
 ^cran-comments\.md$
+^CRAN-RELEASE$

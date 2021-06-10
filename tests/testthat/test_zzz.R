@@ -1,10 +1,9 @@
 
-## .ONLOAD ---------------------------------------------------------------------
+## .ONATTACH ---------------------------------------------------------------------
 
-test_that(".onLoad initiates auth state", {
+test_that(".onAttach works", {
 
-  daiR:::.onLoad()
-  expect_true(.auth$auth_active)
+  expect_message(daiR:::.onAttach(), "Welcome to daiR 0.9.0, your gateway to Google Document AI v1.")
 
 })
 

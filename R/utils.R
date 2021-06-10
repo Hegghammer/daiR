@@ -1,24 +1,23 @@
 #' Convert images to PDF
 #'
-#' This function converts a vector of images to a single pdf.
-#'
+#' @description This helper function converts a vector of images to a
+#' single PDF.
 #' @param files a vector of image files
-#' @param pdf_name name of the new pdf
-#'
+#' @param pdf_name a string with the name of the new PDF
+#' @return no return value, called for side effects
 #' @details Combines any number of image files of almost any type
 #' to a single PDF. The vector can consist of different image file types.
-#' See the \code{magick} package documentation for details on
-#' supported file types. Note that on Linux, ImageMagick may not allow
-#' conversion to pdf for security reasons. The setting can be turned off;
-#' see: https://stackoverflow.com/a/52863413.
-#'
+#' See the 'Magick' package documentation <https://cran.r-project.org/package=magick>
+#' for details on supported file types. Note that on Linux, ImageMagick may
+#' not allow conversion to pdf for security reasons.
 #' @export
 #' @examples
 #' \dontrun{
 #' # Single file
-#' image_to_pdf("document.jpg", "document.pdf")
+#' new_pdf <- file.path(tempdir(), "document.pdf")
+#' image_to_pdf("document.jpg", new_pdf)
 #'
-#' # A vector of files:
+#' # A vector of image files:
 #' image_to_pdf(images)
 #' }
 
@@ -44,56 +43,13 @@ image_to_pdf <- function(files, pdf_name) {
                       )
   }
 
-#' Create folder in Google Storage
+#' Check that a file is PDF
 #'
-#' @param fname name of new folder
-#' @param bucket name of bucket. Defaults to global bucket if set.
-#'
-#' @details Creates a "folder" in your Google Storage bucket by uploading an empty file.
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' create_folder("results")
-#' create_folder("pdfs/documents/json_output")
-#' }
-
-create_folder <- function(fname,
-                          bucket = Sys.getenv("GCS_DEFAULT_BUCKET")
-                          ) {
-
-  # check
-  if (!(length(fname) == 1 && is.character(fname))) {
-    stop("Invalid folder name format.")
-    }
-
-  if (!(length(bucket) == 1 && is.character(bucket)) || bucket == "") {
-    stop("Invalid bucket name format.")
-    }
-
-  if (!(grepl("/$", fname))){
-    fname <- glue::glue("{fname}/")
-    }
-
-  # create empty file
-  empty <- tempfile()
-
-  fs::file_create(empty)
-
-  # upload to Google Storage
-  out <- googleCloudStorageR::gcs_upload(empty,
-                                         bucket = bucket,
-                                         name = fname
-                                         )
-  return(out)
-
-  }
-
-#' Check that a file is pdf
-#'
+#' @description Checks whether a file is a PDF file.
 #' @param file a filepath
-#' @return boolean
+#' @return a boolean
 #' @export
+#'
 #' @examples
 #' \dontrun{
 #' is_pdf("document.pdf")
@@ -108,11 +64,11 @@ is_pdf <- function(file) {
   return(FALSE)
 }
 
-#' Check that a file is json
+#' Check that a file is JSON
 #'
+#' @description Checks whether a file is a JSON file.
 #' @param file a filepath
-#'
-#' @return boolean
+#' @return a boolean
 #' @export
 #'
 #' @examples
@@ -129,10 +85,16 @@ is_json <- function(file) {
   return(FALSE)
 }
 
-#' Convert pdf to base64-encoded binary tiff
+#' PDF to base64 tiff
+#'
+#' @description Converts a PDF file to a base64-encoded binary .tiff file.
 #' @param file path to a single-page pdf file
+#' @return a base64-encoded string
 #' @export
-#' @return string containing base64-encoded binary tiff
+#' @examples
+#' \dontrun{
+#' doc_encoded <- pdf_to_binbase("document.pdf")
+#' }
 
 pdf_to_binbase <- function(file) {
 
@@ -154,10 +116,16 @@ pdf_to_binbase <- function(file) {
 
   }
 
-#' Convert image file to base64-encoded binary tiff
+#' Image to base64 tiff
+#'
+#' @description Converts an image file to a base64-encoded binary .tiff file.
 #' @param file path to an image file
+#' @return a base64-encoded string
 #' @export
-#' @return string containing base64-encoded binary tiff
+#' @examples
+#' \dontrun{
+#' img_encoded <- pdf_to_binbase("image.png")
+#' }
 
 img_to_binbase <- function(file) {
 

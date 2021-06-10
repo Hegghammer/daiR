@@ -1,11 +1,9 @@
-#' Get tables from a Document AI response object
+#' Get tables from response object
 #'
-#' @details Extracts all the tables that DAI identified in
-#' the submitted document and returns them as a list of dataframes.
-#'
-#' @param object a json response object from DAI
-#'
-#' @return a list of dataframes
+#' @description Extracts all the tables that Document AI (DAI)
+#' identified in a synchronous processing request.
+#' @param object an HTTP response object returned by \code{dai_sync_tab()}
+#' @return a list of data frames
 #' @export
 #'
 #' @examples
@@ -96,14 +94,12 @@ tables_from_dai_response <- function(object) {
 
   }
 
-#' Get tables from a Document AI json file
+#' Get tables from output file
 #'
-#' @details Extracts all the tables that DAI identified in
-#' the submitted document and returns them as a list of dataframes.
-#'
-#' @param file filepath of a json file from DAI
-#'
-#' @return a list of dataframes
+#' @description Extracts all the tables that Document AI (DAI)
+#' identified in an asynchronous processing request.
+#' @param file filepath of a JSON file obtained using \code{dai_async_tab()}
+#' @return a list of data frames
 #' @export
 #'
 #' @examples

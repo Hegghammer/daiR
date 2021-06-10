@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{is_json}
 \alias{is_json}
-\title{Check that a file is json}
+\title{Check that a file is JSON}
 \usage{
 is_json(file)
 }
@@ -10,10 +10,10 @@ is_json(file)
 \item{file}{a filepath}
 }
 \value{
-boolean
+a boolean
 }
 \description{
-Check that a file is json
+Checks whether a file is a JSON file.
 }
 \examples{
 \dontrun{

@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{is_pdf}
 \alias{is_pdf}
-\title{Check that a file is pdf}
+\title{Check that a file is PDF}
 \usage{
 is_pdf(file)
 }
@@ -10,10 +10,10 @@ is_pdf(file)
 \item{file}{a filepath}
 }
 \value{
-boolean
+a boolean
 }
 \description{
-Check that a file is pdf
+Checks whether a file is a PDF file.
 }
 \examples{
 \dontrun{

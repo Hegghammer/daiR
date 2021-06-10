@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{pdf_to_binbase}
 \alias{pdf_to_binbase}
-\title{Convert pdf to base64-encoded binary tiff}
+\title{PDF to base64 tiff}
 \usage{
 pdf_to_binbase(file)
 }
@@ -10,8 +10,13 @@ pdf_to_binbase(file)
 \item{file}{path to a single-page pdf file}
 }
 \value{
-string containing base64-encoded binary tiff
+a base64-encoded string
 }
 \description{
-Convert pdf to base64-encoded binary tiff
+Converts a PDF file to a base64-encoded binary .tiff file.
+}
+\examples{
+\dontrun{
+doc_encoded <- pdf_to_binbase("document.pdf")
+}
 }

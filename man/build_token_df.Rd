@@ -2,26 +2,30 @@
 % Please edit documentation in R/process_output.R
 \name{build_token_df}
 \alias{build_token_df}
-\title{Build dataframe with token location data}
+\title{Build token dataframe}
 \usage{
 build_token_df(json)
 }
 \arguments{
-\item{json}{a json file from DAI}
+\item{json}{filepath of a JSON file obtained using \code{dai_async()}}
 }
 \value{
-a dataframe
+a token data frame
 }
 \description{
-This function takes a json output file from Google Document AI (DAI)
-and builds a dataframe with page location data for all identified tokens.
+Builds a token dataframe from the text OCRed by
+Document AI (DAI) in an asynchronous request. Rows are tokens, in the
+order DAI proposes to read them. Columns are location variables
+such as page coordinates and block bounding box numbers.
 }
 \details{
-the dataframe has tokens as rows and location variables as columns
-(start index, end index, left boundary, right boundary, top boundary, and bottom boundary.)
+The location variables are: start index, end index,
+left boundary, right boundary, top boundary, bottom boundary,
+page number, and block number. Start and end indices refer to
+character position in the string containing the full text.
 }
 \examples{
 \dontrun{
-build_token_df("pdf_output.json")
+token_df <- build_token_df("pdf_output.json")
 }
 }

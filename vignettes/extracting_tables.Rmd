@@ -39,11 +39,12 @@ include_graphics("tobacco.PNG")
 First we download it and send it to Document AI for processing:
 ```{r, eval=FALSE}
 library(daiR)
+dest_path <- file.path(tempdir(), "tobacco.pdf")
 download.file("https://archive.org/download/tobacco_lpnn0000/lpnn0000.pdf", 
-              destfile = "tobacco.pdf",
+              destfile = dest_path,
               mode = "wb")
 
-resp <- dai_sync_tab("tobacco.pdf")
+resp <- dai_sync_tab(dest_path)
 ```
 
 To get the tables into R, we pass the response object (`resp`) to our extraction function:
@@ -77,6 +78,7 @@ include_graphics("table.PNG")
 With json files obtained from `dai_async_tab()` the process is very similar, except that we pass a filepath instead of a response object to the extraction function. If we processed the same document asynchronously and obtained a file named `"tobacco.json"`, we would extract the tables like this:
 
 ```{r, eval=FALSE}
+## NOT RUN
 tables <- tables_from_dai_file("tobacco.json")
 ```
 

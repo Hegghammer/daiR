@@ -2,22 +2,19 @@
 % Please edit documentation in R/get_tables.R
 \name{tables_from_dai_response}
 \alias{tables_from_dai_response}
-\title{Get tables from a Document AI response object}
+\title{Get tables from response object}
 \usage{
 tables_from_dai_response(object)
 }
 \arguments{
-\item{object}{a json response object from DAI}
+\item{object}{an HTTP response object returned by \code{dai_sync_tab()}}
 }
 \value{
-a list of dataframes
+a list of data frames
 }
 \description{
-Get tables from a Document AI response object
-}
-\details{
-Extracts all the tables that DAI identified in
-the submitted document and returns them as a list of dataframes.
+Extracts all the tables that Document AI (DAI)
+identified in a synchronous processing request.
 }
 \examples{
 \dontrun{

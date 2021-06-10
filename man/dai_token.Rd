@@ -2,18 +2,26 @@
 % Please edit documentation in R/auth.R
 \name{dai_token}
 \alias{dai_token}
-\title{Produce token}
+\title{Produce access token}
 \usage{
-dai_token()
+dai_token(
+  path = Sys.getenv("GCS_AUTH_FILE"),
+  scopes = "https://www.googleapis.com/auth/cloud-platform"
+)
+}
+\arguments{
+\item{path}{path to a JSON file with a service account key}
+
+\item{scopes}{GCS auth scopes for the token}
 }
 \value{
-GCS access token
+a GCS access token object.
 }
 \description{
-Produce token
+Produces an access token for Google Cloud Services (GCS)
 }
 \examples{
 \dontrun{
-dai_token()
+token <- dai_token()
 }
 }

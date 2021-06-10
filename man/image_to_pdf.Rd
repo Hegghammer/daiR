@@ -9,25 +9,29 @@ image_to_pdf(files, pdf_name)
 \arguments{
 \item{files}{a vector of image files}
 
-\item{pdf_name}{name of the new pdf}
+\item{pdf_name}{a string with the name of the new PDF}
+}
+\value{
+no return value, called for side effects
 }
 \description{
-This function converts a vector of images to a single pdf.
+This helper function converts a vector of images to a
+single PDF.
 }
 \details{
 Combines any number of image files of almost any type
 to a single PDF. The vector can consist of different image file types.
-See the \code{magick} package documentation for details on
-supported file types. Note that on Linux, ImageMagick may not allow
-conversion to pdf for security reasons. The setting can be turned off;
-see: https://stackoverflow.com/a/52863413.
+See the 'Magick' package documentation \url{https://cran.r-project.org/package=magick}
+for details on supported file types. Note that on Linux, ImageMagick may
+not allow conversion to pdf for security reasons.
 }
 \examples{
 \dontrun{
 # Single file
-image_to_pdf("document.jpg", "document.pdf")
+new_pdf <- file.path(tempdir(), "document.pdf")
+image_to_pdf("document.jpg", new_pdf)
 
-# A vector of files:
+# A vector of image files:
 image_to_pdf(images)
 }
 }
