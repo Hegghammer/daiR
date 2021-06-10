@@ -7,9 +7,9 @@ Authors@R:
            role = c("aut", "cre"),
            email = "hegghammer@gmail.com",
            comment = c(ORCID = "0000-0001-6253-1518"))
-Description: R interface for the Google Cloud Document AI API 
+Description: R interface for the Google Cloud Services 'Document AI API' 
     <https://cloud.google.com/document-ai/> with additional tools for output file 
-    parsing and text reconstruction. Document AI is a powerful server-based 
+    parsing and text reconstruction. 'Document AI' is a powerful server-based 
     OCR processor that extracts text and tables from images and pdf files with 
     high accuracy. 'daiR' gives R users programmatic access to this processor and 
     additional tools to handle and visualize the output. See the package website 
