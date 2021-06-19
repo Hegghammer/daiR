@@ -662,13 +662,13 @@ from_labelme <- function(json,
 #' @export
 #' @examples
 #' \dontrun{
-#' draw_blocks_new("pdf_output.json", revised_token_df, dir = tempdir())
+#' redraw_blocks("pdf_output.json", revised_token_df, dir = tempdir())
 #' }
 
-draw_blocks_new <- function(json,
-                            token_df,
-                            dir = getwd()
-                            ) {
+redraw_blocks <- function(json,
+                          token_df,
+                          dir = getwd()
+                          ) {
   # checks
   if (length(json) > 1) {
     stop("Invalid json input. This function is not vectorised.")
