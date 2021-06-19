@@ -639,3 +639,146 @@ from_labelme <- function(json,
   return(blockdata)
 
   }
+
+
+#' Inspect revised block bounding boxes
+#'
+#' @description Tool to visually check the order of block bounding boxes after
+#' manual processing (e.g. block reordering or splitting). Takes as its main
+#' input a token dataframe generated with \code{build_token_df()},
+#' \code{reassign_tokens()}, or \code{reassign_tokens2()}.
+#' The function plots the block bounding boxes onto images of the submitted
+#' document. Generates an annotated .png file for each page in the
+#' original document.
+#'
+#' @param json filepath of a JSON file obtained using \code{dai_async()}
+#' @param token_df a token data frame generated with \code{build_token_df()},
+#' \code{reassign_tokens()}, or \code{reassign_tokens2()}.
+#' @param dir path to the desired output directory.
+#' @return no return value, called for side effects
+#'
+#' @details Not vectorized, but documents can be multi-page.
+#'
+#' @export
+#' @examples
+#' \dontrun{
+#' draw_blocks_new("pdf_output.json", revised_token_df, dir = tempdir())
+#' }
+
+draw_blocks_new <- function(json,
+                            token_df,
+                            dir = getwd()
+                            ) {
+  # checks
+  if (length(json) > 1) {
+    stop("Invalid json input. This function is not vectorised.")
+  }
+
+  if (!(is.character(json))) {
+    stop("Invalid json input.")
+  }
+
+  if (!(is_json(json))) {
+    stop("Input 'json' not .json.")
+  }
+
+  if (!(is.data.frame(token_df))) {
+    stop("token_df not a data frame.")
+  }
+
+  if (!(identical(colnames(token_df), c("token", "start_ind", "end_ind", "left", "right", "top", "bottom", "page", "block")))) {
+    stop("Token dataframe format not recognized.")
+  }
+
+  # parse the json
+  parsed <- jsonlite::fromJSON(json)
+
+  # create a list with pagewise sets of block boundary box coordinates
+  pages_blocks <- split(token_df, token_df$page)
+
+  pagewise_block_sets <- list()
+  for (i in 1:length(pages_blocks)) {
+    blocks <- split(pages_blocks[[i]], pages_blocks[[i]]$block)
+    block_coords <- list()
+    for (j in 1:length(blocks)) {
+      token_sub_df <- blocks[[j]]
+      left <- min(token_sub_df$left)
+      right <- max(token_sub_df$right)
+      top <- min(token_sub_df$top)
+      bottom <- max(token_sub_df$bottom)
+      x <- c(left, right, right, left)
+      y <- c(top, top, bottom, bottom)
+      coords <- list(data.frame(x, y))
+      block_coords <- append(block_coords, coords)
+    }
+    pagewise_block_sets <- append(pagewise_block_sets, list(block_coords))
+  }
+
+  # Get vector of base64-encoded images
+  page_imgs <- parsed$pages$image$content
+
+  # loop over the pagewise sets
+  for (i in 1:length(pagewise_block_sets)) {
+
+    # decode base64
+    path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
+    outconn <- file(path,"wb")
+    base64enc::base64decode(page_imgs[i], outconn)
+    close(outconn)
+
+    # read image into magick
+    img_decoded <- magick::image_read(path)
+
+    # get image dimensions
+    info <- magick::image_info(img_decoded)
+
+    # prepare for plotting on image
+    canvas <- magick::image_draw(img_decoded)
+
+    # set counter for box number
+    counter <- 1
+
+    #loop over boxes on the page
+    for(box in pagewise_block_sets[[i]]) {
+
+      # transform from relative to absolute coordinates
+      box$x1 <- box$x * info$width
+
+      box$y1 <- box$y * info$height
+
+      # draw polygon
+      graphics::polygon(x = box$x1,
+                        y = box$y1,
+                        border = "red",
+                        lwd = 3
+      )
+
+      graphics::text(x = box$x1[1],
+                     y = box$y1[1],
+                     label = counter,
+                     cex = 4,
+                     col = "blue",
+                     family = "Liberation Sans"
+      )
+
+      counter <- counter + 1
+
+    }
+
+    # write annotated image to file
+
+    filename <- glue::glue("page{i}_blocks_revised.png")
+
+    dest <- file.path(dir, filename)
+
+    magick::image_write(canvas, format = "png", dest)
+
+    grDevices::dev.off()
+
+  }
+
+  pages <- length(pages_blocks)
+
+  message(glue::glue("Generated {pages} annotated image(s)."))
+
+}

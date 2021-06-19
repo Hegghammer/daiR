@@ -1,4 +1,8 @@
 
+# daiR 0.9.1
+
+- Added new function (draw_blocks_new()) to inspect block bounding boxes after reprocessing.
+
 # daiR 0.9.0 
 
 - Initial CRAN version.

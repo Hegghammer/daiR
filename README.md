@@ -46,7 +46,13 @@ Google Document AI is a [paid service](https://cloud.google.com/document-ai/pric
 
 ## Installation
 
-Install the latest development version from Github:
+Download from CRAN:
+
+```R
+utils::install.packages("daiR")
+```
+
+Or install the latest development version from Github:
 
 ```R
 devtools::install_github("hegghammer/daiR")

@@ -37,6 +37,7 @@ reference:
       - '`reassign_tokens`'
       - '`reassign_tokens2`'
       - '`from_labelme`'
+      - '`draw_blocks_new`'
   - title: Utilities
     desc: ~
     contents:

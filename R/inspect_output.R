@@ -163,7 +163,7 @@ draw_blocks <- function(json,
       graphics::text(x = box$x1[1],
                      y = box$y1[1],
                      label = counter,
-                     cex = 2,
+                     cex = 4,
                      col = "blue",
                      family = "Liberation Sans"
                      )
@@ -275,7 +275,7 @@ draw_paragraphs <- function(json,
       graphics::text(x = box$x1[1],
                      y = box$y1[1],
                      label = counter,
-                     cex = 2,
+                     cex = 3,
                      col = "blue",
                      family = "Liberation Sans"
                      )
