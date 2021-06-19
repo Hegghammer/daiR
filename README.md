@@ -57,6 +57,11 @@ Or install the latest development version from Github:
 ```R
 devtools::install_github("hegghammer/daiR")
 ```
+
+## Acknowledgments
+
+Thanks to Mark Edmondson, Hallvar Gisnås, Will Hanley, Neil Ketchley, and Trond Arne Sørby for contributions to the project.
+
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/daiR)](https://CRAN.R-project.org/package=daiR)
 [![R-CMD-check](https://github.com/Hegghammer/daiR/actions/workflows/package-check.yml/badge.svg)](https://github.com/Hegghammer/daiR/actions/workflows/package-check.yml)
