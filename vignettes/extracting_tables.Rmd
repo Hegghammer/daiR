@@ -39,12 +39,12 @@ include_graphics("tobacco.PNG")
 First we download it and send it to Document AI for processing:
 ```{r, eval=FALSE}
 library(daiR)
-dest_path <- file.path(tempdir(), "tobacco.pdf")
+setwd(tempdir())
 download.file("https://archive.org/download/tobacco_lpnn0000/lpnn0000.pdf", 
-              destfile = dest_path,
+              destfile = "tobacco.pdf",
               mode = "wb")
 
-resp <- dai_sync_tab(dest_path)
+resp <- dai_sync_tab("tobacco.pdf")
 ```
 
 To get the tables into R, we pass the response object (`resp`) to our extraction function:

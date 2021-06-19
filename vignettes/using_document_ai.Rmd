@@ -76,17 +76,16 @@ The quickest and easiest way to OCR with DAI is through synchronous processing. 
 We can try with a sample pdf from the CIA's Freedom of Information Act Electronic Reading Room: 
 
 ```{r, eval=FALSE}
-dest_path <- file.path(tempdir(), "CIA.pdf")
+setwd(tempdir())
 download.file("https://www.cia.gov/readingroom/docs/AGH%2C%20LASLO_0011.pdf", 
-              destfile = dest_path, 
+              destfile = "CIA.pdf", 
               mode = "wb")
 ```
 
 We send it to Document AI with `dai_sync()` and store the HTTP response in an object, for example `response`.
 
 ```{r, eval=FALSE}
-
-response1 <- dai_sync(dest_path)
+response1 <- dai_sync("CIA.pdf")
 ```
 
 Then we extract the text with `text_from_dai_response()`:
@@ -106,7 +105,7 @@ The first step is to upload the source file(s) to a Google Storage bucket where 
 
 ```{r, eval=FALSE}
 library(googleCloudStorageR)
-gcs_upload(dest_path)
+gcs_upload("CIA.pdf")
 ```
 
 Let's check that our file made it safely: 
@@ -152,16 +151,13 @@ our_file <- "<job_number>/0/CIA-0.json"
 Now let's download it and save it under a simpler name:
 
 ```{r, eval=FALSE}
-dest_path2 <- file.path(tempdir(), "CIA.json")
-gcs_get_object(our_file, 
-               saveToDisk = dest_path2, 
-               overwrite = TRUE)
+gcs_get_object(our_file, saveToDisk = "CIA.json", overwrite = TRUE)
 ```
 
 Finally we extract the text using `text_from_dai_file`:
 
 ```{r, eval=FALSE}
-text <- text_from_dai_file(dest_path2)
+text <- text_from_dai_file("CIA.json")
 cat(text)
 ```
 

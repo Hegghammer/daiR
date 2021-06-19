@@ -32,9 +32,9 @@ Document AI accepts only PDFs, GIFs and TIFFs, but sometimes your source documen
 To illustrate, we can take this image of an old text from the National Park Service Website:
 
 ```{r, eval=FALSE}
-dest_path <- file.path(tempdir(), "nps.jpg")
+setwd(tempdir())
 download.file("https://www.nps.gov/articles/images/dec-of-sentiments-loc-copy.jpg", 
-              destfile = dest_path, 
+              destfile = "nps.jpg", 
               mode = "wb")
 ```
 
@@ -42,8 +42,7 @@ And convert it to a pdf like so:
 
 ```{r, eval=FALSE}
 library(daiR)
-dest_path2 <- file.path(tempdir(), "nps.pdf")
-image_to_pdf(dest_path, dest_path2)
+image_to_pdf("nps.jpg", "nps.pdf")
 ```
 
 And the file is ready for processing with Document AI.

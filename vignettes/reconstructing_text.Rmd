@@ -37,9 +37,9 @@ DAI column-reading errors are of two main types. The first is to put text blocks
 To illustrate, let's feed DAI a simple two-column text. This one is from the CIA's archive of declassified intelligence documents: 
 
 ```{r, message=FALSE, eval=FALSE}
-dest_path <- file.path(tempdir(), "CIA_columns.pdf")
+setwd(tempdir())
 download.file("https://www.cia.gov/readingroom/docs/1968-03-08.pdf", 
-              destfile = dest_path, 
+              destfile = "CIA_columns.pdf", 
               mode = "wb")
 ```
 
@@ -60,7 +60,7 @@ library(googleCloudStorageR)
 ```
 
 ```{r, eval=FALSE}
-resp <- gcs_upload(dest_path)
+resp <- gcs_upload("CIA_columns.pdf")
 resp <- dai_async("CIA_columns.pdf")
 ```
 
@@ -86,15 +86,14 @@ our_file <- "<job_number>/0/CIA_columns-0.json"
 ```
 
 ```{r, eval=FALSE}
-dest_path2 <- file.path(tempdir(), "CIA_columns.json")
-gcs_get_object(our_file, saveToDisk = dest_path2)
+gcs_get_object(our_file, saveToDisk = "CIA_columns.json")
 ```
 
 
 Finally we extract the text:
 
 ```{r, eval=FALSE}
-text <- text_from_dai_file(dest_path2)
+text <- text_from_dai_file("CIA_columns.json")
 cat(text)
 ```
 
@@ -161,11 +160,10 @@ include_graphics("peshtigo.jpg")
 We do our processing routine again:
 
 ```{r, eval=FALSE}
-dest_path3 <- file.path(tempdir(), "peshtigo.pdf")
 download.file("https://archive.org/download/themarinetteandpeshtigoeagleoct141871/The%20Marinette%20and%20Peshtigo%20Eagle%20-%20Oct%2014%201871.pdf", 
-              destfile = dest_path3, 
+              destfile = "peshtigo.pdf", 
               mode = "wb")
-resp <- gcs_upload(dest_path3)
+resp <- gcs_upload("peshtigo.pdf")
 resp <- dai_async("peshtigo.pdf")
 ```
 
@@ -178,16 +176,14 @@ our_file <- "<job_number>/0/peshtigo-0.json"
 ```
 
 ```{r, eval=FALSE}
-dest_path4 <- file.path(tempdir(), "peshtigo.json")
-gcs_get_object(our_file, 
-               saveToDisk = dest_path4)
+gcs_get_object(our_file, saveToDisk = "peshtigo.json")
 ```
 
 
 This time we'll skip the text printout and go straight to inspecting the boundary boxes:
 
 ```{r, eval=FALSE}
-draw_blocks(dest_path4, dir = tempdir())
+draw_blocks("peshtigo.json", dir = tempdir())
 ```
 
 ```{r, echo=FALSE, out.width = "50%"}
@@ -197,7 +193,7 @@ include_graphics("peshtigo1_blocks.png")
 As we can see, this time DAI has failed to distinguish between the two main columns. We can verify this by checking the beginning of the text:
 
 ```{r, eval=FALSE}
-text <- text_from_dai_file(dest_path4)
+text <- text_from_dai_file("peshtigo.json")
 snippet <- substr(text, start = 1, stop = 1000)
 cat(snippet)
 ```
