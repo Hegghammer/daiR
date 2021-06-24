@@ -9,7 +9,7 @@ authors:
   - name: Thomas Hegghammer
     orcid: 0000-0001-6253-1518
 affiliations:
-  - name: Senior Research Fellow, Norwegian Defence Research Establishment
+  - name: Senior Research Fellow, Norwegian Defence Research Establishment (FFI), Kjeller, Norway.
 date: 25 June 2021
 bibliography: paper.bib
 
@@ -31,8 +31,7 @@ Text as data is a growing field in the social sciences and digital humanities,
 but computational access to text produced before the late 20th century has been 
 limited by the difficulty of extracting text from document scans. Established 
 OCR libraries such as Tesseract [@tesseract:2021] are highly sensitive to noise 
-and often require extensive corpus-specific adaptations to deliver high 
-accuracy on historical documents.
+and often require extensive corpus-specific adaptations to render text accurately.
 
 The past two years have seen the introduction of server-based OCR processors,
 such as Amazon Textract [@amazon:2021] and Google Document AI, which offer
@@ -43,18 +42,18 @@ In R, where many scholars do their text analysis work, there are packages
 for Tesseract [@ooms:2021] and Amazon Textract [@kretch:2021], but not for
 Document AI. The primary objective of `daiR` is therefore to provide access,
 from within R, to all the main functionalities of the Document AI API. The
-secondary aim is to offer tools to help parse of the output returned by
+secondary aim is to offer tools to help parse the output returned by
 the DAI processor.
 
 DAI is part of Google Cloud Services (GCS), a suite of cloud computing
-services for storage, analytics, and machine learning. daiR joins a family
+services for storage, analytics, and machine learning. `daiR` joins a family
 of existing R packages that interface with GCS, such as `googleLanguageR`
 [@edmondson:2020], that together allows for the implementation of multiple
 GCS tools into an R-based text mining workflow.
 
 DAI currently has three API endpoints --- v1, v1beta2, and v1beta3 --- with
 partly overlapping sets of methods. Table 1 summarises their features and
-associated `daiR` functions. (Note that`daiR` does not provide access to
+associated `daiR` functions. (Note that `daiR` does not provide access to
 v1beta3 as it is very similar to v1beta2.)
 
 | `daiR` function | API endpoint | Processing method | Main features |
@@ -70,7 +69,7 @@ Documents can be processed synchronously or asynchronously. The first method
 takes a single document and returns the result directly into R. The second
 allows batch processing and involves uploading documents to a Google Cloud
 Storage bucket, telling DAI where to find them, and retrieving the JSON file
-output from the same bucket. The R package googleCloudStorageR
+output from the same bucket. The R package `googleCloudStorageR`
 [@edmondson:2021] provides an interface with Google Cloud Storage.
 
 Use of Document AI requires a GCS account. The default authentication method
