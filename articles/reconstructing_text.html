@@ -45,7 +45,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.1</span>
       </span>
     </div>
 
@@ -53,7 +53,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa-home"></span>
+    <span class="fa fa-home"></span>
      
   </a>
 </li>
@@ -140,19 +140,19 @@
 <a href="#reordering-blocks" class="anchor"></a>Reordering blocks</h2>
 <p>To illustrate, let’s feed DAI a simple two-column text. This one is from the CIA’s archive of declassified intelligence documents:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">dest_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"CIA_columns.pdf"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/getwd.html">setwd</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/download.file.html">download.file</a></span><span class="op">(</span><span class="st">"https://www.cia.gov/readingroom/docs/1968-03-08.pdf"</span>, 
-              destfile <span class="op">=</span> <span class="va">dest_path</span>, 
+              destfile <span class="op">=</span> <span class="st">"CIA_columns.pdf"</span>, 
               mode <span class="op">=</span> <span class="st">"wb"</span><span class="op">)</span></code></pre></div>
 <p><img src="CIA_columns.jpg" width="50%"></p>
 <p>We start by uploading it to Google Storage and passing it to Document AI.</p>
-<pre><code>#&gt; Welcome to daiR 0.9.0, your gateway to Google Document AI v1.
+<pre><code>#&gt; Welcome to daiR 0.9.1, your gateway to Google Document AI v1.
 #&gt; Access token not available. Have you provided a valid service account key file?</code></pre>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Hegghammer/daiR">daiR</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://code.markedmondson.me/googleCloudStorageR/">googleCloudStorageR</a></span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload</a></span><span class="op">(</span><span class="va">dest_path</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload</a></span><span class="op">(</span><span class="st">"CIA_columns.pdf"</span><span class="op">)</span>
 <span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_async.html">dai_async</a></span><span class="op">(</span><span class="st">"CIA_columns.pdf"</span><span class="op">)</span></code></pre></div>
 <p>Note that this code assumes you have set <code>GCS_AUTH_FILE</code> and <code>GCS_DEFAULT_BUCKET</code> variables in your .Renviron file (see the <a href="https://dair.info/articles/setting_up_google_storage.html">two</a> <a href="https://dair.info/articles/using_document_ai.html">previous</a> vignettes for details).</p>
 <p>We check our bucket for the json output and download it when it’s ready:</p>
@@ -162,11 +162,10 @@
 <span class="co">## NOT RUN</span>
 <span class="va">our_file</span> <span class="op">&lt;-</span> <span class="st">"&lt;job_number&gt;/0/CIA_columns-0.json"</span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">dest_path2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"CIA_columns.json"</span><span class="op">)</span>
-<span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html">gcs_get_object</a></span><span class="op">(</span><span class="va">our_file</span>, saveToDisk <span class="op">=</span> <span class="va">dest_path2</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html">gcs_get_object</a></span><span class="op">(</span><span class="va">our_file</span>, saveToDisk <span class="op">=</span> <span class="st">"CIA_columns.json"</span><span class="op">)</span></code></pre></div>
 <p>Finally we extract the text:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/text_from_dai_file.html">text_from_dai_file</a></span><span class="op">(</span><span class="va">dest_path2</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/text_from_dai_file.html">text_from_dai_file</a></span><span class="op">(</span><span class="st">"CIA_columns.json"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="va">text</span><span class="op">)</span></code></pre></div>
 <p>On first inspection, this does not look so bad. But notice the transition from the first to the second paragraph:</p>
 <blockquote>
@@ -206,11 +205,10 @@
 <p><img src="peshtigo.jpg" width="50%"></p>
 <p>We do our processing routine again:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">dest_path3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"peshtigo.pdf"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/download.file.html">download.file</a></span><span class="op">(</span><span class="st">"https://archive.org/download/themarinetteandpeshtigoeagleoct141871/The%20Marinette%20and%20Peshtigo%20Eagle%20-%20Oct%2014%201871.pdf"</span>, 
-              destfile <span class="op">=</span> <span class="va">dest_path3</span>, 
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html">download.file</a></span><span class="op">(</span><span class="st">"https://archive.org/download/themarinetteandpeshtigoeagleoct141871/The%20Marinette%20and%20Peshtigo%20Eagle%20-%20Oct%2014%201871.pdf"</span>, 
+              destfile <span class="op">=</span> <span class="st">"peshtigo.pdf"</span>, 
               mode <span class="op">=</span> <span class="st">"wb"</span><span class="op">)</span>
-<span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload</a></span><span class="op">(</span><span class="va">dest_path3</span><span class="op">)</span>
+<span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload</a></span><span class="op">(</span><span class="st">"peshtigo.pdf"</span><span class="op">)</span>
 <span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_async.html">dai_async</a></span><span class="op">(</span><span class="st">"peshtigo.pdf"</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># wait till ready</span>
@@ -219,16 +217,14 @@
 <span class="co">## NOT RUN</span>
 <span class="va">our_file</span> <span class="op">&lt;-</span> <span class="st">"&lt;job_number&gt;/0/peshtigo-0.json"</span></code></pre></div>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">dest_path4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"peshtigo.json"</span><span class="op">)</span>
-<span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html">gcs_get_object</a></span><span class="op">(</span><span class="va">our_file</span>, 
-               saveToDisk <span class="op">=</span> <span class="va">dest_path4</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html">gcs_get_object</a></span><span class="op">(</span><span class="va">our_file</span>, saveToDisk <span class="op">=</span> <span class="st">"peshtigo.json"</span><span class="op">)</span></code></pre></div>
 <p>This time we’ll skip the text printout and go straight to inspecting the boundary boxes:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/draw_blocks.html">draw_blocks</a></span><span class="op">(</span><span class="va">dest_path4</span>, dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="../reference/draw_blocks.html">draw_blocks</a></span><span class="op">(</span><span class="st">"peshtigo.json"</span>, dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="peshtigo1_blocks.png" width="50%"></p>
 <p>As we can see, this time DAI has failed to distinguish between the two main columns. We can verify this by checking the beginning of the text:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/text_from_dai_file.html">text_from_dai_file</a></span><span class="op">(</span><span class="va">dest_path4</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/text_from_dai_file.html">text_from_dai_file</a></span><span class="op">(</span><span class="st">"peshtigo.json"</span><span class="op">)</span>
 <span class="va">snippet</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html">substr</a></span><span class="op">(</span><span class="va">text</span>, start <span class="op">=</span> <span class="fl">1</span>, stop <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="va">snippet</span><span class="op">)</span></code></pre></div>
 <p>This means that we must find a way of splitting block 12 vertically.</p>

@@ -45,7 +45,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.1</span>
       </span>
     </div>
 
@@ -53,7 +53,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa-home"></span>
+    <span class="fa fa-home"></span>
      
   </a>
 </li>
@@ -133,15 +133,14 @@
 <p>Document AI accepts only PDFs, GIFs and TIFFs, but sometimes your source documents are in other formats. <code>daiR</code>’s helper function <code><a href="../reference/image_to_pdf.html">image_to_pdf()</a></code> is designed to help with this. Based as it is on <code>imagemagick</code>, it converts almost any image file format to pdf. You can also pass a vector of image files and ask for a single <code>.pdf</code> output, which is useful for collating several pagewise images to a single, multipage <code>.pdf</code>.</p>
 <p>To illustrate, we can take this image of an old text from the National Park Service Website:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">dest_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"nps.jpg"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/getwd.html">setwd</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/download.file.html">download.file</a></span><span class="op">(</span><span class="st">"https://www.nps.gov/articles/images/dec-of-sentiments-loc-copy.jpg"</span>, 
-              destfile <span class="op">=</span> <span class="va">dest_path</span>, 
+              destfile <span class="op">=</span> <span class="st">"nps.jpg"</span>, 
               mode <span class="op">=</span> <span class="st">"wb"</span><span class="op">)</span></code></pre></div>
 <p>And convert it to a pdf like so:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Hegghammer/daiR">daiR</a></span><span class="op">)</span>
-<span class="va">dest_path2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"nps.pdf"</span><span class="op">)</span>
-<span class="fu"><a href="../reference/image_to_pdf.html">image_to_pdf</a></span><span class="op">(</span><span class="va">dest_path</span>, <span class="va">dest_path2</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="../reference/image_to_pdf.html">image_to_pdf</a></span><span class="op">(</span><span class="st">"nps.jpg"</span>, <span class="st">"nps.pdf"</span><span class="op">)</span></code></pre></div>
 <p>And the file is ready for processing with Document AI.</p>
 </div>
 <div id="processing-a-folder-tree" class="section level2">
