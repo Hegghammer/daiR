@@ -3,16 +3,18 @@ title: 'daiR: an R package for OCR with Google Document AI'
 tags:
   - R
   - optical character recognition
+  - cloud computing
   - text mining
   - natural language processing
 authors:
-  - name: Thomas Hegghammer
+  - name: Thomas Hegghammer^[corresponding author]
     orcid: 0000-0001-6253-1518
+    affiliation: 1
 affiliations:
-  - name: Senior Research Fellow, Norwegian Defence Research Establishment (FFI), Kjeller, Norway.
+  - name: Senior Research Fellow, Norwegian Defence Research Establishment (FFI)
+    index: 1
 date: 25 June 2021
 bibliography: paper.bib
-
 ---
 
 # Statement of need
