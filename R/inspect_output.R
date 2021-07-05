@@ -148,6 +148,12 @@ draw_blocks <- function(json,
     #loop over boxes on the page
     for(box in pagewise_block_sets[[i]]) {
 
+      # handle NAs in boxes on top or left edge
+      if (is.na(box$y[1])) box$y[1] <- 0
+      if (is.na(box$y[2])) box$y[2] <- 0
+      if (is.na(box$x[1])) box$x[1] <- 0
+      if (is.na(box$x[4])) box$x[4] <- 0
+
       # transform from relative to absolute coordinates
       box$x1 <- box$x * info$width
 
@@ -259,6 +265,12 @@ draw_paragraphs <- function(json,
 
     #loop over boxes on the page
     for(box in pagewise_para_sets[[i]]){
+
+      # handle NAs in boxes on top or left edge
+      if (is.na(box$y[1])) box$y[1] <- 0
+      if (is.na(box$y[2])) box$y[2] <- 0
+      if (is.na(box$x[1])) box$x[1] <- 0
+      if (is.na(box$x[4])) box$x[4] <- 0
 
       # transform from relative to absolute coordinates
       box$x1 <- box$x * info$width
@@ -372,6 +384,12 @@ draw_lines <- function(json,
     #loop over boxes on the page
     for(box in pagewise_line_sets[[i]]) {
 
+      # handle NAs in boxes on top or left edge
+      if (is.na(box$y[1])) box$y[1] <- 0
+      if (is.na(box$y[2])) box$y[2] <- 0
+      if (is.na(box$x[1])) box$x[1] <- 0
+      if (is.na(box$x[4])) box$x[4] <- 0
+
       # transform from relative to absolute coordinates
       box$x1 <- box$x * info$width
 
@@ -484,6 +502,12 @@ draw_tokens <- function(json,
 
     #loop over boxes on the page
     for(box in pagewise_token_sets[[i]]) {
+
+      # handle NAs in boxes on top or left edge
+      if (is.na(box$y[1])) box$y[1] <- 0
+      if (is.na(box$y[2])) box$y[2] <- 0
+      if (is.na(box$x[1])) box$x[1] <- 0
+      if (is.na(box$x[4])) box$x[4] <- 0
 
       # transform from relative to absolute coordinates
       box$x1 <- box$x * info$width
