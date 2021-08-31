@@ -37,12 +37,12 @@ Turn images of tables into R dataframes:
 ```R
 ## NOT RUN:
 response <- dai_sync_tab("tables.pdf")
-dfs <- tables_from_dai_response(response) 
+dfs <- tables_from_dai_response(response)
 ```
 
 ## Requirements
 
-Google Document AI is a [paid service](https://cloud.google.com/document-ai/pricing) that requires a [Google Cloud](https://console.cloud.google.com/) account and a [Google Storage](https://cloud.google.com/storage) bucket. I recommend using Mark Edmondson's `googleCloudStorageR` [package](https://github.com/cloudyr/googleCloudStorageR) in combination with `daiR`. 
+Google Document AI is a [paid service](https://cloud.google.com/document-ai/pricing) that requires a [Google Cloud](https://console.cloud.google.com/) account and a [Google Storage](https://cloud.google.com/storage) bucket. I recommend using Mark Edmondson's `googleCloudStorageR` [package](https://github.com/cloudyr/googleCloudStorageR) in combination with `daiR`.
 
 ## Installation
 
@@ -60,7 +60,11 @@ devtools::install_github("hegghammer/daiR")
 
 ## Acknowledgments
 
-Thanks to Mark Edmondson, Hallvar Gisnås, Will Hanley, Neil Ketchley, and Trond Arne Sørby for contributions to the project.
+Thanks to Mark Edmondson, Hallvar Gisnås, Will Hanley, Neil Ketchley, Trond Arne Sørby, and Chris Barrie for contributions to the project.
+
+## Code of conduct
+
+Please note that the daiR project is released with a [Contributor Code of Conduct](https://www.contributor-covenant.org/version/2/0/code_of_conduct/). By contributing to this project, you agree to abide by its terms.
 
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/daiR)](https://CRAN.R-project.org/package=daiR)
