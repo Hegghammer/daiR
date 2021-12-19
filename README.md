@@ -60,7 +60,7 @@ devtools::install_github("hegghammer/daiR")
 
 ## Acknowledgments
 
-Thanks to Mark Edmondson, Hallvar Gisnås, Will Hanley, Neil Ketchley, Trond Arne Sørby, and Chris Barrie for contributions to the project.
+Thanks to Mark Edmondson, Hallvar Gisnås, Will Hanley, Neil Ketchley, Trond Arne Sørby, Chris Barrie, and Geraint Palmer for contributions to the project.
 
 ## Code of conduct
 
