@@ -1,3 +1,6 @@
+# daiR 0.9.2
+
+- Added more support documentation in connection with JOSS release.
 
 # daiR 0.9.1
 
