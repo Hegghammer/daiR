@@ -4,10 +4,12 @@
 \alias{draw_blocks}
 \title{Inspect block bounding boxes}
 \usage{
-draw_blocks(json, dir = getwd())
+draw_blocks(json, prefix = NULL, dir = getwd())
 }
 \arguments{
 \item{json}{filepath of a JSON file obtained using \code{dai_async()}}
+
+\item{prefix}{string to be prepended to output filename}
 
 \item{dir}{path to the desired output directory}
 }

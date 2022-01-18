@@ -4,10 +4,12 @@
 \alias{draw_paragraphs}
 \title{Inspect paragraph bounding boxes}
 \usage{
-draw_paragraphs(json, dir = getwd())
+draw_paragraphs(json, prefix = NULL, dir = getwd())
 }
 \arguments{
 \item{json}{filepath of a JSON file obtained using \code{dai_async()}}
+
+\item{prefix}{string to be prepended to output filename}
 
 \item{dir}{path to the desired output directory.}
 }

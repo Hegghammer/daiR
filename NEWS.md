@@ -1,3 +1,7 @@
+# daiR 0.9.3
+
+- Changed the "draw_*" functions to allow custom output filenames. 
+
 # daiR 0.9.2
 
 - Added more support documentation in connection with JOSS release.

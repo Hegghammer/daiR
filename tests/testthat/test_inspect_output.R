@@ -70,9 +70,20 @@ test_that("draw_blocks() warns of input errors", {
   expect_error(draw_blocks(12345), "Invalid json input.")
   expect_error(draw_blocks(mtcars), "Invalid json input.")
   expect_error(draw_blocks(as.matrix(mtcars)), "Invalid json input.")
-  expect_error(draw_blocks(c("string.json", "vector.json")), "Invalid json input. This function is not vectorised.")
-  expect_error(draw_blocks(list("a.json", "list.json")), "Invalid json input. This function is not vectorised.")
+  expect_error(draw_blocks(c("foo.json", "bar.json")), "Invalid json input. This function is not vectorised.")
+  expect_error(draw_blocks(list("foo.json", "bar.json")), "Invalid json input. This function is not vectorised.")
   expect_error(draw_blocks("fake.json"), "Input 'json' not .json.")
+  realjson <- testthat::test_path("examples", "sample_v1.json")
+  expect_error(draw_blocks(realjson, prefix = 12345), "Invalid prefix.")
+  expect_error(draw_blocks(realjson, prefix = mtcars), "Invalid prefix.")
+  expect_error(draw_blocks(realjson, prefix = as.matrix(mtcars)), "Invalid prefix.")
+  expect_error(draw_blocks(realjson, prefix = c("foo", "bar")), "Invalid prefix.")
+  expect_error(draw_blocks(realjson, prefix = list("foo", "bar")), "Invalid prefix.")
+  expect_error(draw_blocks(realjson, prefix = "myfile", dir = 12345), "Invalid dir parameter. Must be a valid folder path.")
+  expect_error(draw_blocks(realjson, prefix = "myfile", dir = mtcars), "Invalid dir parameter. Must be a valid folder path.")
+  expect_error(draw_blocks(realjson, prefix = "myfile", dir = as.matrix(mtcars)), "Invalid dir parameter. Must be a valid folder path.")
+  expect_error(draw_blocks(realjson, prefix = "myfile", dir = c(getwd(), getwd())), "Invalid dir parameter. Must be a valid folder path.")
+  expect_error(draw_blocks(realjson, prefix = "myfile", dir = list(getwd(), getwd())), "Invalid dir parameter. Must be a valid folder path.")
 })
 
 test_that("draw_blocks() produces a correctly named png file", {
@@ -85,8 +96,9 @@ test_that("draw_blocks() produces a correctly named png file", {
   parsed <- jsonlite::fromJSON(realjson)
   pages <- parsed[["pages"]][["pageNumber"]]
   expected_filepaths <- character()
+  stem <- substr(basename(realjson), 1, nchar(basename(realjson)) -5)
   for (i in pages) {
-    fname <- glue::glue("page{i}_blocks.png")
+    fname <- glue::glue("{stem}_page{i}_blocks.png")
     fpath <- file.path(tempdir(), fname)
     expected_filepaths <- c(expected_filepaths, fpath)
   }
@@ -106,6 +118,17 @@ test_that("draw_paragraphs() warns of input errors", {
   expect_error(draw_paragraphs(c("string.json", "vector.json")), "Invalid json input. This function is not vectorised.")
   expect_error(draw_paragraphs(list("a.json", "list.json")), "Invalid json input. This function is not vectorised.")
   expect_error(draw_paragraphs("fake.json"), "Input 'json' not .json.")
+  realjson <- testthat::test_path("examples", "sample_v1.json")
+  expect_error(draw_paragraphs(realjson, prefix = 12345), "Invalid prefix.")
+  expect_error(draw_paragraphs(realjson, prefix = mtcars), "Invalid prefix.")
+  expect_error(draw_paragraphs(realjson, prefix = as.matrix(mtcars)), "Invalid prefix.")
+  expect_error(draw_paragraphs(realjson, prefix = c("foo", "bar")), "Invalid prefix.")
+  expect_error(draw_paragraphs(realjson, prefix = list("foo", "bar")), "Invalid prefix.")
+  expect_error(draw_paragraphs(realjson, prefix = "myfile", dir = 12345), "Invalid dir parameter. Must be a valid folder path.")
+  expect_error(draw_paragraphs(realjson, prefix = "myfile", dir = mtcars), "Invalid dir parameter. Must be a valid folder path.")
+  expect_error(draw_paragraphs(realjson, prefix = "myfile", dir = as.matrix(mtcars)), "Invalid dir parameter. Must be a valid folder path.")
+  expect_error(draw_paragraphs(realjson, prefix = "myfile", dir = c(getwd(), getwd())), "Invalid dir parameter. Must be a valid folder path.")
+  expect_error(draw_paragraphs(realjson, prefix = "myfile", dir = list(getwd(), getwd())), "Invalid dir parameter. Must be a valid folder path.")
 })
 
 test_that("draw_paragraphs() produces a correctly named new png file", {
@@ -117,8 +140,9 @@ test_that("draw_paragraphs() produces a correctly named new png file", {
   parsed <- jsonlite::fromJSON(realjson)
   pages <- parsed[["pages"]][["pageNumber"]]
   expected_filepaths <- character()
+  stem <- substr(basename(realjson), 1, nchar(basename(realjson)) -5)
   for (i in pages) {
-    fname <- glue::glue("page{i}_paragraphs.png")
+    fname <- glue::glue("{stem}_page{i}_paragraphs.png")
     fpath <- file.path(tempdir(), fname)
     expected_filepaths <- c(expected_filepaths, fpath)
   }
@@ -138,6 +162,17 @@ test_that("draw_lines() warns of input errors", {
   expect_error(draw_lines(c("string.json", "vector.json")), "Invalid json input. This function is not vectorised.")
   expect_error(draw_lines(list("a.json", "list.json")), "Invalid json input. This function is not vectorised.")
   expect_error(draw_lines("fake.json"), "Input 'json' not .json.")
+  realjson <- testthat::test_path("examples", "sample_v1.json")
+  expect_error(draw_lines(realjson, prefix = 12345), "Invalid prefix.")
+  expect_error(draw_lines(realjson, prefix = mtcars), "Invalid prefix.")
+  expect_error(draw_lines(realjson, prefix = as.matrix(mtcars)), "Invalid prefix.")
+  expect_error(draw_lines(realjson, prefix = c("foo", "bar")), "Invalid prefix.")
+  expect_error(draw_lines(realjson, prefix = list("foo", "bar")), "Invalid prefix.")
+  expect_error(draw_lines(realjson, prefix = "myfile", dir = 12345), "Invalid dir parameter. Must be a valid folder path.")
+  expect_error(draw_lines(realjson, prefix = "myfile", dir = mtcars), "Invalid dir parameter. Must be a valid folder path.")
+  expect_error(draw_lines(realjson, prefix = "myfile", dir = as.matrix(mtcars)), "Invalid dir parameter. Must be a valid folder path.")
+  expect_error(draw_lines(realjson, prefix = "myfile", dir = c(getwd(), getwd())), "Invalid dir parameter. Must be a valid folder path.")
+  expect_error(draw_lines(realjson, prefix = "myfile", dir = list(getwd(), getwd())), "Invalid dir parameter. Must be a valid folder path.")
 })
 
 test_that("draw_lines() produces a correctly named new png file", {
@@ -149,8 +184,9 @@ test_that("draw_lines() produces a correctly named new png file", {
   parsed <- jsonlite::fromJSON(realjson)
   pages <- parsed[["pages"]][["pageNumber"]]
   expected_filepaths <- character()
+  stem <- substr(basename(realjson), 1, nchar(basename(realjson)) -5)
   for (i in pages) {
-    fname <- glue::glue("page{i}_lines.png")
+    fname <- glue::glue("{stem}_page{i}_lines.png")
     fpath <- file.path(tempdir(), fname)
     expected_filepaths <- c(expected_filepaths, fpath)
   }
@@ -170,6 +206,17 @@ test_that("draw_tokens() warns of input errors", {
   expect_error(draw_tokens(c("string.json", "vector.json")), "Invalid json input. This function is not vectorised.")
   expect_error(draw_tokens(list("a.json", "list.json")), "Invalid json input. This function is not vectorised.")
   expect_error(draw_tokens("fake.json"), "Input 'json' not .json.")
+  realjson <- testthat::test_path("examples", "sample_v1.json")
+  expect_error(draw_tokens(realjson, prefix = 12345), "Invalid prefix.")
+  expect_error(draw_tokens(realjson, prefix = mtcars), "Invalid prefix.")
+  expect_error(draw_tokens(realjson, prefix = as.matrix(mtcars)), "Invalid prefix.")
+  expect_error(draw_tokens(realjson, prefix = c("foo", "bar")), "Invalid prefix.")
+  expect_error(draw_tokens(realjson, prefix = list("foo", "bar")), "Invalid prefix.")
+  expect_error(draw_tokens(realjson, prefix = "myfile", dir = 12345), "Invalid dir parameter. Must be a valid folder path.")
+  expect_error(draw_tokens(realjson, prefix = "myfile", dir = mtcars), "Invalid dir parameter. Must be a valid folder path.")
+  expect_error(draw_tokens(realjson, prefix = "myfile", dir = as.matrix(mtcars)), "Invalid dir parameter. Must be a valid folder path.")
+  expect_error(draw_tokens(realjson, prefix = "myfile", dir = c(getwd(), getwd())), "Invalid dir parameter. Must be a valid folder path.")
+  expect_error(draw_tokens(realjson, prefix = "myfile", dir = list(getwd(), getwd())), "Invalid dir parameter. Must be a valid folder path.")
 })
 
 test_that("draw_tokens() produces a correctly named new png file", {
@@ -181,8 +228,9 @@ test_that("draw_tokens() produces a correctly named new png file", {
   parsed <- jsonlite::fromJSON(realjson)
   pages <- parsed[["pages"]][["pageNumber"]]
   expected_filepaths <- character()
+  stem <- substr(basename(realjson), 1, nchar(basename(realjson)) -5)
   for (i in pages) {
-    fname <- glue::glue("page{i}_tokens.png")
+    fname <- glue::glue("{stem}_page{i}_tokens.png")
     fpath <- file.path(tempdir(), fname)
     expected_filepaths <- c(expected_filepaths, fpath)
   }

@@ -4,10 +4,12 @@
 \alias{draw_lines}
 \title{Inspect line bounding boxes}
 \usage{
-draw_lines(json, dir = getwd())
+draw_lines(json, prefix = NULL, dir = getwd())
 }
 \arguments{
 \item{json}{filepath of a JSON file obtained using \code{dai_async()}}
+
+\item{prefix}{string to be prepended to output filename}
 
 \item{dir}{path to the desired output directory.}
 }

@@ -86,6 +86,7 @@ text_from_dai_file <- function(file) {
 #' document.
 #'
 #' @param json filepath of a JSON file obtained using \code{dai_async()}
+#' @param prefix string to be prepended to output filename
 #' @param dir path to the desired output directory
 #' @return no return value, called for side effects
 #'
@@ -98,6 +99,7 @@ text_from_dai_file <- function(file) {
 #' }
 
 draw_blocks <- function(json,
+                        prefix = NULL,
                         dir = getwd()
                        ) {
   # checks
@@ -112,6 +114,22 @@ draw_blocks <- function(json,
   if (!(is_json(json))) {
     stop("Input 'json' not .json.")
     }
+
+  if (length(prefix) > 1) {
+    stop("Invalid prefix.")
+  }
+
+  if (!(is.character(prefix) || is.null(prefix))) {
+    stop("Invalid prefix.")
+    }
+
+  if (length(dir) > 1) {
+    stop("Invalid dir parameter. Must be a valid folder path.")
+  }
+
+  if (!(is.character(dir))) {
+    stop("Invalid dir parameter. Must be a valid folder path.")
+  }
 
   # parse the json
   parsed <- jsonlite::fromJSON(json)
@@ -180,7 +198,13 @@ draw_blocks <- function(json,
 
     # write annotated image to file
 
-    filename <- glue::glue("page{i}_blocks.png")
+    default_prefix <- substr(basename(json), 1, nchar(basename(json)) -5)
+
+    if (is.null(prefix)) {
+      filename <- glue::glue("{default_prefix}_page{i}_blocks.png")
+    } else {
+      filename <- glue::glue("{prefix}_page{i}_blocks.png")
+    }
 
     dest <- file.path(dir, filename)
 
@@ -204,6 +228,7 @@ draw_blocks <- function(json,
 #' document.
 #'
 #' @param json filepath of a JSON file obtained using \code{dai_async()}
+#' @param prefix string to be prepended to output filename
 #' @param dir path to the desired output directory.
 #' @return no return value, called for side effects
 #'
@@ -216,6 +241,7 @@ draw_blocks <- function(json,
 #' }
 
 draw_paragraphs <- function(json,
+                            prefix = NULL,
                             dir = getwd()
                            ) {
   # checks
@@ -230,6 +256,22 @@ draw_paragraphs <- function(json,
   if (!(is_json(json))) {
     stop("Input 'json' not .json.")
     }
+
+  if (length(prefix) > 1) {
+    stop("Invalid prefix.")
+  }
+
+  if (!(is.character(prefix) || is.null(prefix))) {
+    stop("Invalid prefix.")
+    }
+
+  if (length(dir) > 1) {
+    stop("Invalid dir parameter. Must be a valid folder path.")
+  }
+
+  if (!(is.character(dir))) {
+    stop("Invalid dir parameter. Must be a valid folder path.")
+  }
 
   # parse the json
   parsed <- jsonlite::fromJSON(json)
@@ -297,7 +339,13 @@ draw_paragraphs <- function(json,
 
     # write annotated image to file
 
-    filename <- glue::glue("page{i}_paragraphs.png")
+    default_prefix <- substr(basename(json), 1, nchar(basename(json)) -5)
+
+    if (is.null(prefix)) {
+      filename <- glue::glue("{default_prefix}_page{i}_paragraphs.png")
+    } else {
+      filename <- glue::glue("{prefix}_page{i}_paragraphs.png")
+    }
 
     dest <- file.path(dir, filename)
 
@@ -321,6 +369,7 @@ draw_paragraphs <- function(json,
 #' document.
 #'
 #' @param json filepath of a JSON file obtained using \code{dai_async()}
+#' @param prefix string to be prepended to output filename
 #' @param dir path to the desired output directory.
 #' @return no return value, called for side effects
 #'
@@ -333,6 +382,7 @@ draw_paragraphs <- function(json,
 #' }
 
 draw_lines <- function(json,
+                       prefix = NULL,
                        dir = getwd()
                        ) {
 
@@ -348,6 +398,22 @@ draw_lines <- function(json,
   if (!(is_json(json))) {
     stop("Input 'json' not .json.")
     }
+
+  if (length(prefix) > 1) {
+    stop("Invalid prefix.")
+  }
+
+  if (!(is.character(prefix) || is.null(prefix))) {
+    stop("Invalid prefix.")
+  }
+
+  if (length(dir) > 1) {
+    stop("Invalid dir parameter. Must be a valid folder path.")
+  }
+
+  if (!(is.character(dir))) {
+    stop("Invalid dir parameter. Must be a valid folder path.")
+  }
 
   # parse the json
   parsed <- jsonlite::fromJSON(json)
@@ -416,7 +482,13 @@ draw_lines <- function(json,
 
     # write annotated image to file
 
-    filename <- glue::glue("page{i}_lines.png")
+    default_prefix <- substr(basename(json), 1, nchar(basename(json)) -5)
+
+    if (is.null(prefix)) {
+      filename <- glue::glue("{default_prefix}_page{i}_lines.png")
+    } else {
+      filename <- glue::glue("{prefix}_page{i}_lines.png")
+    }
 
     dest <- file.path(dir, filename)
 
@@ -440,6 +512,7 @@ draw_lines <- function(json,
 #' document.
 #'
 #' @param json filepath of a JSON file obtained using \code{dai_async()}
+#' @param prefix string to be prepended to output filename
 #' @param dir path to the desired output directory.
 #' @return no return value, called for side effects
 #'
@@ -452,6 +525,7 @@ draw_lines <- function(json,
 #' }
 
 draw_tokens <- function(json,
+                        prefix = NULL,
                         dir = getwd()
                         ) {
 
@@ -467,6 +541,22 @@ draw_tokens <- function(json,
   if (!(is_json(json))) {
     stop("Input 'json' not .json.")
     }
+
+  if (length(prefix) > 1) {
+    stop("Invalid prefix.")
+  }
+
+  if (!(is.character(prefix) || is.null(prefix))) {
+    stop("Invalid prefix.")
+  }
+
+  if (length(dir) > 1) {
+    stop("Invalid dir parameter. Must be a valid folder path.")
+  }
+
+  if (!(is.character(dir))) {
+    stop("Invalid dir parameter. Must be a valid folder path.")
+  }
 
   # parse the json
   parsed <- jsonlite::fromJSON(json)
@@ -535,7 +625,13 @@ draw_tokens <- function(json,
 
     # write annotated image to file
 
-    filename <- glue::glue("page{i}_tokens.png")
+    default_prefix <- substr(basename(json), 1, nchar(basename(json)) -5)
+
+    if (is.null(prefix)) {
+      filename <- glue::glue("{default_prefix}_page{i}_tokens.png")
+    } else {
+      filename <- glue::glue("{prefix}_page{i}_tokens.png")
+    }
 
     dest <- file.path(dir, filename)
 
