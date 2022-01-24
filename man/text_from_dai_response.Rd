@@ -4,13 +4,24 @@
 \alias{text_from_dai_response}
 \title{Get text from HTTP response object}
 \usage{
-text_from_dai_response(response)
+text_from_dai_response(
+  response,
+  save_to_file = FALSE,
+  dest_dir = getwd(),
+  filename = "output"
+)
 }
 \arguments{
 \item{response}{an HTTP response object returned by \code{dai_sync()}}
+
+\item{save_to_file}{boolean; whether to save the text as a .txt file}
+
+\item{dest_dir}{folder path for the .txt output file if \code{save_to_file = TRUE}}
+
+\item{filename}{string to form the stem of the .txt output file}
 }
 \value{
-a string
+a string (if \code{save_to_file = FALSE})
 }
 \description{
 Extracts the text OCRed by Document AI (DAI) in a
@@ -19,5 +30,7 @@ synchronous processing request.
 \examples{
 \dontrun{
 text <- text_from_dai_response(response)
+
+text_from_dai_response(response, save_to_file = TRUE)
 }
 }

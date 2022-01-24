@@ -1,6 +1,6 @@
 Package: daiR
 Title: Interface with Google Cloud Document AI API
-Version: 0.9.3
+Version: 0.9.5
 Authors@R: 
     person(given = "Thomas",
            family = "Hegghammer",
@@ -22,6 +22,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
 Imports: 
     base64enc,
+    beepr,
     curl,
     fs,
     gargle,
@@ -33,6 +34,7 @@ Imports:
     magick,
     pdftools,
     purrr,
+    readtext,
     stringr
 Suggests: 
     covr,

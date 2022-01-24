@@ -1,3 +1,9 @@
+# daiR 0.9.5
+
+- Added two new functions: `dai_notify()` and `merge_shards()`
+- Modified `text_from_dai_response()` and `text_from_dai_file()` to allow saving the output straight to a text file. 
+- Fixed a bug in `dai_status()` that caused an error when processing responses from the v1beta2 endpoint (`dai_tab_async()`).  
+
 # daiR 0.9.3
 
 - Changed the "draw_*" functions to allow custom output filenames. 

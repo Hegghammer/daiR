@@ -5,7 +5,7 @@
 
 .onAttach <- function(libname, pkgname) {
 
-  packageStartupMessage("Welcome to daiR 0.9.1, your gateway to Google Document AI v1.")
+  packageStartupMessage("Welcome to daiR 0.9.5, your gateway to Google Document AI v1.")
 
   dai_auth()
 

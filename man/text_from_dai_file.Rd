@@ -4,13 +4,17 @@
 \alias{text_from_dai_file}
 \title{Get text from output file}
 \usage{
-text_from_dai_file(file)
+text_from_dai_file(file, save_to_file = FALSE, dest_dir = getwd())
 }
 \arguments{
 \item{file}{filepath of a JSON file obtained using \code{dai_async()}}
+
+\item{save_to_file}{boolean; whether to save the text as a .txt file}
+
+\item{dest_dir}{folder path for the .txt output file if save_to_file=TRUE}
 }
 \value{
-a string
+a string (if \code{save_to_file = FALSE})
 }
 \description{
 Extracts the text OCRed by Document AI (DAI) in an
@@ -18,6 +22,7 @@ asynchronous processing request.
 }
 \examples{
 \dontrun{
-text <- text_from_dai_file("output.json")
+text <- text_from_dai_file("mydoc-0.json")
+text_from_dai_file("mydoc-0.json", save_to_file = TRUE)
 }
 }

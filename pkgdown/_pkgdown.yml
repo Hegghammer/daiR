@@ -16,14 +16,16 @@ reference:
     contents:
       - '`dai_sync`'
       - '`dai_async`'
-      - '`dai_status`'
       - '`dai_sync_tab`'
       - '`dai_async_tab`'
+      - '`dai_status`'
+      - '`dai_notify`'
   - title: Inspect output
     desc: ~
     contents:
       - '`text_from_dai_response`'
       - '`text_from_dai_file`'
+      - '`merge_shards`'
       - '`draw_blocks`'
       - '`draw_paragraphs`'
       - '`draw_lines`'
