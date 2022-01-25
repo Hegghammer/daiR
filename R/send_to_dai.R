@@ -751,7 +751,7 @@ dai_notify <- function(response,
   
   while (isFALSE(finished)) {
     msg <- utils::capture.output(dai_status(response, loc, token), type = "message")
-    finished <- grep("SUCCEEDED", msg)
+    finished <- grepl("SUCCEEDED", msg)
     Sys.sleep(1)
     }
   
