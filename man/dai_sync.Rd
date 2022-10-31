@@ -8,6 +8,7 @@ dai_sync(
   file,
   proj_id = get_project_id(),
   proc_id = Sys.getenv("DAI_PROCESSOR_ID"),
+  proc_v = NA,
   skip_rev = "true",
   loc = "eu",
   token = dai_token()
@@ -18,7 +19,11 @@ dai_sync(
 
 \item{proj_id}{a GCS project id.}
 
-\item{proc_id}{a Document AI processor id}
+\item{proc_id}{a Document AI processor id.}
+
+\item{proc_v}{one of 1) a processor version name, 2) "stable" for the
+latest processor from the stable channel, or 3) "rc" for the latest
+processor from the release candidate channel.}
 
 \item{skip_rev}{whether to skip human review; "true" or "false".}
 
@@ -28,7 +33,7 @@ dai_sync(
 another auth function.}
 }
 \value{
-a HTTP response object
+a HTTP response object.
 }
 \description{
 Sends a single document to the Google Cloud Services (GCS)
@@ -47,7 +52,8 @@ can be up to five pages long. Extract the text from the response object with
 \dontrun{
 response <- dai_sync("doc_page.pdf")
 
-my_page_scan <- "001.png"
-response <- dai_sync(my_page_scan)
+response <- dai_sync("doc_page.pdf", 
+                     proc_v = "pretrained-ocr-v1.1-2022-09-12")
+
 }
 }

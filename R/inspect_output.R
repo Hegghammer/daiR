@@ -30,9 +30,9 @@ text_from_dai_response <- function(response,
 
   parsed <- httr::content(response, as="parsed")
 
-  if (!("pages" %in% names(parsed$document) || "pages" %in% names(parsed))) {
-    stop("Input not recognized. Is it from dai_async?")
-  }
+  #if (!("pages" %in% names(parsed$document) || "pages" %in% names(parsed))) {
+  #  stop("Input not recognized. Is it from dai_async?")
+  #}
   
   if (!("text" %in% names(parsed$document) || "text" %in% names(parsed))) {
     stop("DAI found no text. Was the page blank?")

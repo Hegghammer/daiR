@@ -40,9 +40,9 @@ with \code{httr::content()}.
 }
 \examples{
 \dontrun{
-response <- dai_sync("doc_page.pdf")
+response <- dai_sync_tab("doc_page.pdf")
 
 my_page_scan <- "001.png"
-response <- dai_sync(my_page_scan)
+response <- dai_sync_tab(my_page_scan)
 }
 }

@@ -1,3 +1,7 @@
+# daiR 0.9.6
+- Added three new functions relating to processors: `get_processors()`, `get_processor_info()`, and `get_processor_versions()`. 
+- Added parameter `proc_v` to `dai_sync()` and `dai_async`, allowing for specification of processor version.
+
 # daiR 0.9.5
 
 - Added two new functions: `dai_notify()` and `merge_shards()`

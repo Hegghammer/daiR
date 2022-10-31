@@ -15,8 +15,8 @@ test_that("image_to_pdf() returns a pdf file", {
   skip_on_ci()
   output <- file.path(tempdir(), "output.pdf")
   image <- testthat::test_path("examples", "image.jpg")
-#  image_to_pdf(image, output) # magick problem on Linux
-#  expect_true(daiR::is_pdf(output))
+  image_to_pdf(image, output) # magick problem on Linux
+  expect_true(daiR::is_pdf(output))
   unlink(output, force = TRUE)
 } )
 

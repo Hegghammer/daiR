@@ -10,6 +10,7 @@ dai_async(
   bucket = Sys.getenv("GCS_DEFAULT_BUCKET"),
   proj_id = get_project_id(),
   proc_id = Sys.getenv("DAI_PROCESSOR_ID"),
+  proc_v = NA,
   skip_rev = "true",
   loc = "eu",
   token = dai_token()
@@ -28,6 +29,10 @@ to be processed are located}
 \item{proj_id}{a GCS project id}
 
 \item{proc_id}{a Document AI processor id}
+
+\item{proc_v}{one of 1) a processor version name, 2) "stable" for the
+latest processor from the stable channel, or 3) "rc" for the latest
+processor from the release candidate channel.}
 
 \item{skip_rev}{whether to skip human review; "true" or "false"}
 
