@@ -1,6 +1,6 @@
 Package: daiR
 Title: Interface with Google Cloud Document AI API
-Version: 0.9.6
+Version: 0.9.7
 Authors@R: 
     person(given = "Thomas",
            family = "Hegghammer",

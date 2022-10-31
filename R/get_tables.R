@@ -20,17 +20,21 @@ tables_from_dai_response <- function(object) {
 
   parsed <- httr::content(object, as="parsed")
 
-  if (!("pages" %in% names(parsed))) {
+  if (!("pages" %in% names(parsed) || "pages" %in% names(parsed$document))) {
     stop("Object not a positive dai_sync response.")
     }
 
-  if (!("text" %in% names(parsed))) {
+  if (!("text" %in% names(parsed) || "text" %in% names(parsed$document))) {
     stop("DAI found no text. Was the page blank?")
     }
 
   # Compile a list of table entries
 
-  table_list_raw <- purrr::map(parsed$pages, ~ .x$tables)
+  if ("pages" %in% names(parsed$document)) {
+  	table_list_raw <- purrr::map(parsed$document$pages, ~ .x$tables)
+  } else {
+  	table_list_raw <- purrr::map(parsed$pages, ~ .x$tables)
+  }
 
   if (all(sapply(table_list_raw, is.null))) {
     stop("DAI found no tables in the document.")
@@ -85,7 +89,11 @@ tables_from_dai_response <- function(object) {
     }
 
   # Get reference text for indices
-  text <- parsed$text
+  if ("text" %in% names(parsed$document)) {
+  	text <- parsed$document$text
+  } else {
+  	text <- parsed$text
+  }
 
   # Build all tables
   all_tables <- purrr::map(table_list, resp_build_table)

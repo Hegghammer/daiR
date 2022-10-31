@@ -229,288 +229,544 @@ merge_shards <- function(source_dir,
   
 }
 
-#' Inspect block bounding boxes
+#' Draw block bounding boxes on source document
 #'
 #' @description Plots the block bounding boxes identified by
 #' Document AI (DAI) onto images of the submitted document.
 #' Generates an annotated .png file for each page in the original
 #' document.
 #'
-#' @param json filepath of a JSON file obtained using \code{dai_async()}
-#' @param prefix string to be prepended to output filename
-#' @param dir path to the desired output directory
-#' @return no return value, called for side effects
+#' @param type one of "sync", "async", "sync-tab" or "async-tab", depending on
+#' the function used to process the document. 
+#' @param output either a HTTP response object (from `dai_sync()` or 
+#' `dai_sync_tab()`) or the path to a JSON file (from `dai_async` or 
+#' `dai_async_tab()`).
+#' @param doc filepath to the source document (pdf, tiff, or gif file); only 
+#' necessary for documents processed with `dai_sync_tab()` or `dai_async_tab()`.
+#' @param prefix string to be prepended to the output png filename.
+#' @param dir path to the desired output directory.
+#' @return no return value, called for side effects.
 #'
 #' @details Not vectorized, but documents can be multi-page.
 #'
 #' @export
 #' @examples
 #' \dontrun{
-#' draw_blocks("pdf_output.json", dir = tempdir())
+#' resp <- dai_sync("page.pdf")
+#' draw_blocks(type="sync", 
+#'             output=resp)
+#' 
+#' resp <- dai_sync_tab("page.pdf")
+#' draw_blocks(type="sync-tab", 
+#'             output=resp, 
+#'             doc="page.pdf")
+#'             
+#' draw_blocks(type = "async", 
+#'             output = "page.json")
+#'             
+#' draw_blocks(type = "async-tab", 
+#'             output = "page.json", 
+#'             doc="page.pdf")
 #' }
 
-draw_blocks <- function(json,
-                        prefix = NULL,
-                        dir = getwd()
-                       ) {
-  # checks
-  if (length(json) > 1) {
-    stop("Invalid json input. This function is not vectorised.")
-    }
+draw_blocks <- function(type,
+												output,
+												doc = NA,
+												prefix = NULL,
+												dir = getwd()
+) {
+	
+	# checks
+	if (!(type %in% c("sync", "async", "sync-tab", "async-tab"))) {
+		stop("Invalid type parameter.")
+	}
+	
+	if (!(inherits(output, "response") || is_json(output))) {
+		stop("Invalid output parameter")
+	}
+	
+	if (!(is.na(doc) || (length(doc) == 1 && is.character(doc)))) {
+		stop("Invalid doc parameter")
+	}
+	
+	if (length(prefix) > 1) {
+		stop("Invalid prefix.")
+	}
+	
+	if (!(is.character(prefix) || is.null(prefix))) {
+		stop("Invalid prefix.")
+	}
+	
+	if (length(dir) > 1) {
+		stop("Invalid dir parameter. Must be a valid folder path.")
+	}
+	
+	if (!(is.character(dir))) {
+		stop("Invalid dir parameter. Must be a valid folder path.")
+	}
+	
+	# Helper functions
+	get_vertices <- function(lst) {
+		boxes <- purrr::map(lst, ~.x$layout$boundingPoly$normalizedVertices)
+		return(boxes)
+	}
+	
+	transpose_block <- function(x) {
+		A <- purrr::map(x, unlist)
+		B <- purrr::map(A, data.frame)
+		C <- purrr::map(B, t)
+		D <- rbind(C[[1]], C[[2]], C[[3]], C[[4]])
+		rownames(D) <- c(1, 2, 3, 4)
+		return(as.data.frame(D))
+	}
+	
+	transpose_page <- function(x) {
+		blocks <- purrr::map(x, transpose_block)
+		return(blocks)
+	}
+	
+	if (type=="sync") {
+		
+		if (!(inherits(output, "response"))) {
+			stop("Output parameter not pointing to valid response object.")
+		}
+		
+		# extract a list with pagewise sets of block boundary boxes
+		parsed <- content(output)
+		pages <- parsed$document$pages
+		pages_blocks <- purrr::map(pages, ~.x$blocks)
+		pagewise_block_sets <- purrr::map(pages_blocks, get_vertices)
+		pagewise_block_sets <- purrr::map(pagewise_block_sets, transpose_page)	
+		
+		# decode base64 and save to temp images
+		page_imgs_base64 <-unlist(purrr::map(pages, ~.x$image$content))
+		imgs <- character()
+		for (i in 1:length(page_imgs_base64)) {
+			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
+			outconn <- file(path,"wb")
+			base64enc::base64decode(page_imgs_base64[i], outconn)
+			close(outconn)
+			imgs <- c(imgs, path)
+		}
+		
+	} else if (type=="async"){
+		
+		if (!(is_json(output))) {
+			stop("Output parameter not pointing to valid JSON file.")
+		}
+		
+		# extract a list with pagewise sets of block boundary boxes
+		parsed <- jsonlite::fromJSON(output)
+		pages_blocks <- parsed$pages$blocks
+		pagewise_block_sets <- purrr::map(pages_blocks, ~.x$layout$boundingPoly$normalizedVertices)
+		
+		# decode base64 and save to temp images
+		page_imgs_base64 <- parsed$pages$image$content
+		imgs <- character()
+		for (i in 1:length(page_imgs_base64)) {
+			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
+			outconn <- file(path,"wb")
+			base64enc::base64decode(page_imgs_base64[i], outconn)
+			close(outconn)
+			imgs <- c(imgs, path)
+		}
+		
+	} else if (type=="sync-tab") {
+		
+		if (!(inherits(output, "response"))) {
+			stop("Output parameter not pointing to valid response object.")
+		}
+		
+		# extract a list with pagewise sets of block boundary boxes
+		parsed <- content(output)
+		pages <- parsed$pages
+		pages_blocks <- purrr::map(pages, ~.x$blocks)
+		pagewise_block_sets <- map(pages_blocks, get_vertices)
+		pagewise_block_sets <- map(pagewise_block_sets, transpose_page)	
+		
+		# Get vector of images from source doc
+		if (grepl("pdf$", doc)) {
+			pgs <- magick::image_read_pdf(doc)	
+			imgs <- character()
+			for (i in 1:length(pgs)) {
+				path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
+				magick::image_write(pgs[i], path)
+				imgs <- c(imgs, path)
+			}
+		} else {
+			imgs <- doc
+		}
+		
+	} else if (type=="async-tab") {
+		
+		if (!(is_json(output))) {
+			stop("Output parameter not pointing to valid JSON file.")
+		}		
+		
+		# extract a list with pagewise sets of block boundary boxes
+		parsed <- jsonlite::fromJSON(output)
+		pages_blocks <- parsed$pages$blocks
+		pagewise_block_sets <- purrr::map(pages_blocks, ~.x$layout$boundingPoly$normalizedVertices)
+		
+		# Get vector of images from source doc
+		if (grepl("pdf$", doc)) {
+			pgs <- magick::image_read_pdf(doc)	
+			imgs <- character()
+			for (i in 1:length(pgs)) {
+				path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
+				magick::image_write(pgs[i], path)
+				imgs <- c(imgs, path)
+			}
+		} else {
+			imgs <- doc
+		}
+		
+	} 
+	
+	# loop over the pagewise sets
+	for (i in 1:length(pagewise_block_sets)) {
+		
+		img <- magick::image_read(imgs[i])
+		
+		# get image dimensions
+		info <- magick::image_info(img)
+		
+		# prepare for plotting on image
+		canvas <- magick::image_draw(img)
+		
+		# set counter for box number
+		counter <- 1
+		
+		#loop over boxes on the page
+		for(box in pagewise_block_sets[[i]]) {
+			
+			# handle NAs in boxes on top or left edge
+			if (is.na(box$y[1])) box$y[1] <- 0
+			if (is.na(box$y[2])) box$y[2] <- 0
+			if (is.na(box$x[1])) box$x[1] <- 0
+			if (is.na(box$x[4])) box$x[4] <- 0
+			
+			# transform from relative to absolute coordinates
+			box$x1 <- box$x * info$width
+			
+			box$y1 <- box$y * info$height
+			
+			# draw polygon
+			graphics::polygon(x = box$x1,
+												y = box$y1,
+												border = "red",
+												lwd = 3
+			)
+			
+			graphics::text(x = box$x1[1],
+										 y = box$y1[1],
+										 label = counter,
+										 cex = 4,
+										 col = "blue",
+										 family = "Liberation Sans"
+			)
+			
+			counter <- counter + 1
+			
+		}
+		
+		# write annotated image to file
+		
+		if (type %in% c("async", "async-tab")) {
+			default_prefix <- substr(basename(output), 1, nchar(basename(output)) -5)
+		} else {
+			default_prefix <- "document"
+		}
+		
+		if (is.null(prefix)) {
+			filename <- glue::glue("{default_prefix}_page{i}_blocks.png")
+		} else {
+			filename <- glue::glue("{prefix}_page{i}_blocks.png")
+		}
+		
+		dest <- file.path(dir, filename)
+		
+		magick::image_write(canvas, format = "png", dest)
+		
+		grDevices::dev.off()
+		
+	}
+	
+	pages <- length(pages_blocks)
+	
+	message(glue::glue("Generated {pages} annotated image(s)."))
+	
+}
 
-  if (!(is.character(json))) {
-    stop("Invalid json input.")
-    }
-
-  if (!(is_json(json))) {
-    stop("Input 'json' not .json.")
-    }
-
-  if (length(prefix) > 1) {
-    stop("Invalid prefix.")
-  }
-
-  if (!(is.character(prefix) || is.null(prefix))) {
-    stop("Invalid prefix.")
-    }
-
-  if (length(dir) > 1) {
-    stop("Invalid dir parameter. Must be a valid folder path.")
-  }
-
-  if (!(is.character(dir))) {
-    stop("Invalid dir parameter. Must be a valid folder path.")
-  }
-
-  # parse the json
-  parsed <- jsonlite::fromJSON(json)
-
-  # extract a list with pagewise sets of block boundary boxes
-  pages_blocks <- parsed$pages$blocks
-
-  pagewise_block_sets <- purrr::map(pages_blocks, ~.x$layout$boundingPoly$normalizedVertices)
-
-  # Get vector of base64-encoded images
-  page_imgs <- parsed$pages$image$content
-
-  # loop over the pagewise sets
-  for (i in 1:length(pagewise_block_sets)) {
-
-    # decode base64
-    path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
-    outconn <- file(path,"wb")
-    base64enc::base64decode(page_imgs[i], outconn)
-    close(outconn)
-
-    # read image into magick
-    img_decoded <- magick::image_read(path)
-
-    # get image dimensions
-    info <- magick::image_info(img_decoded)
-
-    # prepare for plotting on image
-    canvas <- magick::image_draw(img_decoded)
-
-    # set counter for box number
-    counter <- 1
-
-    #loop over boxes on the page
-    for(box in pagewise_block_sets[[i]]) {
-
-      # handle NAs in boxes on top or left edge
-      if (is.na(box$y[1])) box$y[1] <- 0
-      if (is.na(box$y[2])) box$y[2] <- 0
-      if (is.na(box$x[1])) box$x[1] <- 0
-      if (is.na(box$x[4])) box$x[4] <- 0
-
-      # transform from relative to absolute coordinates
-      box$x1 <- box$x * info$width
-
-      box$y1 <- box$y * info$height
-
-      # draw polygon
-      graphics::polygon(x = box$x1,
-                        y = box$y1,
-                        border = "red",
-                        lwd = 3
-                        )
-
-      graphics::text(x = box$x1[1],
-                     y = box$y1[1],
-                     label = counter,
-                     cex = 4,
-                     col = "blue",
-                     family = "Liberation Sans"
-                     )
-
-      counter <- counter + 1
-
-      }
-
-    # write annotated image to file
-
-    default_prefix <- substr(basename(json), 1, nchar(basename(json)) -5)
-
-    if (is.null(prefix)) {
-      filename <- glue::glue("{default_prefix}_page{i}_blocks.png")
-    } else {
-      filename <- glue::glue("{prefix}_page{i}_blocks.png")
-    }
-
-    dest <- file.path(dir, filename)
-
-    magick::image_write(canvas, format = "png", dest)
-
-    grDevices::dev.off()
-
-    }
-
-  pages <- length(pages_blocks)
-
-  message(glue::glue("Generated {pages} annotated image(s)."))
-
-  }
-
-#' Inspect paragraph bounding boxes
+#' Draw paragraph bounding boxes on source document
 #'
 #' @description Plots the paragraph bounding boxes identified by
 #' Document AI (DAI) onto images of the submitted document.
 #' Generates an annotated .png file for each page in the original
 #' document.
 #'
-#' @param json filepath of a JSON file obtained using \code{dai_async()}
-#' @param prefix string to be prepended to output filename
+#' @param type one of "sync", "async", "sync-tab" or "async-tab", depending on
+#' the function used to process the document. 
+#' @param output either a HTTP response object (from `dai_sync()` or 
+#' `dai_sync_tab()`) or the path to a JSON file (from `dai_async` or 
+#' `dai_async_tab()`).
+#' @param doc filepath to the source document (pdf, tiff, or gif file); only 
+#' necessary for documents processed with `dai_sync_tab()` or `dai_async_tab()`.
+#' @param prefix string to be prepended to the output png filename.
 #' @param dir path to the desired output directory.
-#' @return no return value, called for side effects
+#' @return no return value, called for side effects.
 #'
 #' @details Not vectorized, but documents can be multi-page.
 #'
 #' @export
 #' @examples
 #' \dontrun{
-#' draw_paragraphs("pdf_output.json", dir = tempdir())
+#' resp <- dai_sync("page.pdf")
+#' draw_paragraphs(type="sync", 
+#'                 output=resp)
+#' 
+#' resp <- dai_sync_tab("page.pdf")
+#' draw_paragraphs(type="sync-tab", 
+#'                 output=resp, 
+#'                 doc="page.pdf")
+#'             
+#' draw_paragraphs(type = "async", 
+#'                 output = "page.json")
+#'             
+#' draw_paragraphs(type = "async-tab", 
+#'                 output = "page.json", 
+#'                 doc="page.pdf")
 #' }
 
-draw_paragraphs <- function(json,
-                            prefix = NULL,
-                            dir = getwd()
-                           ) {
-  # checks
-  if (length(json) > 1) {
-    stop("Invalid json input. This function is not vectorised.")
-    }
 
-  if (!(is.character(json))) {
-    stop("Invalid json input.")
-    }
-
-  if (!(is_json(json))) {
-    stop("Input 'json' not .json.")
-    }
-
-  if (length(prefix) > 1) {
-    stop("Invalid prefix.")
-  }
-
-  if (!(is.character(prefix) || is.null(prefix))) {
-    stop("Invalid prefix.")
-    }
-
-  if (length(dir) > 1) {
-    stop("Invalid dir parameter. Must be a valid folder path.")
-  }
-
-  if (!(is.character(dir))) {
-    stop("Invalid dir parameter. Must be a valid folder path.")
-  }
-
-  # parse the json
-  parsed <- jsonlite::fromJSON(json)
-
-  # extract a list with pagewise sets of paragraph boundary boxes
-  pages_paras <- parsed$pages$paragraphs
-
-  pagewise_para_sets <- purrr::map(pages_paras, ~.x$layout$boundingPoly$normalizedVertices)
-
-  # Get vector of base64-encoded images
-  page_imgs <- parsed$pages$image$content
-
-  # loop over the pagewise sets
-  for (i in 1:length(pagewise_para_sets)) {
-
-    # decode base64
-    path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
-    outconn <- file(path,"wb")
-    base64enc::base64decode(page_imgs[i], outconn)
-    close(outconn)
-
-    # read image into magick
-    img_decoded <- magick::image_read(path)
-
-    # get image dimensions
-    info <- magick::image_info(img_decoded)
-
-    # prepare for plotting on image
-    canvas <- magick::image_draw(img_decoded)
-
-    # set counter for box number
-    counter <- 1
-
-    #loop over boxes on the page
-    for(box in pagewise_para_sets[[i]]){
-
-      # handle NAs in boxes on top or left edge
-      if (is.na(box$y[1])) box$y[1] <- 0
-      if (is.na(box$y[2])) box$y[2] <- 0
-      if (is.na(box$x[1])) box$x[1] <- 0
-      if (is.na(box$x[4])) box$x[4] <- 0
-
-      # transform from relative to absolute coordinates
-      box$x1 <- box$x * info$width
-
-      box$y1 <- box$y * info$height
-
-      # draw polygon
-      graphics::polygon(x = box$x1,
-                        y = box$y1,
-                        border = "red",
-                        lwd = 3
-                        )
-
-      graphics::text(x = box$x1[1],
-                     y = box$y1[1],
-                     label = counter,
-                     cex = 3,
-                     col = "blue",
-                     family = "Liberation Sans"
-                     )
-
-      counter <- counter + 1
-      }
-
-    # write annotated image to file
-
-    default_prefix <- substr(basename(json), 1, nchar(basename(json)) -5)
-
-    if (is.null(prefix)) {
-      filename <- glue::glue("{default_prefix}_page{i}_paragraphs.png")
-    } else {
-      filename <- glue::glue("{prefix}_page{i}_paragraphs.png")
-    }
-
-    dest <- file.path(dir, filename)
-
-    magick::image_write(canvas, format = "png", dest)
-
-    grDevices::dev.off()
-
-    }
-
-  pages <- length(pages_paras)
-
-  message(glue::glue("Generated {pages} annotated image(s)."))
-
-  }
+draw_paragraphs <- function(type,
+												output,
+												doc = NA,
+												prefix = NULL,
+												dir = getwd()
+) {
+	
+	# checks
+	if (!(type %in% c("sync", "async", "sync-tab", "async-tab"))) {
+		stop("Invalid type parameter.")
+	}
+	
+	if (!(inherits(output, "response") || is_json(output))) {
+		stop("Invalid output parameter")
+	}
+	
+	if (!(is.na(doc) || (length(doc) == 1 && is.character(doc)))) {
+		stop("Invalid doc parameter")
+	}
+	
+	if (length(prefix) > 1) {
+		stop("Invalid prefix.")
+	}
+	
+	if (!(is.character(prefix) || is.null(prefix))) {
+		stop("Invalid prefix.")
+	}
+	
+	if (length(dir) > 1) {
+		stop("Invalid dir parameter. Must be a valid folder path.")
+	}
+	
+	if (!(is.character(dir))) {
+		stop("Invalid dir parameter. Must be a valid folder path.")
+	}
+	
+	# Helper functions
+	get_vertices <- function(lst) {
+		boxes <- purrr::map(lst, ~.x$layout$boundingPoly$normalizedVertices)
+		return(boxes)
+	}
+	
+	transpose_block <- function(x) {
+		A <- purrr::map(x, unlist)
+		B <- purrr::map(A, data.frame)
+		C <- purrr::map(B, t)
+		D <- rbind(C[[1]], C[[2]], C[[3]], C[[4]])
+		rownames(D) <- c(1, 2, 3, 4)
+		return(as.data.frame(D))
+	}
+	
+	transpose_page <- function(x) {
+		paragraphs <- purrr::map(x, transpose_block)
+		return(paragraphs)
+	}
+	
+	if (type=="sync") {
+		
+		if (!(inherits(output, "response"))) {
+			stop("Output parameter not pointing to valid response object.")
+		}
+		
+		# extract a list with pagewise sets of block boundary boxes
+		parsed <- content(output)
+		pages <- parsed$document$pages
+		pages_paragraphs <- purrr::map(pages, ~.x$paragraphs)
+		pagewise_block_sets <- purrr::map(pages_paragraphs, get_vertices)
+		pagewise_block_sets <- purrr::map(pagewise_block_sets, transpose_page)	
+		
+		# decode base64 and save to temp images
+		page_imgs_base64 <-unlist(purrr::map(pages, ~.x$image$content))
+		imgs <- character()
+		for (i in 1:length(page_imgs_base64)) {
+			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
+			outconn <- file(path,"wb")
+			base64enc::base64decode(page_imgs_base64[i], outconn)
+			close(outconn)
+			imgs <- c(imgs, path)
+		}
+		
+	} else if (type=="async"){
+		
+		if (!(is_json(output))) {
+			stop("Output parameter not pointing to valid JSON file.")
+		}
+		
+		# extract a list with pagewise sets of block boundary boxes
+		parsed <- jsonlite::fromJSON(output)
+		pages_paragraphs <- parsed$pages$paragraphs
+		pagewise_block_sets <- purrr::map(pages_paragraphs, ~.x$layout$boundingPoly$normalizedVertices)
+		
+		# decode base64 and save to temp images
+		page_imgs_base64 <- parsed$pages$image$content
+		imgs <- character()
+		for (i in 1:length(page_imgs_base64)) {
+			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
+			outconn <- file(path,"wb")
+			base64enc::base64decode(page_imgs_base64[i], outconn)
+			close(outconn)
+			imgs <- c(imgs, path)
+		}
+		
+	} else if (type=="sync-tab") {
+		
+		if (!(inherits(output, "response"))) {
+			stop("Output parameter not pointing to valid response object.")
+		}
+		
+		# extract a list with pagewise sets of block boundary boxes
+		parsed <- content(output)
+		pages <- parsed$pages
+		pages_paragraphs <- purrr::map(pages, ~.x$paragraphs)
+		pagewise_block_sets <- map(pages_paragraphs, get_vertices)
+		pagewise_block_sets <- map(pagewise_block_sets, transpose_page)	
+		
+		# Get vector of images from source doc
+		if (grepl("pdf$", doc)) {
+			pgs <- magick::image_read_pdf(doc)	
+			imgs <- character()
+			for (i in 1:length(pgs)) {
+				path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
+				magick::image_write(pgs[i], path)
+				imgs <- c(imgs, path)
+			}
+		} else {
+			imgs <- doc
+		}
+		
+	} else if (type=="async-tab") {
+		
+		if (!(is_json(output))) {
+			stop("Output parameter not pointing to valid JSON file.")
+		}		
+		
+		# extract a list with pagewise sets of block boundary boxes
+		parsed <- jsonlite::fromJSON(output)
+		pages_paragraphs <- parsed$pages$paragraphs
+		pagewise_block_sets <- purrr::map(pages_paragraphs, ~.x$layout$boundingPoly$normalizedVertices)
+		
+		# Get vector of images from source doc
+		if (grepl("pdf$", doc)) {
+			pgs <- magick::image_read_pdf(doc)	
+			imgs <- character()
+			for (i in 1:length(pgs)) {
+				path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
+				magick::image_write(pgs[i], path)
+				imgs <- c(imgs, path)
+			}
+		} else {
+			imgs <- doc
+		}
+		
+	} 
+	
+	# loop over the pagewise sets
+	for (i in 1:length(pagewise_block_sets)) {
+		
+		img <- magick::image_read(imgs[i])
+		
+		# get image dimensions
+		info <- magick::image_info(img)
+		
+		# prepare for plotting on image
+		canvas <- magick::image_draw(img)
+		
+		# set counter for box number
+		counter <- 1
+		
+		#loop over boxes on the page
+		for(box in pagewise_block_sets[[i]]) {
+			
+			# handle NAs in boxes on top or left edge
+			if (is.na(box$y[1])) box$y[1] <- 0
+			if (is.na(box$y[2])) box$y[2] <- 0
+			if (is.na(box$x[1])) box$x[1] <- 0
+			if (is.na(box$x[4])) box$x[4] <- 0
+			
+			# transform from relative to absolute coordinates
+			box$x1 <- box$x * info$width
+			
+			box$y1 <- box$y * info$height
+			
+			# draw polygon
+			graphics::polygon(x = box$x1,
+												y = box$y1,
+												border = "red",
+												lwd = 3
+			)
+			
+			graphics::text(x = box$x1[1],
+										 y = box$y1[1],
+										 label = counter,
+										 cex = 4,
+										 col = "blue",
+										 family = "Liberation Sans"
+			)
+			
+			counter <- counter + 1
+			
+		}
+		
+		# write annotated image to file
+		
+		if (type %in% c("async", "async-tab")) {
+			default_prefix <- substr(basename(output), 1, nchar(basename(output)) -5)
+		} else {
+			default_prefix <- "document"
+		}
+		
+		if (is.null(prefix)) {
+			filename <- glue::glue("{default_prefix}_page{i}_paragraphs.png")
+		} else {
+			filename <- glue::glue("{prefix}_page{i}_paragraphs.png")
+		}
+		
+		dest <- file.path(dir, filename)
+		
+		magick::image_write(canvas, format = "png", dest)
+		
+		grDevices::dev.off()
+		
+	}
+	
+	pages <- length(pages_paragraphs)
+	
+	message(glue::glue("Generated {pages} annotated image(s)."))
+	
+}
 
 #' Inspect line bounding boxes
 #'
@@ -519,141 +775,267 @@ draw_paragraphs <- function(json,
 #' Generates an annotated .png file for each page in the original
 #' document.
 #'
-#' @param json filepath of a JSON file obtained using \code{dai_async()}
-#' @param prefix string to be prepended to output filename
+#' @param type one of "sync", "async", "sync-tab" or "async-tab", depending on
+#' the function used to process the document. 
+#' @param output either a HTTP response object (from `dai_sync()` or 
+#' `dai_sync_tab()`) or the path to a JSON file (from `dai_async` or 
+#' `dai_async_tab()`).
+#' @param doc filepath to the source document (pdf, tiff, or gif file); only 
+#' necessary for documents processed with `dai_sync_tab()` or `dai_async_tab()`.
+#' @param prefix string to be prepended to the output png filename.
 #' @param dir path to the desired output directory.
-#' @return no return value, called for side effects
+#' @return no return value, called for side effects.
 #'
 #' @details Not vectorized, but documents can be multi-page.
 #'
 #' @export
 #' @examples
 #' \dontrun{
-#' draw_lines("pdf_output.json", dir = tempdir())
+#' resp <- dai_sync("page.pdf")
+#' draw_lines(type="sync", 
+#'            output=resp)
+#' 
+#' resp <- dai_sync_tab("page.pdf")
+#' draw_lines(type="sync-tab", 
+#'            output=resp, 
+#'            doc="page.pdf")
+#'             
+#' draw_lines(type = "async", 
+#'            output = "page.json")
+#'             
+#' draw_lines(type = "async-tab", 
+#'            output = "page.json", 
+#'            doc="page.pdf")
 #' }
 
-draw_lines <- function(json,
-                       prefix = NULL,
-                       dir = getwd()
-                       ) {
-
-  # checks
-  if (length(json) > 1) {
-    stop("Invalid json input. This function is not vectorised.")
-    }
-
-  if (!(is.character(json))) {
-    stop("Invalid json input.")
-    }
-
-  if (!(is_json(json))) {
-    stop("Input 'json' not .json.")
-    }
-
-  if (length(prefix) > 1) {
-    stop("Invalid prefix.")
-  }
-
-  if (!(is.character(prefix) || is.null(prefix))) {
-    stop("Invalid prefix.")
-  }
-
-  if (length(dir) > 1) {
-    stop("Invalid dir parameter. Must be a valid folder path.")
-  }
-
-  if (!(is.character(dir))) {
-    stop("Invalid dir parameter. Must be a valid folder path.")
-  }
-
-  # parse the json
-  parsed <- jsonlite::fromJSON(json)
-
-  # extract a list with pagewise sets of line boundary boxes
-  pages_lines <- parsed$pages$lines
-
-  pagewise_line_sets <- purrr::map(pages_lines, ~.x$layout$boundingPoly$normalizedVertices)
-
-  # Get vector of base64-encoded images
-  page_imgs <- parsed$pages$image$content
-
-  # loop over the pagewise sets
-  for (i in 1:length(pagewise_line_sets)) {
-
-    # decode base64
-    path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
-    outconn <- file(path,"wb")
-    base64enc::base64decode(page_imgs[i], outconn)
-    close(outconn)
-
-    # read image into magick
-    img_decoded <- magick::image_read(path)
-
-    # get image dimensions
-    info <- magick::image_info(img_decoded)
-
-    # prepare for plotting on image
-    canvas <- magick::image_draw(img_decoded)
-
-    # set counter for box number
-    counter <- 1
-
-    #loop over boxes on the page
-    for(box in pagewise_line_sets[[i]]) {
-
-      # handle NAs in boxes on top or left edge
-      if (is.na(box$y[1])) box$y[1] <- 0
-      if (is.na(box$y[2])) box$y[2] <- 0
-      if (is.na(box$x[1])) box$x[1] <- 0
-      if (is.na(box$x[4])) box$x[4] <- 0
-
-      # transform from relative to absolute coordinates
-      box$x1 <- box$x * info$width
-
-      box$y1 <- box$y * info$height
-
-      # draw polygon
-      graphics::polygon(x = box$x1,
-                        y = box$y1,
-                        border = "red",
-                        lwd = 3
-                        )
-
-      graphics::text(x = box$x1[1],
-                     y = box$y1[1],
-                     label = counter,
-                     cex = 2,
-                     col = "blue",
-                     family = "Liberation Sans"
-                     )
-
-      counter <- counter + 1
-
-      }
-
-    # write annotated image to file
-
-    default_prefix <- substr(basename(json), 1, nchar(basename(json)) -5)
-
-    if (is.null(prefix)) {
-      filename <- glue::glue("{default_prefix}_page{i}_lines.png")
-    } else {
-      filename <- glue::glue("{prefix}_page{i}_lines.png")
-    }
-
-    dest <- file.path(dir, filename)
-
-    magick::image_write(canvas, format = "png", dest)
-
-    grDevices::dev.off()
-
-    }
-
-  pages <- length(pages_lines)
-
-  message(glue::glue("Generated {pages} annotated image(s)."))
-
-  }
+draw_lines <- function(type,
+												output,
+												doc = NA,
+												prefix = NULL,
+												dir = getwd()
+) {
+	
+	# checks
+	if (!(type %in% c("sync", "async", "sync-tab", "async-tab"))) {
+		stop("Invalid type parameter.")
+	}
+	
+	if (!(inherits(output, "response") || is_json(output))) {
+		stop("Invalid output parameter")
+	}
+	
+	if (!(is.na(doc) || (length(doc) == 1 && is.character(doc)))) {
+		stop("Invalid doc parameter")
+	}
+	
+	if (length(prefix) > 1) {
+		stop("Invalid prefix.")
+	}
+	
+	if (!(is.character(prefix) || is.null(prefix))) {
+		stop("Invalid prefix.")
+	}
+	
+	if (length(dir) > 1) {
+		stop("Invalid dir parameter. Must be a valid folder path.")
+	}
+	
+	if (!(is.character(dir))) {
+		stop("Invalid dir parameter. Must be a valid folder path.")
+	}
+	
+	# Helper functions
+	get_vertices <- function(lst) {
+		boxes <- purrr::map(lst, ~.x$layout$boundingPoly$normalizedVertices)
+		return(boxes)
+	}
+	
+	transpose_block <- function(x) {
+		A <- purrr::map(x, unlist)
+		B <- purrr::map(A, data.frame)
+		C <- purrr::map(B, t)
+		D <- rbind(C[[1]], C[[2]], C[[3]], C[[4]])
+		rownames(D) <- c(1, 2, 3, 4)
+		return(as.data.frame(D))
+	}
+	
+	transpose_page <- function(x) {
+		lines <- purrr::map(x, transpose_block)
+		return(lines)
+	}
+	
+	if (type=="sync") {
+		
+		if (!(inherits(output, "response"))) {
+			stop("Output parameter not pointing to valid response object.")
+		}
+		
+		# extract a list with pagewise sets of block boundary boxes
+		parsed <- content(output)
+		pages <- parsed$document$pages
+		pages_lines <- purrr::map(pages, ~.x$lines)
+		pagewise_block_sets <- purrr::map(pages_lines, get_vertices)
+		pagewise_block_sets <- purrr::map(pagewise_block_sets, transpose_page)	
+		
+		# decode base64 and save to temp images
+		page_imgs_base64 <-unlist(purrr::map(pages, ~.x$image$content))
+		imgs <- character()
+		for (i in 1:length(page_imgs_base64)) {
+			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
+			outconn <- file(path,"wb")
+			base64enc::base64decode(page_imgs_base64[i], outconn)
+			close(outconn)
+			imgs <- c(imgs, path)
+		}
+		
+	} else if (type=="async"){
+		
+		if (!(is_json(output))) {
+			stop("Output parameter not pointing to valid JSON file.")
+		}
+		
+		# extract a list with pagewise sets of block boundary boxes
+		parsed <- jsonlite::fromJSON(output)
+		pages_lines <- parsed$pages$lines
+		pagewise_block_sets <- purrr::map(pages_lines, ~.x$layout$boundingPoly$normalizedVertices)
+		
+		# decode base64 and save to temp images
+		page_imgs_base64 <- parsed$pages$image$content
+		imgs <- character()
+		for (i in 1:length(page_imgs_base64)) {
+			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
+			outconn <- file(path,"wb")
+			base64enc::base64decode(page_imgs_base64[i], outconn)
+			close(outconn)
+			imgs <- c(imgs, path)
+		}
+		
+	} else if (type=="sync-tab") {
+		
+		if (!(inherits(output, "response"))) {
+			stop("Output parameter not pointing to valid response object.")
+		}
+		
+		# extract a list with pagewise sets of block boundary boxes
+		parsed <- content(output)
+		pages <- parsed$pages
+		pages_lines <- purrr::map(pages, ~.x$lines)
+		pagewise_block_sets <- map(pages_lines, get_vertices)
+		pagewise_block_sets <- map(pagewise_block_sets, transpose_page)	
+		
+		# Get vector of images from source doc
+		if (grepl("pdf$", doc)) {
+			pgs <- magick::image_read_pdf(doc)	
+			imgs <- character()
+			for (i in 1:length(pgs)) {
+				path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
+				magick::image_write(pgs[i], path)
+				imgs <- c(imgs, path)
+			}
+		} else {
+			imgs <- doc
+		}
+		
+	} else if (type=="async-tab") {
+		
+		if (!(is_json(output))) {
+			stop("Output parameter not pointing to valid JSON file.")
+		}		
+		
+		# extract a list with pagewise sets of block boundary boxes
+		parsed <- jsonlite::fromJSON(output)
+		pages_lines <- parsed$pages$lines
+		pagewise_block_sets <- purrr::map(pages_lines, ~.x$layout$boundingPoly$normalizedVertices)
+		
+		# Get vector of images from source doc
+		if (grepl("pdf$", doc)) {
+			pgs <- magick::image_read_pdf(doc)	
+			imgs <- character()
+			for (i in 1:length(pgs)) {
+				path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
+				magick::image_write(pgs[i], path)
+				imgs <- c(imgs, path)
+			}
+		} else {
+			imgs <- doc
+		}
+		
+	} 
+	
+	# loop over the pagewise sets
+	for (i in 1:length(pagewise_block_sets)) {
+		
+		img <- magick::image_read(imgs[i])
+		
+		# get image dimensions
+		info <- magick::image_info(img)
+		
+		# prepare for plotting on image
+		canvas <- magick::image_draw(img)
+		
+		# set counter for box number
+		counter <- 1
+		
+		#loop over boxes on the page
+		for(box in pagewise_block_sets[[i]]) {
+			
+			# handle NAs in boxes on top or left edge
+			if (is.na(box$y[1])) box$y[1] <- 0
+			if (is.na(box$y[2])) box$y[2] <- 0
+			if (is.na(box$x[1])) box$x[1] <- 0
+			if (is.na(box$x[4])) box$x[4] <- 0
+			
+			# transform from relative to absolute coordinates
+			box$x1 <- box$x * info$width
+			
+			box$y1 <- box$y * info$height
+			
+			# draw polygon
+			graphics::polygon(x = box$x1,
+												y = box$y1,
+												border = "red",
+												lwd = 3
+			)
+			
+			graphics::text(x = box$x1[1],
+										 y = box$y1[1],
+										 label = counter,
+										 cex = 4,
+										 col = "blue",
+										 family = "Liberation Sans"
+			)
+			
+			counter <- counter + 1
+			
+		}
+		
+		# write annotated image to file
+		
+		if (type %in% c("async", "async-tab")) {
+			default_prefix <- substr(basename(output), 1, nchar(basename(output)) -5)
+		} else {
+			default_prefix <- "document"
+		}
+		
+		if (is.null(prefix)) {
+			filename <- glue::glue("{default_prefix}_page{i}_lines.png")
+		} else {
+			filename <- glue::glue("{prefix}_page{i}_lines.png")
+		}
+		
+		dest <- file.path(dir, filename)
+		
+		magick::image_write(canvas, format = "png", dest)
+		
+		grDevices::dev.off()
+		
+	}
+	
+	pages <- length(pages_lines)
+	
+	message(glue::glue("Generated {pages} annotated image(s)."))
+	
+}
 
 #' Inspect token bounding boxes
 #'
@@ -662,138 +1044,264 @@ draw_lines <- function(json,
 #' Generates an annotated .png file for each page in the original
 #' document.
 #'
-#' @param json filepath of a JSON file obtained using \code{dai_async()}
-#' @param prefix string to be prepended to output filename
+#' @param type one of "sync", "async", "sync-tab" or "async-tab", depending on
+#' the function used to process the document. 
+#' @param output either a HTTP response object (from `dai_sync()` or 
+#' `dai_sync_tab()`) or the path to a JSON file (from `dai_async` or 
+#' `dai_async_tab()`).
+#' @param doc filepath to the source document (pdf, tiff, or gif file); only 
+#' necessary for documents processed with `dai_sync_tab()` or `dai_async_tab()`.
+#' @param prefix string to be prepended to the output png filename.
 #' @param dir path to the desired output directory.
-#' @return no return value, called for side effects
+#' @return no return value, called for side effects.
 #'
 #' @details Not vectorized, but documents can be multi-page.
 #'
 #' @export
 #' @examples
 #' \dontrun{
-#' draw_tokens("pdf_output.json", dir = tempdir())
+#' resp <- dai_sync("page.pdf")
+#' draw_tokens(type="sync", 
+#'             output=resp)
+#' 
+#' resp <- dai_sync_tab("page.pdf")
+#' draw_tokens(type="sync-tab", 
+#'             output=resp, 
+#'             doc="page.pdf")
+#'             
+#' draw_tokens(type = "async", 
+#'             output = "page.json")
+#'             
+#' draw_tokens(type = "async-tab", 
+#'             output = "page.json", 
+#'             doc="page.pdf")
 #' }
 
-draw_tokens <- function(json,
-                        prefix = NULL,
-                        dir = getwd()
-                        ) {
-
-  # checks
-  if (length(json) > 1) {
-    stop("Invalid json input. This function is not vectorised.")
-    }
-
-  if (!(is.character(json))) {
-    stop("Invalid json input.")
-    }
-
-  if (!(is_json(json))) {
-    stop("Input 'json' not .json.")
-    }
-
-  if (length(prefix) > 1) {
-    stop("Invalid prefix.")
-  }
-
-  if (!(is.character(prefix) || is.null(prefix))) {
-    stop("Invalid prefix.")
-  }
-
-  if (length(dir) > 1) {
-    stop("Invalid dir parameter. Must be a valid folder path.")
-  }
-
-  if (!(is.character(dir))) {
-    stop("Invalid dir parameter. Must be a valid folder path.")
-  }
-
-  # parse the json
-  parsed <- jsonlite::fromJSON(json)
-
-  # extract a list with pagewise sets of token boundary boxes
-  pages_tokens <- parsed$pages$tokens
-
-  pagewise_token_sets <- purrr::map(pages_tokens, ~.x$layout$boundingPoly$normalizedVertices)
-
-  # Get vector of base64-encoded images
-  page_imgs <- parsed$pages$image$content
-
-  # loop over the pagewise sets
-  for (i in 1:length(pagewise_token_sets)) {
-
-    # decode base64
-    path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
-    outconn <- file(path,"wb")
-    base64enc::base64decode(page_imgs[i], outconn)
-    close(outconn)
-
-    # read image into magick
-    img_decoded <- magick::image_read(path)
-
-    # get image dimensions
-    info <- magick::image_info(img_decoded)
-
-    # prepare for plotting on image
-    canvas <- magick::image_draw(img_decoded)
-
-    # set counter for box number
-    counter <- 1
-
-    #loop over boxes on the page
-    for(box in pagewise_token_sets[[i]]) {
-
-      # handle NAs in boxes on top or left edge
-      if (is.na(box$y[1])) box$y[1] <- 0
-      if (is.na(box$y[2])) box$y[2] <- 0
-      if (is.na(box$x[1])) box$x[1] <- 0
-      if (is.na(box$x[4])) box$x[4] <- 0
-
-      # transform from relative to absolute coordinates
-      box$x1 <- box$x * info$width
-
-      box$y1 <- box$y * info$height
-
-      # draw polygon
-      graphics::polygon(x = box$x1,
-                        y = box$y1,
-                        border = "red",
-                        lwd = 3
-                        )
-
-      graphics::text(x = box$x1[1],
-                     y = box$y1[1],
-                     label = counter,
-                     cex = 2,
-                     col = "blue",
-                     family = "Liberation Sans"
-                     )
-
-      counter <- counter + 1
-
-      }
-
-    # write annotated image to file
-
-    default_prefix <- substr(basename(json), 1, nchar(basename(json)) -5)
-
-    if (is.null(prefix)) {
-      filename <- glue::glue("{default_prefix}_page{i}_tokens.png")
-    } else {
-      filename <- glue::glue("{prefix}_page{i}_tokens.png")
-    }
-
-    dest <- file.path(dir, filename)
-
-    magick::image_write(canvas, format = "png", dest)
-
-    grDevices::dev.off()
-
-    }
-
-  pages <- length(pages_tokens)
-
-  message(glue::glue("Generated {pages} annotated image(s)."))
-
-  }
+draw_tokens <- function(type,
+												output,
+												doc = NA,
+												prefix = NULL,
+												dir = getwd()
+) {
+	
+	# checks
+	if (!(type %in% c("sync", "async", "sync-tab", "async-tab"))) {
+		stop("Invalid type parameter.")
+	}
+	
+	if (!(inherits(output, "response") || is_json(output))) {
+		stop("Invalid output parameter")
+	}
+	
+	if (!(is.na(doc) || (length(doc) == 1 && is.character(doc)))) {
+		stop("Invalid doc parameter")
+	}
+	
+	if (length(prefix) > 1) {
+		stop("Invalid prefix.")
+	}
+	
+	if (!(is.character(prefix) || is.null(prefix))) {
+		stop("Invalid prefix.")
+	}
+	
+	if (length(dir) > 1) {
+		stop("Invalid dir parameter. Must be a valid folder path.")
+	}
+	
+	if (!(is.character(dir))) {
+		stop("Invalid dir parameter. Must be a valid folder path.")
+	}
+	
+	# Helper functions
+	get_vertices <- function(lst) {
+		boxes <- purrr::map(lst, ~.x$layout$boundingPoly$normalizedVertices)
+		return(boxes)
+	}
+	
+	transpose_block <- function(x) {
+		A <- purrr::map(x, unlist)
+		B <- purrr::map(A, data.frame)
+		C <- purrr::map(B, t)
+		D <- rbind(C[[1]], C[[2]], C[[3]], C[[4]])
+		rownames(D) <- c(1, 2, 3, 4)
+		return(as.data.frame(D))
+	}
+	
+	transpose_page <- function(x) {
+		tokens <- purrr::map(x, transpose_block)
+		return(tokens)
+	}
+	
+	if (type=="sync") {
+		
+		if (!(inherits(output, "response"))) {
+			stop("Output parameter not pointing to valid response object.")
+		}
+		
+		# extract a list with pagewise sets of block boundary boxes
+		parsed <- content(output)
+		pages <- parsed$document$pages
+		pages_tokens <- purrr::map(pages, ~.x$tokens)
+		pagewise_block_sets <- purrr::map(pages_tokens, get_vertices)
+		pagewise_block_sets <- purrr::map(pagewise_block_sets, transpose_page)	
+		
+		# decode base64 and save to temp images
+		page_imgs_base64 <-unlist(purrr::map(pages, ~.x$image$content))
+		imgs <- character()
+		for (i in 1:length(page_imgs_base64)) {
+			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
+			outconn <- file(path,"wb")
+			base64enc::base64decode(page_imgs_base64[i], outconn)
+			close(outconn)
+			imgs <- c(imgs, path)
+		}
+		
+	} else if (type=="async"){
+		
+		if (!(is_json(output))) {
+			stop("Output parameter not pointing to valid JSON file.")
+		}
+		
+		# extract a list with pagewise sets of block boundary boxes
+		parsed <- jsonlite::fromJSON(output)
+		pages_tokens <- parsed$pages$tokens
+		pagewise_block_sets <- purrr::map(pages_tokens, ~.x$layout$boundingPoly$normalizedVertices)
+		
+		# decode base64 and save to temp images
+		page_imgs_base64 <- parsed$pages$image$content
+		imgs <- character()
+		for (i in 1:length(page_imgs_base64)) {
+			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
+			outconn <- file(path,"wb")
+			base64enc::base64decode(page_imgs_base64[i], outconn)
+			close(outconn)
+			imgs <- c(imgs, path)
+		}
+		
+	} else if (type=="sync-tab") {
+		
+		if (!(inherits(output, "response"))) {
+			stop("Output parameter not pointing to valid response object.")
+		}
+		
+		# extract a list with pagewise sets of block boundary boxes
+		parsed <- content(output)
+		pages <- parsed$pages
+		pages_tokens <- purrr::map(pages, ~.x$tokens)
+		pagewise_block_sets <- map(pages_tokens, get_vertices)
+		pagewise_block_sets <- map(pagewise_block_sets, transpose_page)	
+		
+		# Get vector of images from source doc
+		if (grepl("pdf$", doc)) {
+			pgs <- magick::image_read_pdf(doc)	
+			imgs <- character()
+			for (i in 1:length(pgs)) {
+				path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
+				magick::image_write(pgs[i], path)
+				imgs <- c(imgs, path)
+			}
+		} else {
+			imgs <- doc
+		}
+		
+	} else if (type=="async-tab") {
+		
+		if (!(is_json(output))) {
+			stop("Output parameter not pointing to valid JSON file.")
+		}		
+		
+		# extract a list with pagewise sets of block boundary boxes
+		parsed <- jsonlite::fromJSON(output)
+		pages_tokens <- parsed$pages$tokens
+		pagewise_block_sets <- purrr::map(pages_tokens, ~.x$layout$boundingPoly$normalizedVertices)
+		
+		# Get vector of images from source doc
+		if (grepl("pdf$", doc)) {
+			pgs <- magick::image_read_pdf(doc)	
+			imgs <- character()
+			for (i in 1:length(pgs)) {
+				path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
+				magick::image_write(pgs[i], path)
+				imgs <- c(imgs, path)
+			}
+		} else {
+			imgs <- doc
+		}
+		
+	} 
+	
+	# loop over the pagewise sets
+	for (i in 1:length(pagewise_block_sets)) {
+		
+		img <- magick::image_read(imgs[i])
+		
+		# get image dimensions
+		info <- magick::image_info(img)
+		
+		# prepare for plotting on image
+		canvas <- magick::image_draw(img)
+		
+		# set counter for box number
+		counter <- 1
+		
+		#loop over boxes on the page
+		for(box in pagewise_block_sets[[i]]) {
+			
+			# handle NAs in boxes on top or left edge
+			if (is.na(box$y[1])) box$y[1] <- 0
+			if (is.na(box$y[2])) box$y[2] <- 0
+			if (is.na(box$x[1])) box$x[1] <- 0
+			if (is.na(box$x[4])) box$x[4] <- 0
+			
+			# transform from relative to absolute coordinates
+			box$x1 <- box$x * info$width
+			
+			box$y1 <- box$y * info$height
+			
+			# draw polygon
+			graphics::polygon(x = box$x1,
+												y = box$y1,
+												border = "red",
+												lwd = 3
+			)
+			
+			graphics::text(x = box$x1[1],
+										 y = box$y1[1],
+										 label = counter,
+										 cex = 4,
+										 col = "blue",
+										 family = "Liberation Sans"
+			)
+			
+			counter <- counter + 1
+			
+		}
+		
+		# write annotated image to file
+		
+		if (type %in% c("async", "async-tab")) {
+			default_prefix <- substr(basename(output), 1, nchar(basename(output)) -5)
+		} else {
+			default_prefix <- "document"
+		}
+		
+		if (is.null(prefix)) {
+			filename <- glue::glue("{default_prefix}_page{i}_tokens.png")
+		} else {
+			filename <- glue::glue("{prefix}_page{i}_tokens.png")
+		}
+		
+		dest <- file.path(dir, filename)
+		
+		magick::image_write(canvas, format = "png", dest)
+		
+		grDevices::dev.off()
+		
+	}
+	
+	pages <- length(pages_tokens)
+	
+	message(glue::glue("Generated {pages} annotated image(s)."))
+	
+}
