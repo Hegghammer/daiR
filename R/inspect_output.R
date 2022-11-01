@@ -245,6 +245,10 @@ merge_shards <- function(source_dir,
 #' necessary for documents processed with `dai_sync_tab()` or `dai_async_tab()`.
 #' @param prefix string to be prepended to the output png filename.
 #' @param dir path to the desired output directory.
+#' @param linecol color of the bounding box line.
+#' @param linewd width of the bounding box line.
+#' @param fontcol color of the box numbers.
+#' @param fontsize size of the box numbers.
 #' @return no return value, called for side effects.
 #'
 #' @details Not vectorized, but documents can be multi-page.
@@ -273,7 +277,11 @@ draw_blocks <- function(type,
 												output,
 												doc = NA,
 												prefix = NULL,
-												dir = getwd()
+												dir = getwd(),
+												linecol = "red",
+												linewd = 3,
+												fontcol = "blue",
+												fontsize = 4	
 ) {
 	
 	# checks
@@ -454,15 +462,15 @@ draw_blocks <- function(type,
 			# draw polygon
 			graphics::polygon(x = box$x1,
 												y = box$y1,
-												border = "red",
-												lwd = 3
+												border = linecol,
+												lwd = linewd
 			)
 			
 			graphics::text(x = box$x1[1],
 										 y = box$y1[1],
 										 label = counter,
-										 cex = 4,
-										 col = "blue",
+										 col = fontcol,
+										 cex = fontsize,
 										 family = "Liberation Sans"
 			)
 			
@@ -514,6 +522,10 @@ draw_blocks <- function(type,
 #' necessary for documents processed with `dai_sync_tab()` or `dai_async_tab()`.
 #' @param prefix string to be prepended to the output png filename.
 #' @param dir path to the desired output directory.
+#' @param linecol color of the bounding box line.
+#' @param linewd width of the bounding box line.
+#' @param fontcol color of the box numbers.
+#' @param fontsize size of the box numbers.
 #' @return no return value, called for side effects.
 #'
 #' @details Not vectorized, but documents can be multi-page.
@@ -540,10 +552,14 @@ draw_blocks <- function(type,
 
 
 draw_paragraphs <- function(type,
-												output,
-												doc = NA,
-												prefix = NULL,
-												dir = getwd()
+														output,
+														doc = NA,
+														prefix = NULL,
+														dir = getwd(),
+														linecol = "red",
+														linewd = 3,
+														fontcol = "blue",
+														fontsize = 4
 ) {
 	
 	# checks
@@ -724,15 +740,15 @@ draw_paragraphs <- function(type,
 			# draw polygon
 			graphics::polygon(x = box$x1,
 												y = box$y1,
-												border = "red",
-												lwd = 3
+												border = linecol,
+												lwd = linewd
 			)
 			
 			graphics::text(x = box$x1[1],
 										 y = box$y1[1],
 										 label = counter,
-										 cex = 4,
-										 col = "blue",
+										 col = fontcol,
+										 cex = fontsize,
 										 family = "Liberation Sans"
 			)
 			
@@ -784,6 +800,10 @@ draw_paragraphs <- function(type,
 #' necessary for documents processed with `dai_sync_tab()` or `dai_async_tab()`.
 #' @param prefix string to be prepended to the output png filename.
 #' @param dir path to the desired output directory.
+#' @param linecol color of the bounding box line.
+#' @param linewd width of the bounding box line.
+#' @param fontcol color of the box numbers.
+#' @param fontsize size of the box numbers.
 #' @return no return value, called for side effects.
 #'
 #' @details Not vectorized, but documents can be multi-page.
@@ -809,10 +829,14 @@ draw_paragraphs <- function(type,
 #' }
 
 draw_lines <- function(type,
-												output,
-												doc = NA,
-												prefix = NULL,
-												dir = getwd()
+											 output,
+											 doc = NA,
+											 prefix = NULL,
+											 dir = getwd(),
+											 linecol = "red",
+											 linewd = 3,
+											 fontcol = "blue",
+											 fontsize = 4											 
 ) {
 	
 	# checks
@@ -993,15 +1017,15 @@ draw_lines <- function(type,
 			# draw polygon
 			graphics::polygon(x = box$x1,
 												y = box$y1,
-												border = "red",
-												lwd = 3
+												border = linecol,
+												lwd = linewd
 			)
 			
 			graphics::text(x = box$x1[1],
 										 y = box$y1[1],
 										 label = counter,
-										 cex = 4,
-										 col = "blue",
+										 col = fontcol,
+										 cex = fontsize,
 										 family = "Liberation Sans"
 			)
 			
@@ -1053,6 +1077,10 @@ draw_lines <- function(type,
 #' necessary for documents processed with `dai_sync_tab()` or `dai_async_tab()`.
 #' @param prefix string to be prepended to the output png filename.
 #' @param dir path to the desired output directory.
+#' @param linecol color of the bounding box line.
+#' @param linewd width of the bounding box line.
+#' @param fontcol color of the box numbers.
+#' @param fontsize size of the box numbers.
 #' @return no return value, called for side effects.
 #'
 #' @details Not vectorized, but documents can be multi-page.
@@ -1081,7 +1109,12 @@ draw_tokens <- function(type,
 												output,
 												doc = NA,
 												prefix = NULL,
-												dir = getwd()
+												dir = getwd(),
+												linecol = "red",
+												linewd = 3,
+												fontcol = "blue",
+												fontsize = 4
+												
 ) {
 	
 	# checks
@@ -1262,15 +1295,15 @@ draw_tokens <- function(type,
 			# draw polygon
 			graphics::polygon(x = box$x1,
 												y = box$y1,
-												border = "red",
-												lwd = 3
+												border = linecol,
+												lwd = linewd
 			)
 			
 			graphics::text(x = box$x1[1],
 										 y = box$y1[1],
 										 label = counter,
-										 cex = 4,
-										 col = "blue",
+										 col = fontcol,
+										 cex = fontsize,
 										 family = "Liberation Sans"
 			)
 			
