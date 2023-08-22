@@ -1,5 +1,6 @@
 # daiR 0.9.7
 - Changed the "`draw_*`" functions so they work with response objects (from `dai_sync()` and `dai_sync_tab()`) as well as with json files from `dai_async_tab()`.
+- Changed the "`draw_*`" functions to allow customizing color and thickness of lines around bounding boxes.
 - Modified `tables_from_dai_response()` so that it handles response objects from `dai_sync()` with form parser processors.
 
 # daiR 0.9.6

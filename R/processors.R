@@ -7,10 +7,10 @@
 #'
 #' @return a dataframe.
 #' @export
-#' 
-#' @details For more information about processors, see the Google Document 
+#'
+#' @details For more information about processors, see the Google Document
 #' AI documentation at \url{https://cloud.google.com/document-ai/docs/}.
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' df <- get_processors()
@@ -22,11 +22,11 @@ get_processors <- function(proj_id = get_project_id(),
 	base_url <- glue::glue("https://{loc}-documentai.googleapis.com")
 	path <- glue::glue("/v1/projects/{proj_id}/locations/{loc}/processors")
 	url <- glue::glue("{base_url}{path}")
-	response <- httr::GET(url,httr::config(token = token))
+	response <- httr::GET(url, httr::config(token = token))
 	parsed <- httr::content(response)
 	df <- as.data.frame(data.table::rbindlist(parsed$processors))
 	df$id <- basename(df$name)
-	df <- df[,c(8, 1:7)]
+	df <- df[, c(8, 1:7)]
 	return(df)
 }
 
@@ -44,7 +44,7 @@ get_processors <- function(proj_id = get_project_id(),
 #' @examples
 #' \dontrun{
 #' info <- get_processor_info()
-#' 
+#'
 #' info <- get_processor_info(proc_id = get_processors()$id[1])
 #' }
 get_processor_info <- function(proj_id = get_project_id(),
@@ -55,7 +55,7 @@ get_processor_info <- function(proj_id = get_project_id(),
 	base_url <- glue::glue("https://{loc}-documentai.googleapis.com")
 	path <- glue::glue("/v1/projects/{proj_id}/locations/{loc}/processors/{proc_id}")
 	url <- glue::glue("{base_url}{path}")
-	response <- httr::GET(url,httr::config(token = token))
+	response <- httr::GET(url, httr::config(token = token))
 	parsed <- httr::content(response)
 	return(parsed)
 }
@@ -85,10 +85,10 @@ get_processor_versions <- function(proj_id = get_project_id(),
 	base_url <- glue::glue("https://{loc}-documentai.googleapis.com")
 	path <- glue::glue("/v1/projects/{proj_id}/locations/{loc}/processors/{proc_id}/processorVersions")
 	url <- glue::glue("{base_url}{path}")
-	response <- httr::GET(url,httr::config(token = token))
+	response <- httr::GET(url, httr::config(token = token))
 	parsed <- httr::content(response)
 	df <- as.data.frame(data.table::rbindlist(parsed$processorVersions))
 	df$shortName <- basename(df$name)
-	df <- df[,c(6, 1:5)]
+	df <- df[, c(6, 1:5)]
 	return(df)
 }

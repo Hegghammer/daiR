@@ -7,8 +7,8 @@
 #' @param file path to a single-page pdf or image file
 #' @param proj_id a GCS project id.
 #' @param proc_id a Document AI processor id.
-#' @param proc_v one of 1) a processor version name, 2) "stable" for the 
-#' latest processor from the stable channel, or 3) "rc" for the latest 
+#' @param proc_v one of 1) a processor version name, 2) "stable" for the
+#' latest processor from the stable channel, or 3) "rc" for the latest
 #' processor from the release candidate channel.
 #' @param skip_rev whether to skip human review; "true" or "false".
 #' @param loc a two-letter region code; "eu" or "us".
@@ -29,7 +29,7 @@
 #' \dontrun{
 #' response <- dai_sync("doc_page.pdf")
 #'
-#' response <- dai_sync("doc_page.pdf", 
+#' response <- dai_sync("doc_page.pdf",
 #'                      proc_v = "pretrained-ocr-v1.1-2022-09-12")
 #'
 #' }
@@ -70,11 +70,11 @@ dai_sync <- function(file,
   if (!(length(proc_v) == 1)) {
   	stop("Invalid proc_v.")
   }
-  
+
   if (!(is.na(proc_v) || is.character(proc_v))) {
   	stop("Invalid proc_v.")
   }
-  
+
   skip_rev <- tolower(skip_rev)
 
   if (!(skip_rev %in% c("true", "false") && length(skip_rev) == 1)) {
@@ -88,7 +88,7 @@ dai_sync <- function(file,
     }
 
   # Encode
-  if (extension == "pdf"){
+  if (extension == "pdf") {
     encoded_file <- pdf_to_binbase(file)
     } else {
       encoded_file <- img_to_binbase(file)
@@ -110,11 +110,11 @@ dai_sync <- function(file,
   path <- glue::glue("v1/projects/{proj_id}/locations/{loc}/processors/{proc_id}")
 
   if (is.na(proc_v)) {
-  	version <- ""	
+  	version <- ""
   } else {
   	version <- glue::glue("/processorVersions/{proc_v}")
   }
-  
+
   method <- ":process"
 
   url <- glue::glue("{base_url}{path}{version}{method}")
@@ -150,8 +150,8 @@ dai_sync <- function(file,
 #' to be processed are located
 #' @param proj_id a GCS project id
 #' @param proc_id a Document AI processor id
-#' @param proc_v one of 1) a processor version name, 2) "stable" for the 
-#' latest processor from the stable channel, or 3) "rc" for the latest 
+#' @param proc_v one of 1) a processor version name, 2) "stable" for the
+#' latest processor from the stable channel, or 3) "rc" for the latest
 #' processor from the release candidate channel.
 #' @param skip_rev whether to skip human review; "true" or "false"
 #' @param loc a two-letter region code; "eu" or "us"
@@ -245,11 +245,11 @@ dai_async <- function(files,
   if (!(length(proc_v) == 1)) {
   	stop("Invalid proc_v.")
   }
-  
+
   if (!(is.na(proc_v) || is.character(proc_v))) {
   	stop("Invalid proc_v.")
   }
-  
+
   if (!(skip_rev %in% c("true", "false") && length(skip_rev) == 1)) {
     stop("Invalid skip_rev parameter.")
     }
@@ -295,7 +295,7 @@ dai_async <- function(files,
 
 
   ## create json request body
-  req <- list("inputDocuments" = list("gcsDocuments" = list("documents" = doc_list )),
+  req <- list("inputDocuments" = list("gcsDocuments" = list("documents" = doc_list)),
               "documentOutputConfig" = list("gcsOutputConfig" = list("gcsUri" = dest_folder_uri)),
               "skipHumanReview" = skip_rev
               )
@@ -310,11 +310,11 @@ dai_async <- function(files,
   path <- glue::glue("v1/projects/{proj_id}/locations/{loc}/processors/{proc_id}")
 
   if (is.na(proc_v)) {
-  	version <- ""	
+  	version <- ""
   } else {
   	version <- glue::glue("/processorVersions/{proc_v}")
   }
-  
+
   method <- ":batchProcess"
 
   url <- glue::glue("{base_url}{path}{version}{method}")
@@ -679,59 +679,59 @@ dai_status <- function(response,
                        token = dai_token(),
                        verbose = FALSE
 ) {
-  
+
   if (!(inherits(response, "response") || inherits(response[[1]], "response"))) {
     stop("Input is not a valid HTTP response.")
     }
-  
+
   if (inherits(response[[1]], "response")) {
     last_elem <- max(length(response))
     parsed <- httr::content(response[[last_elem]])
     } else {
       parsed <- httr::content(response)
       }
-  
+
   if (!("name" %in% names(parsed))) {
     stop("Input does not contain a processing job id. Make sure it is from dai_async.")
     }
-  
+
   if (!(loc %in% c("eu", "us") && length(loc) == 1)) {
     stop("Invalid location parameter.")
     }
-  
+
   if (!(verbose %in% c(TRUE, FALSE) && length(verbose))) {
     stop("Parameter verbose can only be TRUE or FALSE.")
     }
-  
+
   name <- parsed$name
-  
+
   base_url <- glue::glue("https://{loc}-documentai.googleapis.com/v1/")
-  
+
   url <- glue::glue(base_url, name)
-  
+
   resp <- httr::GET(url, httr::config(token = token))
-  
+
   resp_par <- httr::content(resp)
-  
+
   status <- resp_par$metadata$state
-  
+
   job_no <- stringr::str_extract(name, "(?<=/)\\d+$")
-  
+
   if (inherits(response[[1]], "response")) {
     message(glue::glue('Status for job {job_no} submitted {response[[last_elem]]$date}: "{status}."'))
     } else {
       message(glue::glue('Status for job {job_no} submitted {response$date}: "{status}."'))
       }
-  
+
   if (isTRUE(verbose)) {
     return(resp)
   }
-  
+
 }
 
 #' Notify on job completion
 #'
-#' @description Queries to the Google Cloud Services (GCS) Document AI API 
+#' @description Queries to the Google Cloud Services (GCS) Document AI API
 #' about the status of a previously submitted asynchronous job
 #' and emits a sound notification when the job is complete.
 #'
@@ -743,7 +743,7 @@ dai_status <- function(response,
 #' (https://www.r-project.org/nosvn/pandoc/beepr.html).
 #'
 #' @return no return value, called for side effects
-#' 
+#'
 #' @export
 #'
 #' @examples
@@ -752,48 +752,48 @@ dai_status <- function(response,
 #' dai_notify(response)
 #' }
 
-dai_notify <- function(response, 
+dai_notify <- function(response,
                        loc = "eu",
                        token = dai_token(),
                        sound = 2
                        ) {
-  
+
   if (!(inherits(response, "response") || inherits(response[[1]], "response"))) {
     stop("Input is not a valid HTTP response.")
     }
-  
+
   if (inherits(response[[1]], "response")) {
     last_elem <- max(length(response))
     parsed <- httr::content(response[[last_elem]])
     } else {
     parsed <- httr::content(response)
     }
-  
+
   if (!("name" %in% names(parsed))) {
     stop("Input does not contain a processing job id. Either it's not from a\n
     dai processing function or it's from an unsuccessful processing request.")
     }
-  
+
   if (!(loc %in% c("eu", "us") && length(loc) == 1)) {
     stop("Invalid location parameter.")
     }
-  
+
   if (!(sound %in% 1:10 && length(sound) == 1)) {
     stop("Invalid sound parameter.")
     }
-  
+
   finished <- FALSE
-  
+
   message("Checking job. I'll beep when it's done.")
-  
+
   while (isFALSE(finished)) {
     msg <- utils::capture.output(dai_status(response, loc, token), type = "message")
     finished <- grepl("SUCCEEDED", msg)
     Sys.sleep(1)
     }
-  
+
   message("Job complete.")
-  
+
   beepr::beep(sound)
-  
+
 }

@@ -18,7 +18,7 @@ tables_from_dai_response <- function(object) {
     stop("Object is not a valid HTTP response.")
     }
 
-  parsed <- httr::content(object, as="parsed")
+  parsed <- httr::content(object, as = "parsed")
 
   if (!("pages" %in% names(parsed) || "pages" %in% names(parsed$document))) {
     stop("Object not a positive dai_sync response.")
@@ -51,7 +51,7 @@ tables_from_dai_response <- function(object) {
       indices <- cell$layout$textAnchor$textSegments
       txt <- character()
       for (i in indices) {
-        if (is.null(i$startIndex)){
+        if (is.null(i$startIndex)) {
           line_start <- 1
         } else {
           line_start <- i$startIndex
@@ -79,7 +79,7 @@ tables_from_dai_response <- function(object) {
     rows_list <- table$bodyRows
     headervectors <- purrr::map(headers_list, resp_get_row_vector)
     rowvectors <- purrr::map(rows_list, resp_get_row_vector)
-    table <- data.frame(matrix(nrow= 0, ncol=6))
+    table <- data.frame(matrix(nrow = 0, ncol = 6))
     for (i in rowvectors) {
       table <- rbind(table, as.data.frame(t(i)))
     }
@@ -124,7 +124,7 @@ tables_from_dai_file <- function(file) {
     stop("Invalid file input.")
     }
 
-  if (!(is_json(file))){
+  if (!(is_json(file))) {
     stop("Input file not .json. Is the file in your working directory?")
     }
 
@@ -155,7 +155,7 @@ tables_from_dai_file <- function(file) {
       pagewise_list_of_header_objs <- page$headerRows
       pagewise_list_of_row_objs <- page$bodyRows
       table_objects <- list()
-      for (i in 1:length(pagewise_list_of_header_objs)){
+      for (i in seq_along(pagewise_list_of_header_objs)){
         table_object <- list(list(headerRows = pagewise_list_of_header_objs[[i]],
                                   bodyRows = pagewise_list_of_row_objs[[i]]))
         table_objects <- append(table_objects, table_object)
@@ -175,13 +175,13 @@ tables_from_dai_file <- function(file) {
       txt <- ""
     } else {
       txt <- character()
-      for (i in 1:nrow(cell)) {
-        if (is.null(cell[i,"startIndex"])){
+      for (i in seq_len(nrow(cell))) {
+        if (is.null(cell[i, "startIndex"])) {
           line_start <- 1
         } else {
-          line_start <- cell[i,"startIndex"]
+          line_start <- cell[i, "startIndex"]
         }
-        line_end <- cell[i,"endIndex"]
+        line_end <- cell[i, "endIndex"]
         line_txt <- substr(text, line_start, line_end)
         txt <- paste(txt, line_txt, sep = "\n")
       }
@@ -202,16 +202,16 @@ tables_from_dai_file <- function(file) {
     rows_list <- table_object$bodyRows$cells
     headervectors <- purrr::map(headers_list, file_get_row_vector)
     rowvectors <- purrr::map(rows_list, file_get_row_vector)
-    table <- data.frame(matrix(nrow= 0, ncol=6))
+    table <- data.frame(matrix(nrow = 0, ncol = 6))
     if (length(rowvectors) == 0) {
       table <- as.data.frame(t(headervectors[[1]]))
     } else {
-      for (i in 1:length(rowvectors)) {
+      for (i in seq_along(rowvectors)) {
         if (is.null(rowvectors[[i]])) {
           if (i == 1) {
-            table_width <- length(rowvectors[[i+1]])
+            table_width <- length(rowvectors[[i + 1]])
           } else {
-            table_width <- length(rowvectors[[i-1]])
+            table_width <- length(rowvectors[[i - 1]])
           }
           rowvectors[[i]] <- rep("", times = table_width)
           table <- rbind(table, as.data.frame(t(rowvectors[[i]])))

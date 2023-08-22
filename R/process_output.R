@@ -23,7 +23,7 @@
 build_token_df <- function(json) {
 
   # check
-  if (!(is_json(json))){
+  if (!(is_json(json))) {
     stop("Input file not .json.")
     }
 
@@ -56,7 +56,7 @@ build_token_df <- function(json) {
 
   token <- character()
 
-  for (i in 1:length(start_ind)) {
+  for (i in seq_along(start_ind)) {
 
     tok <- substr(text,
                   start_ind[i],
@@ -81,7 +81,7 @@ build_token_df <- function(json) {
   # get page numbers
   page <- list()
 
-  for (i in 1:length(pages_tokens)) {
+  for (i in seq_along(pages_tokens)) {
 
     if (is.null(pages_tokens[[i]])) {
       instances <- 0
@@ -119,24 +119,24 @@ build_token_df <- function(json) {
   # then assign block numbers by location
 
   # loop over each page
-  for (i in 1:length(pagewise_block_sets)) {
+  for (i in seq_along(pagewise_block_sets)) {
 
     # create temporary sub-dataframe for that page
     df_sub <- df[df$page == i, ]
 
     # set counter for block number
-    count = 1
+    count <- 1
 
     #loop over blocks
     for (j in pagewise_block_sets[[i]]) {
 
       # assign number to token rows that fall within the box
       df_sub$block[df_sub$right > mean(c(j$x[1], j$x[4])) &
-                     df_sub$left < mean(c(j$x[2],j$x[3])) &
-                     df_sub$bottom > mean(c(j$y[1],j$y[2])) &
-                     df_sub$top < mean(c(j$y[3],j$y[4]))] <- count
+                     df_sub$left < mean(c(j$x[2], j$x[3])) &
+                     df_sub$bottom > mean(c(j$y[1], j$y[2])) &
+                     df_sub$top < mean(c(j$y[3], j$y[4]))] <- count
 
-      count = count + 1
+      count <- count + 1
 
       }
 
@@ -171,7 +171,7 @@ build_token_df <- function(json) {
 build_block_df <- function(json) {
 
   # check
-  if (!(is_json(json))){
+  if (!(is_json(json))) {
     stop("Input file not .json.")
     }
 
@@ -196,7 +196,7 @@ build_block_df <- function(json) {
 
   for (i in pagewise_block_sets) {
 
-    b <- 1:length(i)
+    b <- seq_along(i)
 
     block <- append(block, b)
 
@@ -218,7 +218,7 @@ build_block_df <- function(json) {
   # get page numbers
   page <- list()
 
-  for (i in 1:length(pages_blocks)) {
+  for (i in seq_along(pages_blocks)) {
 
     if (is.null(pages_blocks[[i]])) {
       instances <- 0
@@ -425,15 +425,16 @@ reassign_tokens <- function(token_df,
                             ) {
 
   # checks
-  if (!(is.data.frame(token_df))){
+  if (!(is.data.frame(token_df))) {
     stop("token_df not a data frame.")
     }
 
-  if (!(identical(colnames(token_df), c("token", "start_ind", "end_ind", "left", "right", "top", "bottom", "page", "block")))) {
+  if (!(identical(colnames(token_df),
+                  c("token", "start_ind", "end_ind", "left", "right", "top", "bottom", "page", "block")))) {
     stop("Token dataframe not recognized. Was it made with build_token_df?")
     }
 
-  if (!(is.data.frame(block_df))){
+  if (!(is.data.frame(block_df))) {
     stop("block_df not a data frame.")
     }
 
@@ -456,7 +457,7 @@ reassign_tokens <- function(token_df,
   new_token_df <- as.data.frame(matrix(ncol = length(colnames), nrow = 0, dimnames = list(NULL, colnames)))
 
   # loop over each page
-  for (i in 1:length(token_df_pages)) {
+  for (i in seq_along(token_df_pages)) {
 
     # short names for readability
     tokens <- token_df_pages[[i]]
@@ -466,7 +467,7 @@ reassign_tokens <- function(token_df,
     new_token_df_page <- as.data.frame(matrix(ncol = length(colnames), nrow = 0, dimnames = list(NULL, colnames)))
 
     # loop over each block
-    for (j in 1:nrow(blocks)) {
+    for (j in seq_len(nrow(blocks))) {
 
       tokens_in_block <- tokens[tokens$top >= blocks[j, ]$top &
                                   tokens$bottom <= blocks[j, ]$bottom &
@@ -521,7 +522,8 @@ reassign_tokens2 <- function(token_df,
     stop("token_df not a data frame.")
     }
 
-  if (!(identical(colnames(token_df), c("token", "start_ind", "end_ind", "left", "right", "top", "bottom", "page", "block")))) {
+  if (!(identical(colnames(token_df),
+                  c("token", "start_ind", "end_ind", "left", "right", "top", "bottom", "page", "block")))) {
     stop("Token dataframe not recognized. Was it made with build_token_df?")
     }
 
@@ -537,7 +539,7 @@ reassign_tokens2 <- function(token_df,
     stop("Invalid page parameter.")
     }
 
-  if (page > max(token_df$page, na.rm = TRUE)){
+  if (page > max(token_df$page, na.rm = TRUE)) {
     stop("No such page number in this dataframe.")
     }
 
@@ -560,7 +562,7 @@ reassign_tokens2 <- function(token_df,
 
   # if last of several
       } else if (page > 1 && page == max(token_df$page)) {
-        preceeding <- token_df[token_df$page < page, ]
+        preceding <- token_df[token_df$page < page, ]
         new_token_df <- rbind(preceding, page_df)
 
   # if in middle
@@ -618,13 +620,13 @@ from_labelme <- function(json,
 
   width <- info[[7]]
 
-  left <- info[[3]][[2]][[1]][1,1] / width
+  left <- info[[3]][[2]][[1]][1, 1] / width
 
-  right <- info[[3]][[2]][[1]][2,1] / width
+  right <- info[[3]][[2]][[1]][2, 1] / width
 
-  top <- info[[3]][[2]][[1]][1,2] / height
+  top <- info[[3]][[2]][[1]][1, 2] / height
 
-  bottom <- info[[3]][[2]][[1]][2,2] / height
+  bottom <- info[[3]][[2]][[1]][2, 2] / height
 
   block <- info[[3]][[1]]
 
@@ -686,7 +688,8 @@ redraw_blocks <- function(json,
     stop("token_df not a data frame.")
   }
 
-  if (!(identical(colnames(token_df), c("token", "start_ind", "end_ind", "left", "right", "top", "bottom", "page", "block")))) {
+  if (!(identical(colnames(token_df),
+                  c("token", "start_ind", "end_ind", "left", "right", "top", "bottom", "page", "block")))) {
     stop("Token dataframe format not recognized.")
   }
 
@@ -697,10 +700,10 @@ redraw_blocks <- function(json,
   pages_blocks <- split(token_df, token_df$page)
 
   pagewise_block_sets <- list()
-  for (i in 1:length(pages_blocks)) {
+  for (i in seq_along(pages_blocks)) {
     blocks <- split(pages_blocks[[i]], pages_blocks[[i]]$block)
     block_coords <- list()
-    for (j in 1:length(blocks)) {
+    for (j in seq_along(blocks)) {
       token_sub_df <- blocks[[j]]
       left <- min(token_sub_df$left)
       right <- max(token_sub_df$right)
@@ -718,11 +721,11 @@ redraw_blocks <- function(json,
   page_imgs <- parsed$pages$image$content
 
   # loop over the pagewise sets
-  for (i in 1:length(pagewise_block_sets)) {
+  for (i in seq_along(pagewise_block_sets)) {
 
     # decode base64
     path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
-    outconn <- file(path,"wb")
+    outconn <- file(path, "wb")
     base64enc::base64decode(page_imgs[i], outconn)
     close(outconn)
 
@@ -739,7 +742,7 @@ redraw_blocks <- function(json,
     counter <- 1
 
     #loop over boxes on the page
-    for(box in pagewise_block_sets[[i]]) {
+    for (box in pagewise_block_sets[[i]]) {
 
       # transform from relative to absolute coordinates
       box$x1 <- box$x * info$width

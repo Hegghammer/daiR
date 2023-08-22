@@ -4,7 +4,7 @@
 #' synchronous processing request.
 #'
 #' @param response an HTTP response object returned by \code{dai_sync()}
-#' @param save_to_file boolean; whether to save the text as a .txt file 
+#' @param save_to_file boolean; whether to save the text as a .txt file
 #' @param dest_dir folder path for the .txt output file if \code{save_to_file = TRUE}
 #' @param filename string to form the stem of the .txt output file
 #' @return a string (if \code{save_to_file = FALSE})
@@ -13,7 +13,7 @@
 #' @examples
 #' \dontrun{
 #' text <- text_from_dai_response(response)
-#' 
+#'
 #' text_from_dai_response(response, save_to_file = TRUE)
 #' }
 
@@ -28,36 +28,35 @@ text_from_dai_response <- function(response,
     stop("Input is not a valid HTTP response.")
     }
 
-  parsed <- httr::content(response, as="parsed")
+  parsed <- httr::content(response, as = "parsed")
 
   #if (!("pages" %in% names(parsed$document) || "pages" %in% names(parsed))) {
   #  stop("Input not recognized. Is it from dai_async?")
   #}
-  
   if (!("text" %in% names(parsed$document) || "text" %in% names(parsed))) {
     stop("DAI found no text. Was the page blank?")
   }
-  
+
   if (!(save_to_file %in% c(TRUE, FALSE))) {
     stop("Invalid save_to_file argument. Must be either TRUE or FALSE.")
   }
-  
+
   if (!(length(dest_dir) == 1)) {
     stop("Invalid dest_dir argument. Must be a valid folder path.")
   }
-  
+
   if (!(is.character(dest_dir))) {
     stop("Invalid dest_dir argument. Must be a valid folder path.")
-  }  
-  
+  }
+
   if (!(length(filename) == 1)) {
     stop("Invalid dest_dir argument. Must be a valid folder path.")
   }
-  
+
   if (!(is.character(filename))) {
     stop("Invalid dest_dir argument. Must be a valid folder path.")
   }
-  
+
   if (nchar(filename) > 200) {
     stop("Filename too long.")
   }
@@ -67,7 +66,7 @@ text_from_dai_response <- function(response,
     text <- parsed$document$text
   } else {
   	text <- parsed$text
-  }  
+  }
 
   # save to file if requested
   if (isTRUE(save_to_file)) {
@@ -84,7 +83,7 @@ text_from_dai_response <- function(response,
 #' asynchronous processing request.
 #'
 #' @param file filepath of a JSON file obtained using \code{dai_async()}
-#' @param save_to_file boolean; whether to save the text as a .txt file 
+#' @param save_to_file boolean; whether to save the text as a .txt file
 #' @param dest_dir folder path for the .txt output file if save_to_file=TRUE
 #' @return a string (if \code{save_to_file = FALSE})
 #' @export
@@ -105,7 +104,7 @@ text_from_dai_file <- function(file,
     stop("Invalid file input.")
     }
 
-  if (!(is_json(file))){
+  if (!(is_json(file))) {
     stop("Input file not .json. Is the file in your working directory?")
     }
 
@@ -122,15 +121,15 @@ text_from_dai_file <- function(file,
   if (!(save_to_file %in% c(TRUE, FALSE))) {
     stop("Invalid save_to_file argument. Must be either TRUE or FALSE.")
   }
-  
+
   if (!(length(dest_dir) == 1)) {
     stop("Invalid dest_dir argument. Must be a valid folder path.")
   }
-  
+
   if (!(is.character(dest_dir))) {
     stop("Invalid dest_dir argument. Must be a valid folder path.")
-  }  
-  
+  }
+
   # get text
   text <- output$text
 
@@ -144,24 +143,24 @@ text_from_dai_file <- function(file,
 
 #' Merge shards
 #'
-#' @description Merges text files from Document AI output shards into a 
+#' @description Merges text files from Document AI output shards into a
 #' single text file corresponding to the parent document.
-#'    
-#' @param source_dir folder path for input files 
+#'
+#' @param source_dir folder path for input files
 #' @param dest_dir folder path for output files
 #' @return no return value, called for side effects
-#' 
+#'
 #' @export
-#' 
-#' @details The function works on .txt files generated from .json output files, 
+#'
+#' @details The function works on .txt files generated from .json output files,
 #' not on .json files directly. It also presupposes that the .txt filenames
 #' have the same name stems as the .json files from which they were extracted.
-#' For the v1 API, this means files ending with "-0.txt", "-1.txt", "-2.txt", 
-#' and so forth. For the v1beta2 API, it means files ending with 
-#' "-page-1-to-100.txt", "-page-101-to-200.txt", etc. The safest approach is 
-#' to generate .txt files using `text_from_dai_file()` with the `save_to_file` 
+#' For the v1 API, this means files ending with "-0.txt", "-1.txt", "-2.txt",
+#' and so forth. For the v1beta2 API, it means files ending with
+#' "-page-1-to-100.txt", "-page-101-to-200.txt", etc. The safest approach is
+#' to generate .txt files using `text_from_dai_file()` with the `save_to_file`
 #' parameter set to TRUE.
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' merge_shards(source_dir = getwd(), dest_dir = tempdir())
@@ -170,63 +169,63 @@ text_from_dai_file <- function(file,
 merge_shards <- function(source_dir,
                          dest_dir
                          ) {
-  
+
   if (length(source_dir) > 1) {
     stop("Invalid source_dir argument. Must be a valid folder path.")
     }
-  
+
   if (!(is.character(source_dir))) {
     stop("Invalid source_dir argument. Must be a valid folder path.")
-    }  
-  
+    }
+
   if (!(length(dest_dir) == 1)) {
     stop("Invalid dest_dir argument. Must be a valid folder path.")
     }
-  
+
   if (!(is.character(dest_dir))) {
     stop("Invalid dest_dir argument. Must be a valid folder path.")
-    }  
-  
+    }
+
   files <- list.files(source_dir, pattern = "*txt$", full.names = TRUE)
-  
+
   if (length(files) == 0) {
     stop("No .txt files found.")
     }
-  
+
   if (isFALSE(grepl("-\\d{1,3}\\.txt", files)) && isFALSE(grepl("-page-\\d{1,4}-to-\\d{1,4}", files))) {
     stop("The .txt files are incorrectly formatted. Are they from Document AI output shards?")
     }
-  
+
   all <- grep("-\\d{1,3}\\.txt", files, value = TRUE)
-  
+
   v1beta2 <- grep("-page-\\d{1,4}-to-\\d{1,4}", files, value = TRUE)
-  
+
   v1 <- all[!all %in% v1beta2]
-  
+
   v1beta2_stems <- unique(gsub("\\-page-\\d{1,4}-to-\\d{1,4}\\.txt", "", v1beta2))
-  
-  v1_stems <- unique(gsub("-\\d{1,2}\\.txt", "", v1)) 
-  
-  if (length(v1beta2) > 0) {        
-    for (i in 1:length(v1beta2_stems)) {
+
+  v1_stems <- unique(gsub("-\\d{1,2}\\.txt", "", v1))
+
+  if (length(v1beta2) > 0) {
+    for (i in seq_along(v1beta2_stems)) {
       cluster <- grep(v1beta2_stems[i], v1beta2, value = TRUE)
       cluster_df <- readtext::readtext(cluster)
       text <- paste(cluster_df$text, collapse = "\n")
       write(text, file.path(dest_dir, paste0(basename(v1beta2_stems[i]), ".txt")))
       }
     }
-  
+
   if (length(v1) > 0) {
-    for (i in 1:length(v1_stems)) {
+    for (i in seq_along(v1_stems)) {
       cluster <- grep(v1_stems[i], v1, value = TRUE)
       cluster_df <- readtext::readtext(cluster)
       text <- paste(cluster_df$text, collapse = "\n")
       write(text, file.path(dest_dir, paste0(basename(v1_stems[i]), ".txt")))
       }
     }
-  
+
   message("Shards merged.")
-  
+
 }
 
 #' Draw block bounding boxes on source document
@@ -237,11 +236,11 @@ merge_shards <- function(source_dir,
 #' document.
 #'
 #' @param type one of "sync", "async", "sync-tab" or "async-tab", depending on
-#' the function used to process the document. 
-#' @param output either a HTTP response object (from `dai_sync()` or 
-#' `dai_sync_tab()`) or the path to a JSON file (from `dai_async` or 
+#' the function used to process the document.
+#' @param output either a HTTP response object (from `dai_sync()` or
+#' `dai_sync_tab()`) or the path to a JSON file (from `dai_async` or
 #' `dai_async_tab()`).
-#' @param doc filepath to the source document (pdf, tiff, or gif file); only 
+#' @param doc filepath to the source document (pdf, tiff, or gif file); only
 #' necessary for documents processed with `dai_sync_tab()` or `dai_async_tab()`.
 #' @param prefix string to be prepended to the output png filename.
 #' @param dir path to the desired output directory.
@@ -257,146 +256,146 @@ merge_shards <- function(source_dir,
 #' @examples
 #' \dontrun{
 #' resp <- dai_sync("page.pdf")
-#' draw_blocks(type="sync", 
+#' draw_blocks(type="sync",
 #'             output=resp)
-#' 
+#'
 #' resp <- dai_sync_tab("page.pdf")
-#' draw_blocks(type="sync-tab", 
-#'             output=resp, 
+#' draw_blocks(type="sync-tab",
+#'             output=resp,
 #'             doc="page.pdf")
-#'             
-#' draw_blocks(type = "async", 
+#'
+#' draw_blocks(type = "async",
 #'             output = "page.json")
-#'             
-#' draw_blocks(type = "async-tab", 
-#'             output = "page.json", 
+#'
+#' draw_blocks(type = "async-tab",
+#'             output = "page.json",
 #'             doc="page.pdf")
 #' }
 
 draw_blocks <- function(type,
-												output,
-												doc = NA,
-												prefix = NULL,
-												dir = getwd(),
-												linecol = "red",
-												linewd = 3,
-												fontcol = "blue",
-												fontsize = 4	
+						output,
+						doc = NA,
+						prefix = NULL,
+						dir = getwd(),
+						linecol = "red",
+						linewd = 3,
+						fontcol = "blue",
+						fontsize = 4
 ) {
-	
+
 	# checks
 	if (!(type %in% c("sync", "async", "sync-tab", "async-tab"))) {
 		stop("Invalid type parameter.")
 	}
-	
+
 	if (!(inherits(output, "response") || is_json(output))) {
 		stop("Invalid output parameter")
 	}
-	
+
 	if (!(is.na(doc) || (length(doc) == 1 && is.character(doc)))) {
 		stop("Invalid doc parameter")
 	}
-	
+
 	if (length(prefix) > 1) {
 		stop("Invalid prefix.")
 	}
-	
+
 	if (!(is.character(prefix) || is.null(prefix))) {
 		stop("Invalid prefix.")
 	}
-	
+
 	if (length(dir) > 1) {
 		stop("Invalid dir parameter. Must be a valid folder path.")
 	}
-	
+
 	if (!(is.character(dir))) {
 		stop("Invalid dir parameter. Must be a valid folder path.")
 	}
-	
+
 	# Helper functions
 	get_vertices <- function(lst) {
 		boxes <- purrr::map(lst, ~.x$layout$boundingPoly$normalizedVertices)
 		return(boxes)
 	}
-	
+
 	transpose_block <- function(x) {
 		A <- purrr::map(x, unlist)
 		B <- purrr::map(A, data.frame)
 		C <- purrr::map(B, t)
 		D <- rbind(C[[1]], C[[2]], C[[3]], C[[4]])
-		rownames(D) <- c(1, 2, 3, 4)
+		rownames(D) <- 1:4
 		return(as.data.frame(D))
 	}
-	
+
 	transpose_page <- function(x) {
 		blocks <- purrr::map(x, transpose_block)
 		return(blocks)
 	}
-	
-	if (type=="sync") {
-		
+
+	if (type == "sync") {
+
 		if (!(inherits(output, "response"))) {
 			stop("Output parameter not pointing to valid response object.")
 		}
-		
+
 		# extract a list with pagewise sets of block boundary boxes
-		parsed <- content(output)
+		parsed <- httr::content(output)
 		pages <- parsed$document$pages
 		pages_blocks <- purrr::map(pages, ~.x$blocks)
 		pagewise_block_sets <- purrr::map(pages_blocks, get_vertices)
-		pagewise_block_sets <- purrr::map(pagewise_block_sets, transpose_page)	
-		
+		pagewise_block_sets <- purrr::map(pagewise_block_sets, transpose_page)
+
 		# decode base64 and save to temp images
-		page_imgs_base64 <-unlist(purrr::map(pages, ~.x$image$content))
+		page_imgs_base64 <- unlist(purrr::map(pages, ~.x$image$content))
 		imgs <- character()
-		for (i in 1:length(page_imgs_base64)) {
+		for (i in seq_along(page_imgs_base64)) {
 			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
-			outconn <- file(path,"wb")
+			outconn <- file(path, "wb")
 			base64enc::base64decode(page_imgs_base64[i], outconn)
 			close(outconn)
 			imgs <- c(imgs, path)
 		}
-		
-	} else if (type=="async"){
-		
+
+	} else if (type == "async") {
+
 		if (!(is_json(output))) {
 			stop("Output parameter not pointing to valid JSON file.")
 		}
-		
+
 		# extract a list with pagewise sets of block boundary boxes
 		parsed <- jsonlite::fromJSON(output)
 		pages_blocks <- parsed$pages$blocks
 		pagewise_block_sets <- purrr::map(pages_blocks, ~.x$layout$boundingPoly$normalizedVertices)
-		
+
 		# decode base64 and save to temp images
 		page_imgs_base64 <- parsed$pages$image$content
 		imgs <- character()
-		for (i in 1:length(page_imgs_base64)) {
+		for (i in seq_along(page_imgs_base64)) {
 			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
-			outconn <- file(path,"wb")
+			outconn <- file(path, "wb")
 			base64enc::base64decode(page_imgs_base64[i], outconn)
 			close(outconn)
 			imgs <- c(imgs, path)
 		}
-		
-	} else if (type=="sync-tab") {
-		
+
+	} else if (type == "sync-tab") {
+
 		if (!(inherits(output, "response"))) {
 			stop("Output parameter not pointing to valid response object.")
 		}
-		
+
 		# extract a list with pagewise sets of block boundary boxes
-		parsed <- content(output)
+		parsed <- httr::content(output)
 		pages <- parsed$pages
 		pages_blocks <- purrr::map(pages, ~.x$blocks)
-		pagewise_block_sets <- map(pages_blocks, get_vertices)
-		pagewise_block_sets <- map(pagewise_block_sets, transpose_page)	
-		
+		pagewise_block_sets <- purrr::map(pages_blocks, get_vertices)
+		pagewise_block_sets <- purrr::map(pagewise_block_sets, transpose_page)
+
 		# Get vector of images from source doc
 		if (grepl("pdf$", doc)) {
-			pgs <- magick::image_read_pdf(doc)	
+			pgs <- magick::image_read_pdf(doc)
 			imgs <- character()
-			for (i in 1:length(pgs)) {
+			for (i in seq_along(pgs)) {
 				path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
 				magick::image_write(pgs[i], path)
 				imgs <- c(imgs, path)
@@ -404,23 +403,23 @@ draw_blocks <- function(type,
 		} else {
 			imgs <- doc
 		}
-		
-	} else if (type=="async-tab") {
-		
+
+	} else if (type == "async-tab") {
+
 		if (!(is_json(output))) {
 			stop("Output parameter not pointing to valid JSON file.")
-		}		
-		
+		}
+
 		# extract a list with pagewise sets of block boundary boxes
 		parsed <- jsonlite::fromJSON(output)
 		pages_blocks <- parsed$pages$blocks
 		pagewise_block_sets <- purrr::map(pages_blocks, ~.x$layout$boundingPoly$normalizedVertices)
-		
+
 		# Get vector of images from source doc
 		if (grepl("pdf$", doc)) {
-			pgs <- magick::image_read_pdf(doc)	
+			pgs <- magick::image_read_pdf(doc)
 			imgs <- character()
-			for (i in 1:length(pgs)) {
+			for (i in seq_along(pgs)) {
 				path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
 				magick::image_write(pgs[i], path)
 				imgs <- c(imgs, path)
@@ -428,44 +427,44 @@ draw_blocks <- function(type,
 		} else {
 			imgs <- doc
 		}
-		
-	} 
-	
+
+	}
+
 	# loop over the pagewise sets
-	for (i in 1:length(pagewise_block_sets)) {
-		
+	for (i in seq_along(pagewise_block_sets)) {
+
 		img <- magick::image_read(imgs[i])
-		
+
 		# get image dimensions
 		info <- magick::image_info(img)
-		
+
 		# prepare for plotting on image
 		canvas <- magick::image_draw(img)
-		
+
 		# set counter for box number
 		counter <- 1
-		
+
 		#loop over boxes on the page
-		for(box in pagewise_block_sets[[i]]) {
-			
+		for (box in pagewise_block_sets[[i]]) {
+
 			# handle NAs in boxes on top or left edge
 			if (is.na(box$y[1])) box$y[1] <- 0
 			if (is.na(box$y[2])) box$y[2] <- 0
 			if (is.na(box$x[1])) box$x[1] <- 0
 			if (is.na(box$x[4])) box$x[4] <- 0
-			
+
 			# transform from relative to absolute coordinates
 			box$x1 <- box$x * info$width
-			
+
 			box$y1 <- box$y * info$height
-			
+
 			# draw polygon
 			graphics::polygon(x = box$x1,
 												y = box$y1,
 												border = linecol,
 												lwd = linewd
 			)
-			
+
 			graphics::text(x = box$x1[1],
 										 y = box$y1[1],
 										 label = counter,
@@ -473,37 +472,37 @@ draw_blocks <- function(type,
 										 cex = fontsize,
 										 family = "Liberation Sans"
 			)
-			
+
 			counter <- counter + 1
-			
+
 		}
-		
+
 		# write annotated image to file
-		
+
 		if (type %in% c("async", "async-tab")) {
-			default_prefix <- substr(basename(output), 1, nchar(basename(output)) -5)
+			default_prefix <- substr(basename(output), 1, nchar(basename(output)) - 5)
 		} else {
 			default_prefix <- "document"
 		}
-		
+
 		if (is.null(prefix)) {
 			filename <- glue::glue("{default_prefix}_page{i}_blocks.png")
 		} else {
 			filename <- glue::glue("{prefix}_page{i}_blocks.png")
 		}
-		
+
 		dest <- file.path(dir, filename)
-		
+
 		magick::image_write(canvas, format = "png", dest)
-		
+
 		grDevices::dev.off()
-		
+
 	}
-	
+
 	pages <- length(pages_blocks)
-	
+
 	message(glue::glue("Generated {pages} annotated image(s)."))
-	
+
 }
 
 #' Draw paragraph bounding boxes on source document
@@ -514,11 +513,11 @@ draw_blocks <- function(type,
 #' document.
 #'
 #' @param type one of "sync", "async", "sync-tab" or "async-tab", depending on
-#' the function used to process the document. 
-#' @param output either a HTTP response object (from `dai_sync()` or 
-#' `dai_sync_tab()`) or the path to a JSON file (from `dai_async` or 
+#' the function used to process the document.
+#' @param output either a HTTP response object (from `dai_sync()` or
+#' `dai_sync_tab()`) or the path to a JSON file (from `dai_async` or
 #' `dai_async_tab()`).
-#' @param doc filepath to the source document (pdf, tiff, or gif file); only 
+#' @param doc filepath to the source document (pdf, tiff, or gif file); only
 #' necessary for documents processed with `dai_sync_tab()` or `dai_async_tab()`.
 #' @param prefix string to be prepended to the output png filename.
 #' @param dir path to the desired output directory.
@@ -534,19 +533,19 @@ draw_blocks <- function(type,
 #' @examples
 #' \dontrun{
 #' resp <- dai_sync("page.pdf")
-#' draw_paragraphs(type="sync", 
+#' draw_paragraphs(type="sync",
 #'                 output=resp)
-#' 
+#'
 #' resp <- dai_sync_tab("page.pdf")
-#' draw_paragraphs(type="sync-tab", 
-#'                 output=resp, 
+#' draw_paragraphs(type="sync-tab",
+#'                 output=resp,
 #'                 doc="page.pdf")
-#'             
-#' draw_paragraphs(type = "async", 
+#'
+#' draw_paragraphs(type = "async",
 #'                 output = "page.json")
-#'             
-#' draw_paragraphs(type = "async-tab", 
-#'                 output = "page.json", 
+#'
+#' draw_paragraphs(type = "async-tab",
+#'                 output = "page.json",
 #'                 doc="page.pdf")
 #' }
 
@@ -561,42 +560,42 @@ draw_paragraphs <- function(type,
 														fontcol = "blue",
 														fontsize = 4
 ) {
-	
+
 	# checks
 	if (!(type %in% c("sync", "async", "sync-tab", "async-tab"))) {
 		stop("Invalid type parameter.")
 	}
-	
+
 	if (!(inherits(output, "response") || is_json(output))) {
 		stop("Invalid output parameter")
 	}
-	
+
 	if (!(is.na(doc) || (length(doc) == 1 && is.character(doc)))) {
 		stop("Invalid doc parameter")
 	}
-	
+
 	if (length(prefix) > 1) {
 		stop("Invalid prefix.")
 	}
-	
+
 	if (!(is.character(prefix) || is.null(prefix))) {
 		stop("Invalid prefix.")
 	}
-	
+
 	if (length(dir) > 1) {
 		stop("Invalid dir parameter. Must be a valid folder path.")
 	}
-	
+
 	if (!(is.character(dir))) {
 		stop("Invalid dir parameter. Must be a valid folder path.")
 	}
-	
+
 	# Helper functions
 	get_vertices <- function(lst) {
 		boxes <- purrr::map(lst, ~.x$layout$boundingPoly$normalizedVertices)
 		return(boxes)
 	}
-	
+
 	transpose_block <- function(x) {
 		A <- purrr::map(x, unlist)
 		B <- purrr::map(A, data.frame)
@@ -605,76 +604,76 @@ draw_paragraphs <- function(type,
 		rownames(D) <- c(1, 2, 3, 4)
 		return(as.data.frame(D))
 	}
-	
+
 	transpose_page <- function(x) {
 		paragraphs <- purrr::map(x, transpose_block)
 		return(paragraphs)
 	}
-	
-	if (type=="sync") {
-		
+
+	if (type == "sync") {
+
 		if (!(inherits(output, "response"))) {
 			stop("Output parameter not pointing to valid response object.")
 		}
-		
+
 		# extract a list with pagewise sets of block boundary boxes
-		parsed <- content(output)
+		parsed <- httr::content(output)
 		pages <- parsed$document$pages
 		pages_paragraphs <- purrr::map(pages, ~.x$paragraphs)
 		pagewise_block_sets <- purrr::map(pages_paragraphs, get_vertices)
-		pagewise_block_sets <- purrr::map(pagewise_block_sets, transpose_page)	
-		
+		pagewise_block_sets <- purrr::map(pagewise_block_sets, transpose_page)
+
 		# decode base64 and save to temp images
-		page_imgs_base64 <-unlist(purrr::map(pages, ~.x$image$content))
+		page_imgs_base64 <- unlist(purrr::map(pages, ~.x$image$content))
 		imgs <- character()
-		for (i in 1:length(page_imgs_base64)) {
+		for (i in seq_along(page_imgs_base64)) {
 			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
-			outconn <- file(path,"wb")
+			outconn <- file(path, "wb")
 			base64enc::base64decode(page_imgs_base64[i], outconn)
 			close(outconn)
 			imgs <- c(imgs, path)
 		}
-		
-	} else if (type=="async"){
-		
+
+	} else if (type == "async") {
+
 		if (!(is_json(output))) {
 			stop("Output parameter not pointing to valid JSON file.")
 		}
-		
+
 		# extract a list with pagewise sets of block boundary boxes
 		parsed <- jsonlite::fromJSON(output)
 		pages_paragraphs <- parsed$pages$paragraphs
 		pagewise_block_sets <- purrr::map(pages_paragraphs, ~.x$layout$boundingPoly$normalizedVertices)
-		
+
 		# decode base64 and save to temp images
 		page_imgs_base64 <- parsed$pages$image$content
 		imgs <- character()
-		for (i in 1:length(page_imgs_base64)) {
+		for (i in seq_along(page_imgs_base64)) {
 			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
-			outconn <- file(path,"wb")
+			outconn <- file(path, "wb")
 			base64enc::base64decode(page_imgs_base64[i], outconn)
 			close(outconn)
 			imgs <- c(imgs, path)
 		}
-		
-	} else if (type=="sync-tab") {
-		
+
+	} else if (type == "sync-tab") {
+
 		if (!(inherits(output, "response"))) {
 			stop("Output parameter not pointing to valid response object.")
 		}
-		
+
 		# extract a list with pagewise sets of block boundary boxes
-		parsed <- content(output)
+		parsed <- httr::content(output)
 		pages <- parsed$pages
 		pages_paragraphs <- purrr::map(pages, ~.x$paragraphs)
-		pagewise_block_sets <- map(pages_paragraphs, get_vertices)
-		pagewise_block_sets <- map(pagewise_block_sets, transpose_page)	
-		
+		pagewise_block_sets <- purrr::map(pages_paragraphs, get_vertices)
+		pagewise_block_sets <- purrr::map(pagewise_block_sets, transpose_page)
+
 		# Get vector of images from source doc
 		if (grepl("pdf$", doc)) {
-			pgs <- magick::image_read_pdf(doc)	
+			pgs <- magick::image_read_pdf(doc)
 			imgs <- character()
-			for (i in 1:length(pgs)) {
+			for (i in seq_along(pgs)) {
 				path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
 				magick::image_write(pgs[i], path)
 				imgs <- c(imgs, path)
@@ -682,23 +681,23 @@ draw_paragraphs <- function(type,
 		} else {
 			imgs <- doc
 		}
-		
-	} else if (type=="async-tab") {
-		
+
+	} else if (type == "async-tab") {
+
 		if (!(is_json(output))) {
 			stop("Output parameter not pointing to valid JSON file.")
-		}		
-		
+		}
+
 		# extract a list with pagewise sets of block boundary boxes
 		parsed <- jsonlite::fromJSON(output)
 		pages_paragraphs <- parsed$pages$paragraphs
 		pagewise_block_sets <- purrr::map(pages_paragraphs, ~.x$layout$boundingPoly$normalizedVertices)
-		
+
 		# Get vector of images from source doc
 		if (grepl("pdf$", doc)) {
-			pgs <- magick::image_read_pdf(doc)	
+			pgs <- magick::image_read_pdf(doc)
 			imgs <- character()
-			for (i in 1:length(pgs)) {
+			for (i in seq_along(pgs)) {
 				path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
 				magick::image_write(pgs[i], path)
 				imgs <- c(imgs, path)
@@ -706,44 +705,44 @@ draw_paragraphs <- function(type,
 		} else {
 			imgs <- doc
 		}
-		
-	} 
-	
+
+	}
+
 	# loop over the pagewise sets
-	for (i in 1:length(pagewise_block_sets)) {
-		
+	for (i in seq_along(pagewise_block_sets)) {
+
 		img <- magick::image_read(imgs[i])
-		
+
 		# get image dimensions
 		info <- magick::image_info(img)
-		
+
 		# prepare for plotting on image
 		canvas <- magick::image_draw(img)
-		
+
 		# set counter for box number
 		counter <- 1
-		
+
 		#loop over boxes on the page
-		for(box in pagewise_block_sets[[i]]) {
-			
+		for (box in pagewise_block_sets[[i]]) {
+
 			# handle NAs in boxes on top or left edge
 			if (is.na(box$y[1])) box$y[1] <- 0
 			if (is.na(box$y[2])) box$y[2] <- 0
 			if (is.na(box$x[1])) box$x[1] <- 0
 			if (is.na(box$x[4])) box$x[4] <- 0
-			
+
 			# transform from relative to absolute coordinates
 			box$x1 <- box$x * info$width
-			
+
 			box$y1 <- box$y * info$height
-			
+
 			# draw polygon
 			graphics::polygon(x = box$x1,
 												y = box$y1,
 												border = linecol,
 												lwd = linewd
 			)
-			
+
 			graphics::text(x = box$x1[1],
 										 y = box$y1[1],
 										 label = counter,
@@ -751,37 +750,37 @@ draw_paragraphs <- function(type,
 										 cex = fontsize,
 										 family = "Liberation Sans"
 			)
-			
+
 			counter <- counter + 1
-			
+
 		}
-		
+
 		# write annotated image to file
-		
+
 		if (type %in% c("async", "async-tab")) {
-			default_prefix <- substr(basename(output), 1, nchar(basename(output)) -5)
+			default_prefix <- substr(basename(output), 1, nchar(basename(output)) - 5)
 		} else {
 			default_prefix <- "document"
 		}
-		
+
 		if (is.null(prefix)) {
 			filename <- glue::glue("{default_prefix}_page{i}_paragraphs.png")
 		} else {
 			filename <- glue::glue("{prefix}_page{i}_paragraphs.png")
 		}
-		
+
 		dest <- file.path(dir, filename)
-		
+
 		magick::image_write(canvas, format = "png", dest)
-		
+
 		grDevices::dev.off()
-		
+
 	}
-	
+
 	pages <- length(pages_paragraphs)
-	
+
 	message(glue::glue("Generated {pages} annotated image(s)."))
-	
+
 }
 
 #' Inspect line bounding boxes
@@ -792,11 +791,11 @@ draw_paragraphs <- function(type,
 #' document.
 #'
 #' @param type one of "sync", "async", "sync-tab" or "async-tab", depending on
-#' the function used to process the document. 
-#' @param output either a HTTP response object (from `dai_sync()` or 
-#' `dai_sync_tab()`) or the path to a JSON file (from `dai_async` or 
+#' the function used to process the document.
+#' @param output either a HTTP response object (from `dai_sync()` or
+#' `dai_sync_tab()`) or the path to a JSON file (from `dai_async` or
 #' `dai_async_tab()`).
-#' @param doc filepath to the source document (pdf, tiff, or gif file); only 
+#' @param doc filepath to the source document (pdf, tiff, or gif file); only
 #' necessary for documents processed with `dai_sync_tab()` or `dai_async_tab()`.
 #' @param prefix string to be prepended to the output png filename.
 #' @param dir path to the desired output directory.
@@ -812,19 +811,19 @@ draw_paragraphs <- function(type,
 #' @examples
 #' \dontrun{
 #' resp <- dai_sync("page.pdf")
-#' draw_lines(type="sync", 
+#' draw_lines(type="sync",
 #'            output=resp)
-#' 
+#'
 #' resp <- dai_sync_tab("page.pdf")
-#' draw_lines(type="sync-tab", 
-#'            output=resp, 
+#' draw_lines(type="sync-tab",n
+#'            output=resp,
 #'            doc="page.pdf")
-#'             
-#' draw_lines(type = "async", 
+#'
+#' draw_lines(type = "async",
 #'            output = "page.json")
-#'             
-#' draw_lines(type = "async-tab", 
-#'            output = "page.json", 
+#'
+#' draw_lines(type = "async-tab",
+#'            output = "page.json",
 #'            doc="page.pdf")
 #' }
 
@@ -836,44 +835,44 @@ draw_lines <- function(type,
 											 linecol = "red",
 											 linewd = 3,
 											 fontcol = "blue",
-											 fontsize = 4											 
+											 fontsize = 4
 ) {
-	
+
 	# checks
 	if (!(type %in% c("sync", "async", "sync-tab", "async-tab"))) {
 		stop("Invalid type parameter.")
 	}
-	
+
 	if (!(inherits(output, "response") || is_json(output))) {
 		stop("Invalid output parameter")
 	}
-	
+
 	if (!(is.na(doc) || (length(doc) == 1 && is.character(doc)))) {
 		stop("Invalid doc parameter")
 	}
-	
+
 	if (length(prefix) > 1) {
 		stop("Invalid prefix.")
 	}
-	
+
 	if (!(is.character(prefix) || is.null(prefix))) {
 		stop("Invalid prefix.")
 	}
-	
+
 	if (length(dir) > 1) {
 		stop("Invalid dir parameter. Must be a valid folder path.")
 	}
-	
+
 	if (!(is.character(dir))) {
 		stop("Invalid dir parameter. Must be a valid folder path.")
 	}
-	
+
 	# Helper functions
 	get_vertices <- function(lst) {
 		boxes <- purrr::map(lst, ~.x$layout$boundingPoly$normalizedVertices)
 		return(boxes)
 	}
-	
+
 	transpose_block <- function(x) {
 		A <- purrr::map(x, unlist)
 		B <- purrr::map(A, data.frame)
@@ -882,76 +881,76 @@ draw_lines <- function(type,
 		rownames(D) <- c(1, 2, 3, 4)
 		return(as.data.frame(D))
 	}
-	
+
 	transpose_page <- function(x) {
 		lines <- purrr::map(x, transpose_block)
 		return(lines)
 	}
-	
-	if (type=="sync") {
-		
+
+	if (type == "sync") {
+
 		if (!(inherits(output, "response"))) {
 			stop("Output parameter not pointing to valid response object.")
 		}
-		
+
 		# extract a list with pagewise sets of block boundary boxes
-		parsed <- content(output)
+		parsed <- httr::content(output)
 		pages <- parsed$document$pages
 		pages_lines <- purrr::map(pages, ~.x$lines)
 		pagewise_block_sets <- purrr::map(pages_lines, get_vertices)
-		pagewise_block_sets <- purrr::map(pagewise_block_sets, transpose_page)	
-		
+		pagewise_block_sets <- purrr::map(pagewise_block_sets, transpose_page)
+
 		# decode base64 and save to temp images
-		page_imgs_base64 <-unlist(purrr::map(pages, ~.x$image$content))
+		page_imgs_base64 <- unlist(purrr::map(pages, ~.x$image$content))
 		imgs <- character()
-		for (i in 1:length(page_imgs_base64)) {
+		for (i in seq_along(page_imgs_base64)) {
 			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
-			outconn <- file(path,"wb")
+			outconn <- file(path, "wb")
 			base64enc::base64decode(page_imgs_base64[i], outconn)
 			close(outconn)
 			imgs <- c(imgs, path)
 		}
-		
-	} else if (type=="async"){
-		
+
+	} else if (type == "async") {
+
 		if (!(is_json(output))) {
 			stop("Output parameter not pointing to valid JSON file.")
 		}
-		
+
 		# extract a list with pagewise sets of block boundary boxes
 		parsed <- jsonlite::fromJSON(output)
 		pages_lines <- parsed$pages$lines
 		pagewise_block_sets <- purrr::map(pages_lines, ~.x$layout$boundingPoly$normalizedVertices)
-		
+
 		# decode base64 and save to temp images
 		page_imgs_base64 <- parsed$pages$image$content
 		imgs <- character()
-		for (i in 1:length(page_imgs_base64)) {
+		for (i in seq_along(page_imgs_base64)) {
 			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
-			outconn <- file(path,"wb")
+			outconn <- file(path, "wb")
 			base64enc::base64decode(page_imgs_base64[i], outconn)
 			close(outconn)
 			imgs <- c(imgs, path)
 		}
-		
-	} else if (type=="sync-tab") {
-		
+
+	} else if (type == "sync-tab") {
+
 		if (!(inherits(output, "response"))) {
 			stop("Output parameter not pointing to valid response object.")
 		}
-		
+
 		# extract a list with pagewise sets of block boundary boxes
-		parsed <- content(output)
+		parsed <- httr::content(output)
 		pages <- parsed$pages
 		pages_lines <- purrr::map(pages, ~.x$lines)
-		pagewise_block_sets <- map(pages_lines, get_vertices)
-		pagewise_block_sets <- map(pagewise_block_sets, transpose_page)	
-		
+		pagewise_block_sets <- purrr::map(pages_lines, get_vertices)
+		pagewise_block_sets <- purrr::map(pagewise_block_sets, transpose_page)
+
 		# Get vector of images from source doc
 		if (grepl("pdf$", doc)) {
-			pgs <- magick::image_read_pdf(doc)	
+			pgs <- magick::image_read_pdf(doc)
 			imgs <- character()
-			for (i in 1:length(pgs)) {
+			for (i in seq_along(pgs)) {
 				path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
 				magick::image_write(pgs[i], path)
 				imgs <- c(imgs, path)
@@ -959,23 +958,23 @@ draw_lines <- function(type,
 		} else {
 			imgs <- doc
 		}
-		
-	} else if (type=="async-tab") {
-		
+
+	} else if (type == "async-tab") {
+
 		if (!(is_json(output))) {
 			stop("Output parameter not pointing to valid JSON file.")
-		}		
-		
+		}
+
 		# extract a list with pagewise sets of block boundary boxes
 		parsed <- jsonlite::fromJSON(output)
 		pages_lines <- parsed$pages$lines
 		pagewise_block_sets <- purrr::map(pages_lines, ~.x$layout$boundingPoly$normalizedVertices)
-		
+
 		# Get vector of images from source doc
 		if (grepl("pdf$", doc)) {
-			pgs <- magick::image_read_pdf(doc)	
+			pgs <- magick::image_read_pdf(doc)
 			imgs <- character()
-			for (i in 1:length(pgs)) {
+			for (i in seq_along(pgs)) {
 				path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
 				magick::image_write(pgs[i], path)
 				imgs <- c(imgs, path)
@@ -983,44 +982,44 @@ draw_lines <- function(type,
 		} else {
 			imgs <- doc
 		}
-		
-	} 
-	
+
+	}
+
 	# loop over the pagewise sets
-	for (i in 1:length(pagewise_block_sets)) {
-		
+	for (i in seq_along(pagewise_block_sets)) {
+
 		img <- magick::image_read(imgs[i])
-		
+
 		# get image dimensions
 		info <- magick::image_info(img)
-		
+
 		# prepare for plotting on image
 		canvas <- magick::image_draw(img)
-		
+
 		# set counter for box number
 		counter <- 1
-		
+
 		#loop over boxes on the page
-		for(box in pagewise_block_sets[[i]]) {
-			
+		for (box in pagewise_block_sets[[i]]) {
+
 			# handle NAs in boxes on top or left edge
 			if (is.na(box$y[1])) box$y[1] <- 0
 			if (is.na(box$y[2])) box$y[2] <- 0
 			if (is.na(box$x[1])) box$x[1] <- 0
 			if (is.na(box$x[4])) box$x[4] <- 0
-			
+
 			# transform from relative to absolute coordinates
 			box$x1 <- box$x * info$width
-			
+
 			box$y1 <- box$y * info$height
-			
+
 			# draw polygon
 			graphics::polygon(x = box$x1,
 												y = box$y1,
 												border = linecol,
 												lwd = linewd
 			)
-			
+
 			graphics::text(x = box$x1[1],
 										 y = box$y1[1],
 										 label = counter,
@@ -1028,37 +1027,37 @@ draw_lines <- function(type,
 										 cex = fontsize,
 										 family = "Liberation Sans"
 			)
-			
+
 			counter <- counter + 1
-			
+
 		}
-		
+
 		# write annotated image to file
-		
+
 		if (type %in% c("async", "async-tab")) {
-			default_prefix <- substr(basename(output), 1, nchar(basename(output)) -5)
+			default_prefix <- substr(basename(output), 1, nchar(basename(output)) - 5)
 		} else {
 			default_prefix <- "document"
 		}
-		
+
 		if (is.null(prefix)) {
 			filename <- glue::glue("{default_prefix}_page{i}_lines.png")
 		} else {
 			filename <- glue::glue("{prefix}_page{i}_lines.png")
 		}
-		
+
 		dest <- file.path(dir, filename)
-		
+
 		magick::image_write(canvas, format = "png", dest)
-		
+
 		grDevices::dev.off()
-		
+
 	}
-	
+
 	pages <- length(pages_lines)
-	
+
 	message(glue::glue("Generated {pages} annotated image(s)."))
-	
+
 }
 
 #' Inspect token bounding boxes
@@ -1069,11 +1068,11 @@ draw_lines <- function(type,
 #' document.
 #'
 #' @param type one of "sync", "async", "sync-tab" or "async-tab", depending on
-#' the function used to process the document. 
-#' @param output either a HTTP response object (from `dai_sync()` or 
-#' `dai_sync_tab()`) or the path to a JSON file (from `dai_async` or 
+#' the function used to process the document.
+#' @param output either a HTTP response object (from `dai_sync()` or
+#' `dai_sync_tab()`) or the path to a JSON file (from `dai_async` or
 #' `dai_async_tab()`).
-#' @param doc filepath to the source document (pdf, tiff, or gif file); only 
+#' @param doc filepath to the source document (pdf, tiff, or gif file); only
 #' necessary for documents processed with `dai_sync_tab()` or `dai_async_tab()`.
 #' @param prefix string to be prepended to the output png filename.
 #' @param dir path to the desired output directory.
@@ -1089,69 +1088,68 @@ draw_lines <- function(type,
 #' @examples
 #' \dontrun{
 #' resp <- dai_sync("page.pdf")
-#' draw_tokens(type="sync", 
+#' draw_tokens(type="sync",
 #'             output=resp)
-#' 
+#'
 #' resp <- dai_sync_tab("page.pdf")
-#' draw_tokens(type="sync-tab", 
-#'             output=resp, 
+#' draw_tokens(type="sync-tab",
+#'             output=resp,
 #'             doc="page.pdf")
-#'             
-#' draw_tokens(type = "async", 
+#'
+#' draw_tokens(type = "async",
 #'             output = "page.json")
-#'             
-#' draw_tokens(type = "async-tab", 
-#'             output = "page.json", 
+#'
+#' draw_tokens(type = "async-tab",
+#'             output = "page.json",
 #'             doc="page.pdf")
 #' }
 
 draw_tokens <- function(type,
-												output,
-												doc = NA,
-												prefix = NULL,
-												dir = getwd(),
-												linecol = "red",
-												linewd = 3,
-												fontcol = "blue",
-												fontsize = 4
-												
+						output,
+						doc = NA,
+						prefix = NULL,
+						dir = getwd(),
+						linecol = "red",
+						linewd = 3,
+    					fontcol = "blue",
+						fontsize = 4
 ) {
-	
+
 	# checks
 	if (!(type %in% c("sync", "async", "sync-tab", "async-tab"))) {
 		stop("Invalid type parameter.")
 	}
-	
+
 	if (!(inherits(output, "response") || is_json(output))) {
 		stop("Invalid output parameter")
 	}
-	
+
 	if (!(is.na(doc) || (length(doc) == 1 && is.character(doc)))) {
 		stop("Invalid doc parameter")
 	}
-	
+
 	if (length(prefix) > 1) {
 		stop("Invalid prefix.")
 	}
-	
+
 	if (!(is.character(prefix) || is.null(prefix))) {
 		stop("Invalid prefix.")
 	}
-	
+
 	if (length(dir) > 1) {
 		stop("Invalid dir parameter. Must be a valid folder path.")
 	}
-	
+
 	if (!(is.character(dir))) {
 		stop("Invalid dir parameter. Must be a valid folder path.")
 	}
-	
+
 	# Helper functions
 	get_vertices <- function(lst) {
 		boxes <- purrr::map(lst, ~.x$layout$boundingPoly$normalizedVertices)
 		return(boxes)
 	}
-	
+
 	transpose_block <- function(x) {
 		A <- purrr::map(x, unlist)
 		B <- purrr::map(A, data.frame)
@@ -1160,76 +1158,76 @@ draw_tokens <- function(type,
 		rownames(D) <- c(1, 2, 3, 4)
 		return(as.data.frame(D))
 	}
-	
+
 	transpose_page <- function(x) {
 		tokens <- purrr::map(x, transpose_block)
 		return(tokens)
 	}
-	
-	if (type=="sync") {
-		
+
+	if (type == "sync") {
+
 		if (!(inherits(output, "response"))) {
 			stop("Output parameter not pointing to valid response object.")
 		}
-		
+
 		# extract a list with pagewise sets of block boundary boxes
-		parsed <- content(output)
+		parsed <- httr::content(output)
 		pages <- parsed$document$pages
 		pages_tokens <- purrr::map(pages, ~.x$tokens)
 		pagewise_block_sets <- purrr::map(pages_tokens, get_vertices)
-		pagewise_block_sets <- purrr::map(pagewise_block_sets, transpose_page)	
-		
+		pagewise_block_sets <- purrr::map(pagewise_block_sets, transpose_page)
+
 		# decode base64 and save to temp images
-		page_imgs_base64 <-unlist(purrr::map(pages, ~.x$image$content))
+		page_imgs_base64 <- unlist(purrr::map(pages, ~.x$image$content))
 		imgs <- character()
-		for (i in 1:length(page_imgs_base64)) {
+		for (i in seq_along(page_imgs_base64)) {
 			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
-			outconn <- file(path,"wb")
+			outconn <- file(path, "wb")
 			base64enc::base64decode(page_imgs_base64[i], outconn)
 			close(outconn)
 			imgs <- c(imgs, path)
 		}
-		
-	} else if (type=="async"){
-		
+
+	} else if (type == "async") {
+
 		if (!(is_json(output))) {
 			stop("Output parameter not pointing to valid JSON file.")
 		}
-		
+
 		# extract a list with pagewise sets of block boundary boxes
 		parsed <- jsonlite::fromJSON(output)
 		pages_tokens <- parsed$pages$tokens
 		pagewise_block_sets <- purrr::map(pages_tokens, ~.x$layout$boundingPoly$normalizedVertices)
-		
+
 		# decode base64 and save to temp images
 		page_imgs_base64 <- parsed$pages$image$content
 		imgs <- character()
-		for (i in 1:length(page_imgs_base64)) {
+		for (i in seq_along(page_imgs_base64)) {
 			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
-			outconn <- file(path,"wb")
+			outconn <- file(path, "wb")
 			base64enc::base64decode(page_imgs_base64[i], outconn)
 			close(outconn)
 			imgs <- c(imgs, path)
 		}
-		
-	} else if (type=="sync-tab") {
-		
+
+	} else if (type == "sync-tab") {
+
 		if (!(inherits(output, "response"))) {
 			stop("Output parameter not pointing to valid response object.")
 		}
-		
+
 		# extract a list with pagewise sets of block boundary boxes
-		parsed <- content(output)
+		parsed <- httr::content(output)
 		pages <- parsed$pages
 		pages_tokens <- purrr::map(pages, ~.x$tokens)
-		pagewise_block_sets <- map(pages_tokens, get_vertices)
-		pagewise_block_sets <- map(pagewise_block_sets, transpose_page)	
-		
+		pagewise_block_sets <- purrr::map(pages_tokens, get_vertices)
+		pagewise_block_sets <- purrr::map(pagewise_block_sets, transpose_page)
+
 		# Get vector of images from source doc
 		if (grepl("pdf$", doc)) {
-			pgs <- magick::image_read_pdf(doc)	
+			pgs <- magick::image_read_pdf(doc)
 			imgs <- character()
-			for (i in 1:length(pgs)) {
+			for (i in seq_along(pgs)) {
 				path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
 				magick::image_write(pgs[i], path)
 				imgs <- c(imgs, path)
@@ -1237,23 +1235,23 @@ draw_tokens <- function(type,
 		} else {
 			imgs <- doc
 		}
-		
-	} else if (type=="async-tab") {
-		
+
+	} else if (type == "async-tab") {
+
 		if (!(is_json(output))) {
 			stop("Output parameter not pointing to valid JSON file.")
-		}		
-		
+		}
+
 		# extract a list with pagewise sets of block boundary boxes
 		parsed <- jsonlite::fromJSON(output)
 		pages_tokens <- parsed$pages$tokens
 		pagewise_block_sets <- purrr::map(pages_tokens, ~.x$layout$boundingPoly$normalizedVertices)
-		
+
 		# Get vector of images from source doc
 		if (grepl("pdf$", doc)) {
-			pgs <- magick::image_read_pdf(doc)	
+			pgs <- magick::image_read_pdf(doc)
 			imgs <- character()
-			for (i in 1:length(pgs)) {
+			for (i in seq_along(pgs)) {
 				path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
 				magick::image_write(pgs[i], path)
 				imgs <- c(imgs, path)
@@ -1261,80 +1259,80 @@ draw_tokens <- function(type,
 		} else {
 			imgs <- doc
 		}
-		
-	} 
-	
+
+	}
+
 	# loop over the pagewise sets
-	for (i in 1:length(pagewise_block_sets)) {
-		
+	for (i in seq_along(pagewise_block_sets)) {
+
 		img <- magick::image_read(imgs[i])
-		
+
 		# get image dimensions
 		info <- magick::image_info(img)
-		
+
 		# prepare for plotting on image
 		canvas <- magick::image_draw(img)
-		
+
 		# set counter for box number
 		counter <- 1
-		
+
 		#loop over boxes on the page
-		for(box in pagewise_block_sets[[i]]) {
-			
+		for (box in pagewise_block_sets[[i]]) {
+
 			# handle NAs in boxes on top or left edge
 			if (is.na(box$y[1])) box$y[1] <- 0
 			if (is.na(box$y[2])) box$y[2] <- 0
 			if (is.na(box$x[1])) box$x[1] <- 0
 			if (is.na(box$x[4])) box$x[4] <- 0
-			
+
 			# transform from relative to absolute coordinates
 			box$x1 <- box$x * info$width
-			
+
 			box$y1 <- box$y * info$height
-			
+
 			# draw polygon
 			graphics::polygon(x = box$x1,
-												y = box$y1,
-												border = linecol,
-												lwd = linewd
+							  y = box$y1,
+							  border = linecol,
+							  lwd = linewd
 			)
-			
+
 			graphics::text(x = box$x1[1],
-										 y = box$y1[1],
-										 label = counter,
-										 col = fontcol,
-										 cex = fontsize,
-										 family = "Liberation Sans"
+						   y = box$y1[1],
+						   label = counter,
+						   col = fontcol,
+						   cex = fontsize,
+						   family = "Liberation Sans"
 			)
-			
+
 			counter <- counter + 1
-			
+
 		}
-		
+
 		# write annotated image to file
-		
+
 		if (type %in% c("async", "async-tab")) {
-			default_prefix <- substr(basename(output), 1, nchar(basename(output)) -5)
+			default_prefix <- substr(basename(output), 1, nchar(basename(output)) - 5)
 		} else {
 			default_prefix <- "document"
 		}
-		
+
 		if (is.null(prefix)) {
 			filename <- glue::glue("{default_prefix}_page{i}_tokens.png")
 		} else {
 			filename <- glue::glue("{prefix}_page{i}_tokens.png")
 		}
-		
+
 		dest <- file.path(dir, filename)
-		
+
 		magick::image_write(canvas, format = "png", dest)
-		
+
 		grDevices::dev.off()
-		
+
 	}
-	
+
 	pages <- length(pages_tokens)
-	
+
 	message(glue::glue("Generated {pages} annotated image(s)."))
-	
+
 }
