@@ -21,6 +21,7 @@ write(json, madeup_json_file)
 test_that("dai_auth warns of incorrect credentials", {
   expect_message(dai_auth(path = null), "Access token not available. Have you provided a valid service account key file?")
   expect_message(dai_auth(path = na), "Access token not available. Have you provided a valid service account key file?")
+  expect_message(dai_auth(path = boolean), "Access token not available. Have you provided a valid service account key file?")
   expect_message(dai_auth(path = number_random), "Access token not available. Have you provided a valid service account key file?")
   expect_message(dai_auth(path = vector_strings), "Access token not available. Have you provided a valid service account key file?")
   expect_message(dai_auth(path = list_strings), "Access token not available. Have you provided a valid service account key file?")
@@ -41,6 +42,7 @@ test_that("dai_auth authenticates with correct credentials", {
 test_that("dai_token warns of incorrect credentials", {
   expect_message(dai_token(path = null), "Invalid GCS credentials. No token produced.")
   expect_message(dai_token(path = na), "Invalid GCS credentials. No token produced.")
+  expect_message(dai_token(path = boolean), "Invalid GCS credentials. No token produced.")
   expect_message(dai_token(path = number_random), "Invalid GCS credentials. No token produced.")
   expect_message(dai_token(path = vector_strings), "Invalid GCS credentials. No token produced.")
   expect_message(dai_token(path = list_strings), "Invalid GCS credentials. No token produced.")
@@ -72,11 +74,14 @@ test_that("dai_user works", {
 test_that("get_project_id calls out input errors", {
   expect_error(get_project_id(path = null), "Error: invalid path parameter.")
   expect_error(get_project_id(path = na), "Error: invalid path parameter.")
+  expect_error(get_project_id(path = boolean), "Error: invalid path parameter.")
   expect_error(get_project_id(path = number_random), "Error: invalid path parameter.")
   expect_error(get_project_id(path = vector_strings), "Error: invalid path parameter.")
   expect_error(get_project_id(path = list_strings), "Error: invalid path parameter.")
   expect_error(get_project_id(path = df), "Error: invalid path parameter.")
   expect_error(get_project_id(path = matrix), "Error: invalid path parameter.")
 })
+
+## CLEANUP ---------------------------------------------------------------------
 
 unlink(madeup_json_file, force = TRUE)

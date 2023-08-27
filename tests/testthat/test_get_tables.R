@@ -21,6 +21,7 @@ write(json, madeup_json_file)
 test_that("tables_from_dai_response() warns of input errors", {
   expect_error(tables_from_dai_response(null), "Object is not a valid HTTP response.")
   expect_error(tables_from_dai_response(na), "Object is not a valid HTTP response.")
+  expect_error(tables_from_dai_response(boolean), "Object is not a valid HTTP response.")
   expect_error(tables_from_dai_response(number_random), "Object is not a valid HTTP response.")
   expect_error(tables_from_dai_response(string_random), "Object is not a valid HTTP response.")
   expect_error(tables_from_dai_response(vector_strings), "Object is not a valid HTTP response.")
@@ -57,6 +58,7 @@ test_that("tables_from_dai_response() returns dataframes from dai response conta
 test_that("tables_from_dai_file() warns of input errors", {
   expect_error(tables_from_dai_file(null), "Invalid file input.")
   expect_error(tables_from_dai_file(na), "Invalid file input.")
+  expect_error(tables_from_dai_file(boolean), "Invalid file input.")
   expect_error(tables_from_dai_file(number_random), "Invalid file input.")
   expect_error(tables_from_dai_file(df), "Invalid file input.")
   expect_error(tables_from_dai_file(matrix), "Invalid file input.")

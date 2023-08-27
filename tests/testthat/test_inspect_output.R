@@ -21,6 +21,7 @@ write(json, madeup_json_file)
 test_that("text_from_dai_response() warns of input errors", {
   expect_error(text_from_dai_response(null), "Input is not a valid HTTP response.")
   expect_error(text_from_dai_response(na), "Input is not a valid HTTP response.")
+  expect_error(text_from_dai_response(boolean), "Input is not a valid HTTP response.")
   expect_error(text_from_dai_response(number_random), "Input is not a valid HTTP response.")
   expect_error(text_from_dai_response(string_random), "Input is not a valid HTTP response.")
   expect_error(text_from_dai_response(vector_strings), "Input is not a valid HTTP response.")
@@ -56,6 +57,7 @@ test_that("text_from_dai_response() gets text from DAI response from example fil
 test_that("text_from_dai_file() warns of input errors", {
   expect_error(text_from_dai_file(null), "Invalid file input.")
   expect_error(text_from_dai_file(na), "Invalid file input.")
+  expect_error(text_from_dai_file(boolean), "Invalid file input.")
   expect_error(text_from_dai_file(number_random), "Invalid file input.")
   expect_error(text_from_dai_file(vector_strings), "Invalid file input.")
   expect_error(text_from_dai_file(list_strings), "Invalid file input.")
@@ -84,6 +86,7 @@ test_that("text_from_dai_file() gets text from example json file", {
 test_that("draw_blocks() warns of input errors", {
   expect_error(draw_blocks(type = null), "Invalid type parameter.")
   expect_error(draw_blocks(type = na), "Invalid type parameter.")
+  expect_error(draw_blocks(type = boolean), "Invalid type parameter.")
   expect_error(draw_blocks(type = number_random), "Invalid type parameter.")
   expect_error(draw_blocks(type = string_random), "Invalid type parameter.")
   expect_error(draw_blocks(type = df), "Invalid type parameter.")
@@ -93,6 +96,7 @@ test_that("draw_blocks() warns of input errors", {
 
   expect_error(draw_blocks(type = "sync", output = null), "Invalid output parameter.")
   expect_error(draw_blocks(type = "sync", output = na), "Invalid output parameter.")
+  expect_error(draw_blocks(type = "sync", output = boolean), "Invalid output parameter.")
   expect_error(draw_blocks(type = "sync", output = number_random), "Invalid output parameter.")
   expect_error(draw_blocks(type = "sync", output = df), "Invalid output parameter.")
   expect_error(draw_blocks(type = "sync", output = matrix), "Invalid output parameter.")
@@ -116,6 +120,8 @@ test_that("draw_blocks() warns of input errors", {
                "Invalid dir parameter. Must be a valid folder path.")
   expect_error(draw_blocks(type = "async", output = realjson, doc = "source.pdf", prefix = "test", dir = na),
                "Invalid dir parameter. Must be a valid folder path.")
+  expect_error(draw_blocks(type = "async", output = realjson, doc = "source.pdf", prefix = "test", dir = boolean),
+               "Invalid dir parameter. Must be a valid folder path.")
   expect_error(draw_blocks(type = "async", output = realjson, doc = "source.pdf", prefix = "test", dir = number_random),
                "Invalid dir parameter. Must be a valid folder path.")
   expect_error(draw_blocks(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = df),
@@ -130,6 +136,8 @@ test_that("draw_blocks() warns of input errors", {
   expect_error(draw_blocks(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linecol = null),
                "Invalid linecol parameter. Must be a single valid colour representation.")
   expect_error(draw_blocks(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linecol = na),
+               "Invalid linecol parameter. Must be a single valid colour representation.")
+  expect_error(draw_blocks(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linecol = boolean),
                "Invalid linecol parameter. Must be a single valid colour representation.")
   expect_error(draw_blocks(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linecol = string_random),
                "Invalid linecol parameter. Must be a single valid colour representation.")
@@ -146,6 +154,8 @@ test_that("draw_blocks() warns of input errors", {
                "Invalid linewd parameter. Must be a single number.")
   expect_error(draw_blocks(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linewd = na),
                "Invalid linewd parameter. Must be a single number.")
+  expect_error(draw_blocks(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linewd = boolean),
+               "Invalid linewd parameter. Must be a single number.")
   expect_error(draw_blocks(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linewd = string_random),
                "Invalid linewd parameter. Must be a single number.")
   expect_error(draw_blocks(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linewd = vector_strings),
@@ -161,6 +171,8 @@ test_that("draw_blocks() warns of input errors", {
                "Invalid fontcol parameter. Must be a single valid colour representation.")
   expect_error(draw_blocks(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontcol = na),
                "Invalid fontcol parameter. Must be a single valid colour representation.")
+  expect_error(draw_blocks(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontcol = boolean),
+               "Invalid fontcol parameter. Must be a single valid colour representation.")
   expect_error(draw_blocks(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontcol = string_random),
                "Invalid fontcol parameter. Must be a single valid colour representation.")
   expect_error(draw_blocks(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontcol = vector_strings),
@@ -175,6 +187,8 @@ test_that("draw_blocks() warns of input errors", {
   expect_error(draw_blocks(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontsize = null),
                "Invalid fontsize parameter. Must be a single number.")
   expect_error(draw_blocks(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontsize = na),
+               "Invalid fontsize parameter. Must be a single number.")
+  expect_error(draw_blocks(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontsize = boolean),
                "Invalid fontsize parameter. Must be a single number.")
   expect_error(draw_blocks(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontsize = string_random),
                "Invalid fontsize parameter. Must be a single number.")
@@ -215,6 +229,7 @@ test_that("draw_blocks() produces a correctly named png file", {
 test_that("draw_paragraphs() warns of input errors", {
   expect_error(draw_paragraphs(type = null), "Invalid type parameter.")
   expect_error(draw_paragraphs(type = na), "Invalid type parameter.")
+  expect_error(draw_paragraphs(type = boolean), "Invalid type parameter.")
   expect_error(draw_paragraphs(type = number_random), "Invalid type parameter.")
   expect_error(draw_paragraphs(type = string_random), "Invalid type parameter.")
   expect_error(draw_paragraphs(type = df), "Invalid type parameter.")
@@ -224,6 +239,7 @@ test_that("draw_paragraphs() warns of input errors", {
 
   expect_error(draw_paragraphs(type = "sync", output = null), "Invalid output parameter.")
   expect_error(draw_paragraphs(type = "sync", output = na), "Invalid output parameter.")
+  expect_error(draw_paragraphs(type = "sync", output = boolean), "Invalid output parameter.")
   expect_error(draw_paragraphs(type = "sync", output = number_random), "Invalid output parameter.")
   expect_error(draw_paragraphs(type = "sync", output = df), "Invalid output parameter.")
   expect_error(draw_paragraphs(type = "sync", output = matrix), "Invalid output parameter.")
@@ -247,6 +263,8 @@ test_that("draw_paragraphs() warns of input errors", {
                "Invalid dir parameter. Must be a valid folder path.")
   expect_error(draw_paragraphs(type = "async", output = realjson, doc = "source.pdf", prefix = "test", dir = na),
                "Invalid dir parameter. Must be a valid folder path.")
+  expect_error(draw_paragraphs(type = "async", output = realjson, doc = "source.pdf", prefix = "test", dir = boolean),
+               "Invalid dir parameter. Must be a valid folder path.")
   expect_error(draw_paragraphs(type = "async", output = realjson, doc = "source.pdf", prefix = "test", dir = number_random),
                "Invalid dir parameter. Must be a valid folder path.")
   expect_error(draw_paragraphs(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = df),
@@ -261,6 +279,8 @@ test_that("draw_paragraphs() warns of input errors", {
   expect_error(draw_paragraphs(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linecol = null),
                "Invalid linecol parameter. Must be a single valid colour representation.")
   expect_error(draw_paragraphs(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linecol = na),
+               "Invalid linecol parameter. Must be a single valid colour representation.")
+  expect_error(draw_paragraphs(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linecol = boolean),
                "Invalid linecol parameter. Must be a single valid colour representation.")
   expect_error(draw_paragraphs(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linecol = string_random),
                "Invalid linecol parameter. Must be a single valid colour representation.")
@@ -277,6 +297,8 @@ test_that("draw_paragraphs() warns of input errors", {
                "Invalid linewd parameter. Must be a single number.")
   expect_error(draw_paragraphs(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linewd = na),
                "Invalid linewd parameter. Must be a single number.")
+  expect_error(draw_paragraphs(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linewd = boolean),
+               "Invalid linewd parameter. Must be a single number.")
   expect_error(draw_paragraphs(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linewd = string_random),
                "Invalid linewd parameter. Must be a single number.")
   expect_error(draw_paragraphs(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linewd = vector_strings),
@@ -292,6 +314,8 @@ test_that("draw_paragraphs() warns of input errors", {
                "Invalid fontcol parameter. Must be a single valid colour representation.")
   expect_error(draw_paragraphs(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontcol = na),
                "Invalid fontcol parameter. Must be a single valid colour representation.")
+  expect_error(draw_paragraphs(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontcol = boolean),
+               "Invalid fontcol parameter. Must be a single valid colour representation.")
   expect_error(draw_paragraphs(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontcol = string_random),
                "Invalid fontcol parameter. Must be a single valid colour representation.")
   expect_error(draw_paragraphs(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontcol = vector_strings),
@@ -306,6 +330,8 @@ test_that("draw_paragraphs() warns of input errors", {
   expect_error(draw_paragraphs(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontsize = null),
                "Invalid fontsize parameter. Must be a single number.")
   expect_error(draw_paragraphs(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontsize = na),
+               "Invalid fontsize parameter. Must be a single number.")
+  expect_error(draw_paragraphs(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontsize = boolean),
                "Invalid fontsize parameter. Must be a single number.")
   expect_error(draw_paragraphs(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontsize = string_random),
                "Invalid fontsize parameter. Must be a single number.")
@@ -345,6 +371,7 @@ test_that("draw_paragraphs() produces a correctly named new png file", {
 test_that("draw_lines() warns of input errors", {
   expect_error(draw_lines(type = null), "Invalid type parameter.")
   expect_error(draw_lines(type = na), "Invalid type parameter.")
+  expect_error(draw_lines(type = boolean), "Invalid type parameter.")
   expect_error(draw_lines(type = number_random), "Invalid type parameter.")
   expect_error(draw_lines(type = string_random), "Invalid type parameter.")
   expect_error(draw_lines(type = df), "Invalid type parameter.")
@@ -354,6 +381,7 @@ test_that("draw_lines() warns of input errors", {
 
   expect_error(draw_lines(type = "sync", output = null), "Invalid output parameter.")
   expect_error(draw_lines(type = "sync", output = na), "Invalid output parameter.")
+  expect_error(draw_lines(type = "sync", output = boolean), "Invalid output parameter.")
   expect_error(draw_lines(type = "sync", output = number_random), "Invalid output parameter.")
   expect_error(draw_lines(type = "sync", output = df), "Invalid output parameter.")
   expect_error(draw_lines(type = "sync", output = matrix), "Invalid output parameter.")
@@ -377,6 +405,8 @@ test_that("draw_lines() warns of input errors", {
                "Invalid dir parameter. Must be a valid folder path.")
   expect_error(draw_lines(type = "async", output = realjson, doc = "source.pdf", prefix = "test", dir = na),
                "Invalid dir parameter. Must be a valid folder path.")
+  expect_error(draw_lines(type = "async", output = realjson, doc = "source.pdf", prefix = "test", dir = boolean),
+               "Invalid dir parameter. Must be a valid folder path.")
   expect_error(draw_lines(type = "async", output = realjson, doc = "source.pdf", prefix = "test", dir = number_random),
                "Invalid dir parameter. Must be a valid folder path.")
   expect_error(draw_lines(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = df),
@@ -391,6 +421,8 @@ test_that("draw_lines() warns of input errors", {
   expect_error(draw_lines(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linecol = null),
                "Invalid linecol parameter. Must be a single valid colour representation.")
   expect_error(draw_lines(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linecol = na),
+               "Invalid linecol parameter. Must be a single valid colour representation.")
+  expect_error(draw_lines(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linecol = boolean),
                "Invalid linecol parameter. Must be a single valid colour representation.")
   expect_error(draw_lines(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linecol = string_random),
                "Invalid linecol parameter. Must be a single valid colour representation.")
@@ -407,6 +439,8 @@ test_that("draw_lines() warns of input errors", {
                "Invalid linewd parameter. Must be a single number.")
   expect_error(draw_lines(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linewd = na),
                "Invalid linewd parameter. Must be a single number.")
+  expect_error(draw_lines(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linewd = boolean),
+               "Invalid linewd parameter. Must be a single number.")
   expect_error(draw_lines(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linewd = string_random),
                "Invalid linewd parameter. Must be a single number.")
   expect_error(draw_lines(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linewd = vector_strings),
@@ -422,6 +456,8 @@ test_that("draw_lines() warns of input errors", {
                "Invalid fontcol parameter. Must be a single valid colour representation.")
   expect_error(draw_lines(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontcol = na),
                "Invalid fontcol parameter. Must be a single valid colour representation.")
+  expect_error(draw_lines(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontcol = boolean),
+               "Invalid fontcol parameter. Must be a single valid colour representation.")
   expect_error(draw_lines(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontcol = string_random),
                "Invalid fontcol parameter. Must be a single valid colour representation.")
   expect_error(draw_lines(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontcol = vector_strings),
@@ -436,6 +472,8 @@ test_that("draw_lines() warns of input errors", {
   expect_error(draw_lines(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontsize = null),
                "Invalid fontsize parameter. Must be a single number.")
   expect_error(draw_lines(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontsize = na),
+               "Invalid fontsize parameter. Must be a single number.")
+  expect_error(draw_lines(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontsize = boolean),
                "Invalid fontsize parameter. Must be a single number.")
   expect_error(draw_lines(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontsize = string_random),
                "Invalid fontsize parameter. Must be a single number.")
@@ -475,6 +513,7 @@ test_that("draw_lines() produces a correctly named new png file", {
 test_that("draw_tokens() warns of input errors", {
   expect_error(draw_tokens(type = null), "Invalid type parameter.")
   expect_error(draw_tokens(type = na), "Invalid type parameter.")
+  expect_error(draw_tokens(type = boolean), "Invalid type parameter.")
   expect_error(draw_tokens(type = number_random), "Invalid type parameter.")
   expect_error(draw_tokens(type = string_random), "Invalid type parameter.")
   expect_error(draw_tokens(type = df), "Invalid type parameter.")
@@ -484,6 +523,7 @@ test_that("draw_tokens() warns of input errors", {
 
   expect_error(draw_tokens(type = "sync", output = null), "Invalid output parameter.")
   expect_error(draw_tokens(type = "sync", output = na), "Invalid output parameter.")
+  expect_error(draw_tokens(type = "sync", output = boolean), "Invalid output parameter.")
   expect_error(draw_tokens(type = "sync", output = number_random), "Invalid output parameter.")
   expect_error(draw_tokens(type = "sync", output = df), "Invalid output parameter.")
   expect_error(draw_tokens(type = "sync", output = matrix), "Invalid output parameter.")
@@ -507,6 +547,8 @@ test_that("draw_tokens() warns of input errors", {
                "Invalid dir parameter. Must be a valid folder path.")
   expect_error(draw_tokens(type = "async", output = realjson, doc = "source.pdf", prefix = "test", dir = na),
                "Invalid dir parameter. Must be a valid folder path.")
+  expect_error(draw_tokens(type = "async", output = realjson, doc = "source.pdf", prefix = "test", dir = boolean),
+               "Invalid dir parameter. Must be a valid folder path.")
   expect_error(draw_tokens(type = "async", output = realjson, doc = "source.pdf", prefix = "test", dir = number_random),
                "Invalid dir parameter. Must be a valid folder path.")
   expect_error(draw_tokens(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = df),
@@ -521,6 +563,8 @@ test_that("draw_tokens() warns of input errors", {
   expect_error(draw_tokens(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linecol = null),
                "Invalid linecol parameter. Must be a single valid colour representation.")
   expect_error(draw_tokens(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linecol = na),
+               "Invalid linecol parameter. Must be a single valid colour representation.")
+  expect_error(draw_tokens(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linecol = boolean),
                "Invalid linecol parameter. Must be a single valid colour representation.")
   expect_error(draw_tokens(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linecol = string_random),
                "Invalid linecol parameter. Must be a single valid colour representation.")
@@ -537,6 +581,8 @@ test_that("draw_tokens() warns of input errors", {
                "Invalid linewd parameter. Must be a single number.")
   expect_error(draw_tokens(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linewd = na),
                "Invalid linewd parameter. Must be a single number.")
+  expect_error(draw_tokens(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linewd = boolean),
+               "Invalid linewd parameter. Must be a single number.")
   expect_error(draw_tokens(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linewd = string_random),
                "Invalid linewd parameter. Must be a single number.")
   expect_error(draw_tokens(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", linewd = vector_strings),
@@ -552,6 +598,8 @@ test_that("draw_tokens() warns of input errors", {
                "Invalid fontcol parameter. Must be a single valid colour representation.")
   expect_error(draw_tokens(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontcol = na),
                "Invalid fontcol parameter. Must be a single valid colour representation.")
+  expect_error(draw_tokens(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontcol = boolean),
+               "Invalid fontcol parameter. Must be a single valid colour representation.")
   expect_error(draw_tokens(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontcol = string_random),
                "Invalid fontcol parameter. Must be a single valid colour representation.")
   expect_error(draw_tokens(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontcol = vector_strings),
@@ -566,6 +614,8 @@ test_that("draw_tokens() warns of input errors", {
   expect_error(draw_tokens(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontsize = null),
                "Invalid fontsize parameter. Must be a single number.")
   expect_error(draw_tokens(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontsize = na),
+               "Invalid fontsize parameter. Must be a single number.")
+  expect_error(draw_tokens(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontsize = boolean),
                "Invalid fontsize parameter. Must be a single number.")
   expect_error(draw_tokens(type = "async", output = realjson, doc = "source.pdf", prefix = "myfile", dir = ".", fontsize = string_random),
                "Invalid fontsize parameter. Must be a single number.")
