@@ -33,7 +33,7 @@ text_from_dai_response <- function(response,
   if (!("pages" %in% names(parsed$document) || "pages" %in% names(parsed))) {
     stop("Input not recognized. Is it from dai_async?")
   }
-  
+
   if (!("text" %in% names(parsed$document) || "text" %in% names(parsed))) {
     stop("DAI found no text. Was the page blank?")
   }
@@ -293,7 +293,7 @@ draw_blocks <- function(type,
 		stop("Invalid output parameter.")
 	}
 
-	if (length(doc) > 1 || is.numeric(doc) ) {
+	if (length(doc) > 1 || is.numeric(doc)) {
 		stop("Invalid doc parameter.")
 	}
 
@@ -303,8 +303,8 @@ draw_blocks <- function(type,
 
 	if (length(dir) > 1 || !(is.character(dir))) {
 		stop("Invalid dir parameter. Must be a valid folder path.")
-	}	
-	
+	}
+
 	if (!(length(linecol) == 1) || !(daiR::is_colour(linecol)) || is.na(linecol)) {
 		stop("Invalid linecol parameter. Must be a single valid colour representation.")
 	}
@@ -579,7 +579,7 @@ draw_paragraphs <- function(type,
 		stop("Invalid output parameter.")
 	}
 
-	if (length(doc) > 1 || is.numeric(doc) ) {
+	if (length(doc) > 1 || is.numeric(doc)) {
 		stop("Invalid doc parameter.")
 	}
 
@@ -589,8 +589,8 @@ draw_paragraphs <- function(type,
 
 	if (length(dir) > 1 || !(is.character(dir))) {
 		stop("Invalid dir parameter. Must be a valid folder path.")
-	}	
-	
+	}
+
 	if (!(length(linecol) == 1) || !(daiR::is_colour(linecol)) || is.na(linecol)) {
 		stop("Invalid linecol parameter. Must be a single valid colour representation.")
 	}
@@ -864,7 +864,7 @@ draw_lines <- function(type,
 		stop("Invalid output parameter.")
 	}
 
-	if (length(doc) > 1 || is.numeric(doc) ) {
+	if (length(doc) > 1 || is.numeric(doc)) {
 		stop("Invalid doc parameter.")
 	}
 
@@ -891,7 +891,7 @@ draw_lines <- function(type,
 	if (!(is.numeric(fontsize) && length(fontsize) == 1)) {
 		stop("Invalid fontsize parameter. Must be a single number.")
 	}
-	
+
 	# Helper functions
 	get_vertices <- function(lst) {
 		boxes <- purrr::map(lst, ~.x$layout$boundingPoly$normalizedVertices)
@@ -1149,7 +1149,7 @@ draw_tokens <- function(type,
 		stop("Invalid output parameter.")
 	}
 
-	if (length(doc) > 1 || is.numeric(doc) ) {
+	if (length(doc) > 1 || is.numeric(doc)) {
 		stop("Invalid doc parameter.")
 	}
 
@@ -1159,8 +1159,8 @@ draw_tokens <- function(type,
 
 	if (length(dir) > 1 || !(is.character(dir))) {
 		stop("Invalid dir parameter. Must be a valid folder path.")
-	}	
-	
+	}
+
 	if (!(length(linecol) == 1) || !(daiR::is_colour(linecol)) || is.na(linecol)) {
 		stop("Invalid linecol parameter. Must be a single valid colour representation.")
 	}
@@ -1176,7 +1176,7 @@ draw_tokens <- function(type,
 	if (!(is.numeric(fontsize) && length(fontsize) == 1)) {
 		stop("Invalid fontsize parameter. Must be a single number.")
 	}
-	
+
 	# Helper functions
 	get_vertices <- function(lst) {
 		boxes <- purrr::map(lst, ~.x$layout$boundingPoly$normalizedVertices)

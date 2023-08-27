@@ -37,10 +37,12 @@ test_that("get_processors calls out input errors", {
 })
 
 test_that("get_processors gets processors", {
-
-#TODO
-    
-}
+  skip_on_cran()
+  skip_on_ci()
+  skip_if_offline()
+  response <- get_processors()
+  expect_equal(class(response), "data.frame")
+})
 
 # GET_PROCESSOR_INFO--------------------------------------------------------------------------------
 
@@ -78,10 +80,12 @@ test_that("get_processor_info calls out input errors", {
 })
 
 test_that("get_processor_info gets processor info", {
-
-#TODO
-
-}
+  skip_on_cran()
+  skip_on_ci()
+  skip_if_offline()
+  response <- get_processor_info()
+  expect_equal(class(response), "list")
+})
 
 # GET_PROCESSOR_VERSIONS--------------------------------------------------------------------------------
 
@@ -119,6 +123,9 @@ test_that("get_processor_versions calls out input errors", {
 })
 
 test_that("get_processor_versions gets processor versions", {
-# TODO
-
-}
+  skip_on_cran()
+  skip_on_ci()
+  skip_if_offline()
+  response <- suppressWarnings(get_processor_versions())
+  expect_equal(class(response), "data.frame")
+})
