@@ -2,19 +2,45 @@
 % Please edit documentation in R/inspect_output.R
 \name{draw_blocks}
 \alias{draw_blocks}
-\title{Inspect block bounding boxes}
+\title{Draw block bounding boxes on source document}
 \usage{
-draw_blocks(json, prefix = NULL, dir = getwd())
+draw_blocks(
+  type,
+  output,
+  doc = NA,
+  prefix = NULL,
+  dir = getwd(),
+  linecol = "red",
+  linewd = 3,
+  fontcol = "blue",
+  fontsize = 4
+)
 }
 \arguments{
-\item{json}{filepath of a JSON file obtained using \code{dai_async()}}
+\item{type}{one of "sync", "async", "sync-tab" or "async-tab", depending on
+the function used to process the document.}
 
-\item{prefix}{string to be prepended to output filename}
+\item{output}{either a HTTP response object (from \code{dai_sync()} or
+\code{dai_sync_tab()}) or the path to a JSON file (from \code{dai_async} or
+\code{dai_async_tab()}).}
 
-\item{dir}{path to the desired output directory}
+\item{doc}{filepath to the source document (pdf, tiff, or gif file); only
+necessary for documents processed with \code{dai_sync_tab()} or \code{dai_async_tab()}.}
+
+\item{prefix}{string to be prepended to the output png filename.}
+
+\item{dir}{path to the desired output directory.}
+
+\item{linecol}{color of the bounding box line.}
+
+\item{linewd}{width of the bounding box line.}
+
+\item{fontcol}{color of the box numbers.}
+
+\item{fontsize}{size of the box numbers.}
 }
 \value{
-no return value, called for side effects
+no return value, called for side effects.
 }
 \description{
 Plots the block bounding boxes identified by
@@ -27,6 +53,20 @@ Not vectorized, but documents can be multi-page.
 }
 \examples{
 \dontrun{
-draw_blocks("pdf_output.json", dir = tempdir())
+resp <- dai_sync("page.pdf")
+draw_blocks(type="sync",
+            output=resp)
+
+resp <- dai_sync_tab("page.pdf")
+draw_blocks(type="sync-tab",
+            output=resp,
+            doc="page.pdf")
+
+draw_blocks(type = "async",
+            output = "page.json")
+
+draw_blocks(type = "async-tab",
+            output = "page.json",
+            doc="page.pdf")
 }
 }

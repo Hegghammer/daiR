@@ -284,32 +284,40 @@ draw_blocks <- function(type,
 ) {
 
 	# checks
-	if (!(type %in% c("sync", "async", "sync-tab", "async-tab"))) {
+	if (!(length(type) == 1) || !(type %in% c("sync", "async", "sync-tab", "async-tab"))) {
 		stop("Invalid type parameter.")
 	}
 
 	if (!(inherits(output, "response") || is_json(output))) {
-		stop("Invalid output parameter")
+		stop("Invalid output parameter.")
 	}
 
-	if (!(is.na(doc) || (length(doc) == 1 && is.character(doc)))) {
-		stop("Invalid doc parameter")
+	if (length(doc) > 1 || is.numeric(doc) ) {
+		stop("Invalid doc parameter.")
 	}
 
-	if (length(prefix) > 1) {
-		stop("Invalid prefix.")
+	if (length(prefix) > 1 || is.numeric(prefix)) {
+		stop("Invalid prefix parameter.")
 	}
 
-	if (!(is.character(prefix) || is.null(prefix))) {
-		stop("Invalid prefix.")
-	}
-
-	if (length(dir) > 1) {
+	if (length(dir) > 1 || !(is.character(dir))) {
 		stop("Invalid dir parameter. Must be a valid folder path.")
+	}	
+	
+	if (!(length(linecol) == 1) || !(is_colour(linecol)) || is.na(linecol)) {
+		stop("Invalid linecol parameter. Must be a single valid colour representation.")
 	}
 
-	if (!(is.character(dir))) {
-		stop("Invalid dir parameter. Must be a valid folder path.")
+	if (!(is.numeric(linewd) && length(linewd) == 1)) {
+		stop("Invalid linewd parameter. Must be a single number.")
+	}
+
+	if (!(length(fontcol) == 1) || !(is_colour(fontcol)) || is.na(fontcol)) {
+		stop("Invalid fontcol parameter. Must be a single valid colour representation.")
+	}
+
+	if (!(is.numeric(fontsize) && length(fontsize) == 1)) {
+		stop("Invalid fontsize parameter. Must be a single number.")
 	}
 
 	# Helper functions
@@ -562,32 +570,40 @@ draw_paragraphs <- function(type,
 ) {
 
 	# checks
-	if (!(type %in% c("sync", "async", "sync-tab", "async-tab"))) {
+	if (!(length(type) == 1) || !(type %in% c("sync", "async", "sync-tab", "async-tab"))) {
 		stop("Invalid type parameter.")
 	}
 
 	if (!(inherits(output, "response") || is_json(output))) {
-		stop("Invalid output parameter")
+		stop("Invalid output parameter.")
 	}
 
-	if (!(is.na(doc) || (length(doc) == 1 && is.character(doc)))) {
-		stop("Invalid doc parameter")
+	if (length(doc) > 1 || is.numeric(doc) ) {
+		stop("Invalid doc parameter.")
 	}
 
-	if (length(prefix) > 1) {
-		stop("Invalid prefix.")
+	if (length(prefix) > 1 || is.numeric(prefix)) {
+		stop("Invalid prefix parameter.")
 	}
 
-	if (!(is.character(prefix) || is.null(prefix))) {
-		stop("Invalid prefix.")
-	}
-
-	if (length(dir) > 1) {
+	if (length(dir) > 1 || !(is.character(dir))) {
 		stop("Invalid dir parameter. Must be a valid folder path.")
+	}	
+	
+	if (!(length(linecol) == 1) || !(is_colour(linecol)) || is.na(linecol)) {
+		stop("Invalid linecol parameter. Must be a single valid colour representation.")
 	}
 
-	if (!(is.character(dir))) {
-		stop("Invalid dir parameter. Must be a valid folder path.")
+	if (!(is.numeric(linewd) && length(linewd) == 1)) {
+		stop("Invalid linewd parameter. Must be a single number.")
+	}
+
+	if (!(length(fontcol) == 1) || !(is_colour(fontcol)) || is.na(fontcol)) {
+		stop("Invalid fontcol parameter. Must be a single valid colour representation.")
+	}
+
+	if (!(is.numeric(fontsize) && length(fontsize) == 1)) {
+		stop("Invalid fontsize parameter. Must be a single number.")
 	}
 
 	# Helper functions
@@ -839,34 +855,42 @@ draw_lines <- function(type,
 ) {
 
 	# checks
-	if (!(type %in% c("sync", "async", "sync-tab", "async-tab"))) {
+	if (!(length(type) == 1) || !(type %in% c("sync", "async", "sync-tab", "async-tab"))) {
 		stop("Invalid type parameter.")
 	}
 
 	if (!(inherits(output, "response") || is_json(output))) {
-		stop("Invalid output parameter")
+		stop("Invalid output parameter.")
 	}
 
-	if (!(is.na(doc) || (length(doc) == 1 && is.character(doc)))) {
-		stop("Invalid doc parameter")
+	if (length(doc) > 1 || is.numeric(doc) ) {
+		stop("Invalid doc parameter.")
 	}
 
-	if (length(prefix) > 1) {
-		stop("Invalid prefix.")
+	if (length(prefix) > 1 || is.numeric(prefix)) {
+		stop("Invalid prefix parameter.")
 	}
 
-	if (!(is.character(prefix) || is.null(prefix))) {
-		stop("Invalid prefix.")
-	}
-
-	if (length(dir) > 1) {
+	if (length(dir) > 1 || !(is.character(dir))) {
 		stop("Invalid dir parameter. Must be a valid folder path.")
+	}	
+	
+	if (!(length(linecol) == 1) || !(is_colour(linecol)) || is.na(linecol)) {
+		stop("Invalid linecol parameter. Must be a single valid colour representation.")
 	}
 
-	if (!(is.character(dir))) {
-		stop("Invalid dir parameter. Must be a valid folder path.")
+	if (!(is.numeric(linewd) && length(linewd) == 1)) {
+		stop("Invalid linewd parameter. Must be a single number.")
 	}
 
+	if (!(length(fontcol) == 1) || !(is_colour(fontcol)) || is.na(fontcol)) {
+		stop("Invalid fontcol parameter. Must be a single valid colour representation.")
+	}
+
+	if (!(is.numeric(fontsize) && length(fontsize) == 1)) {
+		stop("Invalid fontsize parameter. Must be a single number.")
+	}
+	
 	# Helper functions
 	get_vertices <- function(lst) {
 		boxes <- purrr::map(lst, ~.x$layout$boundingPoly$normalizedVertices)
@@ -1116,34 +1140,42 @@ draw_tokens <- function(type,
 ) {
 
 	# checks
-	if (!(type %in% c("sync", "async", "sync-tab", "async-tab"))) {
+	if (!(length(type) == 1) || !(type %in% c("sync", "async", "sync-tab", "async-tab"))) {
 		stop("Invalid type parameter.")
 	}
 
 	if (!(inherits(output, "response") || is_json(output))) {
-		stop("Invalid output parameter")
+		stop("Invalid output parameter.")
 	}
 
-	if (!(is.na(doc) || (length(doc) == 1 && is.character(doc)))) {
-		stop("Invalid doc parameter")
+	if (length(doc) > 1 || is.numeric(doc) ) {
+		stop("Invalid doc parameter.")
 	}
 
-	if (length(prefix) > 1) {
-		stop("Invalid prefix.")
+	if (length(prefix) > 1 || is.numeric(prefix)) {
+		stop("Invalid prefix parameter.")
 	}
 
-	if (!(is.character(prefix) || is.null(prefix))) {
-		stop("Invalid prefix.")
-	}
-
-	if (length(dir) > 1) {
+	if (length(dir) > 1 || !(is.character(dir))) {
 		stop("Invalid dir parameter. Must be a valid folder path.")
+	}	
+	
+	if (!(length(linecol) == 1) || !(is_colour(linecol)) || is.na(linecol)) {
+		stop("Invalid linecol parameter. Must be a single valid colour representation.")
 	}
 
-	if (!(is.character(dir))) {
-		stop("Invalid dir parameter. Must be a valid folder path.")
+	if (!(is.numeric(linewd) && length(linewd) == 1)) {
+		stop("Invalid linewd parameter. Must be a single number.")
 	}
 
+	if (!(length(fontcol) == 1) || !(is_colour(fontcol)) || is.na(fontcol)) {
+		stop("Invalid fontcol parameter. Must be a single valid colour representation.")
+	}
+
+	if (!(is.numeric(fontsize) && length(fontsize) == 1)) {
+		stop("Invalid fontsize parameter. Must be a single number.")
+	}
+	
 	# Helper functions
 	get_vertices <- function(lst) {
 		boxes <- purrr::map(lst, ~.x$layout$boundingPoly$normalizedVertices)

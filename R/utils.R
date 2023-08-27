@@ -85,6 +85,26 @@ is_json <- function(file) {
   return(FALSE)
 }
 
+#' Check that a string is a valid colour representation
+#'
+#' @description Checks whether a string is a valid colour representation.
+#' @param x a string
+#' @return a boolean
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' is_colour("red")
+#' }
+
+is_colour <- function(x) {
+
+  result <- try(col2rgb(x), silent = TRUE)
+
+  return(!"try-error" %in% class(result))
+
+ }
+
 #' PDF to base64 tiff
 #'
 #' @description Converts a PDF file to a base64-encoded binary .tiff file.
