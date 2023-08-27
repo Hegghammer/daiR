@@ -117,8 +117,6 @@ tables_from_dai_response <- function(object) {
 
 tables_from_dai_file <- function(file) {
 
-  message("Checking file...")
-
   # checks
   if (!(is.character(file) && length(file) == 1)) {
     stop("Invalid file input.")

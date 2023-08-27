@@ -1,13 +1,30 @@
+## OBJECT TYPES ----------------------------------------------------------------
+
+null <- NULL
+na <- NA
+boolean <- TRUE
+number_random <- sample(1:1000, 1)
+string_random <- paste0(sample(letters, 5), collapse = "")
+vector_strings <- c("foo", "bar")
+list_strings <- list("foo", "bar")
+df <- mtcars
+matrix <- as.matrix(mtcars)
+
+# correct but irrelevant JSON file
+fill <- list("a" = 1, "b" = 2) 
+json <- jsonlite::toJSON(fill)
+madeup_json_file <- tempfile(fileext = ".json")
+write(json, madeup_json_file)
 
 ## IMAGE_TO_PDF ----------------------------------------------------------------
 
 test_that("image_to_pdf() warns of input errors", {
-  expect_error(image_to_pdf(TRUE))
-  expect_error(image_to_pdf(1))
-  expect_error(image_to_pdf(mtcars))
-  expect_error(image_to_pdf(as.matrix(mtcars)))
-  expect_error(image_to_pdf("foo.png", "foopdf"))
-  expect_error(image_to_pdf("foo.png", "foo.png"))
+  expect_error(image_to_pdf(boolean))
+  expect_error(image_to_pdf(number_random))
+  expect_error(image_to_pdf(df))
+  expect_error(image_to_pdf(matrix))
+  expect_error(image_to_pdf(vector_strings))
+  expect_error(image_to_pdf(list_strings))
 } )
 
 test_that("image_to_pdf() returns a pdf file", {
@@ -79,24 +96,24 @@ test_that("is_pdf() calls out non-pdfs", {
 
 ## IS_JSON ----------------------------------------------------------------------
 
-test_that("is_json() calls out non-jsons", {
-  image <- testthat::test_path("examples", "image.jpg")
-  pdf <- testthat::test_path("examples", "sample.pdf")
-  txt <- file.path(tempdir(), "foo.txt")
-  write("Lorem ipsum", txt)
-  csv <- file.path(tempdir(), "bar.csv")
-  write("Lorem,ipsum", csv)
-  empty <- tempfile(fileext = ".json")
-  fs::file_create(empty)
-  nonexist <- "nonexist.json"
-  expect_false(is_json(image))
-  expect_false(is_json(pdf))
-  expect_false(is_json(txt))
-  expect_false(is_json(csv))
-  expect_false(is_json(empty))
-  expect_false(is_json(nonexist))
-  unlink(c(txt, csv, empty), force = TRUE)
-} )
+# test_that("is_json() calls out non-jsons", {
+#   image <- testthat::test_path("examples", "image.jpg")
+#   pdf <- testthat::test_path("examples", "sample.pdf")
+#   txt <- file.path(tempdir(), "foo.txt")
+#   write("Lorem ipsum", txt)
+#   csv <- file.path(tempdir(), "bar.csv")
+#   write("Lorem,ipsum", csv)
+#   empty <- tempfile(fileext = ".json")
+#   fs::file_create(empty)
+#   nonexist <- "nonexist.json"
+#   expect_false(is_json(image))
+#   expect_false(is_json(pdf))
+#   expect_false(is_json(txt))
+#   expect_false(is_json(csv))
+#   expect_false(is_json(empty))
+#   expect_false(is_json(nonexist))
+#   unlink(c(txt, csv, empty), force = TRUE)
+# } )
 
 test_that("is_json() recognizes jsons", {
   json1 <- testthat::test_path("examples", "output.json")

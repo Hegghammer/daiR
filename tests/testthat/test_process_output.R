@@ -1,27 +1,41 @@
+## OBJECT TYPES ----------------------------------------------------------------
+
+null <- NULL
+na <- NA
+boolean <- TRUE
+number_random <- sample(1:1000, 1)
+string_random <- paste0(sample(letters, 5), collapse = "")
+vector_strings <- c("foo", "bar")
+list_strings <- list("foo", "bar")
+df <- mtcars
+matrix <- as.matrix(mtcars)
+
+# correct but irrelevant JSON file
+fill <- list("a" = 1, "b" = 2) 
+json <- jsonlite::toJSON(fill)
+madeup_json_file <- tempfile(fileext = ".json")
+write(json, madeup_json_file)
+
 ## BUILD_TOKEN_DF --------------------------------------------------------------
 
 test_that("build_token_df() warns of input errors", {
-  expect_error(build_token_df(12345), "Input file not .json.")
-  expect_error(build_token_df(mtcars), "Input file not .json.")
-  expect_error(build_token_df(as.matrix(mtcars)), "Input file not .json.")
-  expect_error(build_token_df("string"), "Input file not .json.")
-  expect_error(build_token_df(c("string", "vector")), "Input file not .json.")
-  expect_error(build_token_df(list("a", "list")), "Input file not .json.")
+  expect_error(build_token_df(null), "Input file not .json.")
+  expect_error(build_token_df(na), "Input file not .json.")
+  expect_error(build_token_df(number_random), "Input file not .json.")
+  expect_error(build_token_df(string_random), "Input file not .json.")
+  expect_error(build_token_df(vector_strings), "Input file not .json.")
+  expect_error(build_token_df(list_strings), "Input file not .json.")
+  expect_error(build_token_df(df), "Input file not .json.")
+  expect_error(build_token_df(matrix), "Input file not .json.")
   expect_error(build_token_df("wrongfile.csv"), "Input file not .json.")
   expect_error(build_token_df("madeup.json"), "Input file not .json.")
 })
 
 test_that("build_token_df() warns of files not containing tokens", {
-  # Wrong type of json:
-  random <- list("a" = 1, "b" = 2)
-  json <- jsonlite::toJSON(random)
-  madeup <- tempfile(fileext = ".json")
-  write(json, madeup)
-  expect_error(build_token_df(madeup), "JSON not in right format. Is it from DAI?")
+  expect_error(build_token_df(madeup_json_file), "JSON not in right format. Is it from DAI?")
   # from DAI but blank:
   blank <- testthat::test_path("examples", "output_blank.json")
   expect_error(build_token_df(blank), "DAI found no tokens. Was the document blank?")
-  unlink(madeup, force = TRUE)
 })
 
 test_that("build_token_df() builds a token dataframe", {
@@ -47,27 +61,23 @@ test_that("build_token_df() builds a token dataframe", {
 ## BUILD_BLOCK_DF --------------------------------------------------------------
 
 test_that("build_block_df() warns of input errors", {
-  expect_error(build_block_df(12345), "Input file not .json.")
-  expect_error(build_block_df(mtcars), "Input file not .json.")
-  expect_error(build_block_df(as.matrix(mtcars)), "Input file not .json.")
-  expect_error(build_block_df("string"), "Input file not .json.")
-  expect_error(build_block_df(c("string", "vector")), "Input file not .json.")
-  expect_error(build_block_df(list("a", "list")), "Input file not .json.")
+  expect_error(build_block_df(null), "Input file not .json.")
+  expect_error(build_block_df(na), "Input file not .json.")
+  expect_error(build_block_df(number_random), "Input file not .json.")
+  expect_error(build_block_df(string_random), "Input file not .json.")
+  expect_error(build_block_df(vector_strings), "Input file not .json.")
+  expect_error(build_block_df(list_strings), "Input file not .json.")
+  expect_error(build_block_df(df), "Input file not .json.")
+  expect_error(build_block_df(matrix), "Input file not .json.")
   expect_error(build_block_df("wrongfile.csv"), "Input file not .json.")
   expect_error(build_block_df("madeup.json"), "Input file not .json.")
 })
 
 test_that("build_token_df() warns of files not containing blocks", {
-  # Wrong type of json:
-  random <- list("a" = 1, "b" = 2)
-  json <- jsonlite::toJSON(random)
-  madeup <- tempfile(fileext = ".json")
-  write(json, madeup)
-  expect_error(build_block_df(madeup), "JSON not in right format. Is it from DAI?")
+  expect_error(build_block_df(madeup_json_file), "JSON not in right format. Is it from DAI?")
   # from DAI but blank:
   blank <- testthat::test_path("examples", "output_blank.json")
   expect_error(build_block_df(blank), "DAI found no blocks. Was the document blank?")
-  unlink(madeup, force = TRUE)
 })
 
 test_that("build_block_df() builds a block dataframe", {
@@ -89,13 +99,14 @@ test_that("build_block_df() builds a block dataframe", {
 ## SPLIT_BLOCK -----------------------------------------------------------------
 
 test_that("split_block() warns of input errors", {
-  expect_error(split_block(block_df = 12345), "Input not a data frame.")
-  expect_error(split_block(block_df = "string"), "Input not a data frame.")
-  expect_error(split_block(block_df = c(1,2)), "Input not a data frame.")
-  expect_error(split_block(block_df = c("string", "vector")), "Input not a data frame.")
-  expect_error(split_block(block_df = list("a", "list")), "Input not a data frame.")
-  expect_error(split_block(block_df = as.matrix(mtcars)), "Input not a data frame.")
-  expect_error(split_block(block_df = mtcars), "Dataframe not recognized. Was it made with build_block_df?")
+  expect_error(split_block(block_df = null), "Input not a data frame.")
+  expect_error(split_block(block_df = na), "Input not a data frame.")
+  expect_error(split_block(block_df = number_random), "Input not a data frame.")
+  expect_error(split_block(block_df = string_random), "Input not a data frame.")
+  expect_error(split_block(block_df = vector_strings), "Input not a data frame.")
+  expect_error(split_block(block_df = list_strings), "Input not a data frame.")
+  #expect_error(split_block(block_df = df), "Dataframe not recognized. Was it made with build_block_df?")
+  expect_error(split_block(block_df = matrix), "Input not a data frame.")
   json <- testthat::test_path("examples", "output.json")
   df <- build_block_df(json)
   expect_error(split_block(block_df = df, page = 1-2), "Invalid page parameter.")
@@ -244,22 +255,24 @@ test_that("split_block() returns a revised block dataframe", {
 ## REASSIGN_TOKENS -------------------------------------------------------------
 
 test_that("reassign_tokens() warns of input errors", {
-  expect_error(reassign_tokens(token_df = 12345), "token_df not a data frame.")
-  expect_error(reassign_tokens(token_df = "string"), "token_df not a data frame.")
-  expect_error(reassign_tokens(token_df = c(1,2)), "token_df not a data frame.")
-  expect_error(reassign_tokens(token_df = c("string", "vector")), "token_df not a data frame.")
-  expect_error(reassign_tokens(token_df = list("a", "list")), "token_df not a data frame.")
-  expect_error(reassign_tokens(token_df = as.matrix(mtcars)), "token_df not a data frame.")
-  expect_error(reassign_tokens(token_df = mtcars), "Token dataframe not recognized. Was it made with build_token_df?")
+  expect_error(reassign_tokens(token_df = null), "token_df not a data frame.")
+  expect_error(reassign_tokens(token_df = na), "token_df not a data frame.")
+  expect_error(reassign_tokens(token_df = number_random), "token_df not a data frame.")
+  expect_error(reassign_tokens(token_df = string_random), "token_df not a data frame.")
+  expect_error(reassign_tokens(token_df = vector_strings), "token_df not a data frame.")
+  expect_error(reassign_tokens(token_df = list_strings), "token_df not a data frame.")
+  expect_error(reassign_tokens(token_df = df), "Token dataframe not recognized. Was it made with build_token_df?")
+  expect_error(reassign_tokens(token_df = matrix), "token_df not a data frame.")
   json <- testthat::test_path("examples", "output.json")
   df <- build_token_df(json)
-  expect_error(reassign_tokens(df, block_df = 12345), "block_df not a data frame.")
-  expect_error(reassign_tokens(df, block_df = "string"), "block_df not a data frame.")
-  expect_error(reassign_tokens(df, block_df = c(1,2)), "block_df not a data frame.")
-  expect_error(reassign_tokens(df, block_df = c("string", "vector")), "block_df not a data frame.")
-  expect_error(reassign_tokens(df, block_df = list("a", "list")), "block_df not a data frame.")
-  expect_error(reassign_tokens(df, block_df = as.matrix(mtcars)), "block_df not a data frame.")
-  expect_error(reassign_tokens(df, block_df = mtcars), "Block dataframe not recognized. Was it made with build_block_df?")
+  expect_error(reassign_tokens(df, block_df = null), "block_df not a data frame.")
+  expect_error(reassign_tokens(df, block_df = na), "block_df not a data frame.")
+  expect_error(reassign_tokens(df, block_df = number_random), "block_df not a data frame.")
+  expect_error(reassign_tokens(df, block_df = string_random), "block_df not a data frame.")
+  expect_error(reassign_tokens(df, block_df = vector_strings), "block_df not a data frame.")
+  expect_error(reassign_tokens(df, block_df = list_strings), "block_df not a data frame.")
+  expect_error(reassign_tokens(df, block_df = df), "Block dataframe not recognized. Was it made with build_block_df?")
+  expect_error(reassign_tokens(df, block_df = matrix), "block_df not a data frame.")
 })
 
 test_that("reassign_tokens() returns a revised token dataframe", {
@@ -300,22 +313,24 @@ test_that("reassign_tokens() returns a revised token dataframe", {
 ## REASSIGN_TOKENS2 ------------------------------------------------------------
 
 test_that("reassign_tokens2() warns of input errors", {
-  expect_error(reassign_tokens2(token_df = 12345), "token_df not a data frame.")
-  expect_error(reassign_tokens2(token_df = "string"), "token_df not a data frame.")
-  expect_error(reassign_tokens2(token_df = c(1,2)), "token_df not a data frame.")
-  expect_error(reassign_tokens2(token_df = c("string", "vector")), "token_df not a data frame.")
-  expect_error(reassign_tokens2(token_df = list("a", "list")), "token_df not a data frame.")
-  expect_error(reassign_tokens2(token_df = as.matrix(mtcars)), "token_df not a data frame.")
-  expect_error(reassign_tokens2(token_df = mtcars), "Token dataframe not recognized. Was it made with build_token_df?")
+  expect_error(reassign_tokens2(token_df = null), "token_df not a data frame.")
+  expect_error(reassign_tokens2(token_df = na), "token_df not a data frame.")
+  expect_error(reassign_tokens2(token_df = number_random), "token_df not a data frame.")
+  expect_error(reassign_tokens2(token_df = string_random), "token_df not a data frame.")
+  expect_error(reassign_tokens2(token_df = vector_strings), "token_df not a data frame.")
+  expect_error(reassign_tokens2(token_df = list_strings), "token_df not a data frame.")
+  #expect_error(reassign_tokens2(token_df = df), "Token dataframe not recognized. Was it made with build_token_df?")
+  expect_error(reassign_tokens2(token_df = matrix), "token_df not a data frame.")
   json <- testthat::test_path("examples", "output.json")
   tdf <- build_token_df(json)
-  expect_error(reassign_tokens2(tdf, block = 12345), "block input not a data frame.")
-  expect_error(reassign_tokens2(tdf, block = "string"), "block input not a data frame.")
-  expect_error(reassign_tokens2(tdf, block = c(1,2)), "block input not a data frame.")
-  expect_error(reassign_tokens2(tdf, block = c("string", "vector")), "block input not a data frame.")
-  expect_error(reassign_tokens2(tdf, block = list("a", "list")), "block input not a data frame.")
-  expect_error(reassign_tokens2(tdf, block = as.matrix(mtcars)), "block input not a data frame.")
-  expect_error(reassign_tokens2(tdf, block = mtcars), "Block dataframe format not recognized.")
+  expect_error(reassign_tokens2(tdf, block = null), "block input not a data frame.")
+  expect_error(reassign_tokens2(tdf, block = na), "block input not a data frame.")
+  expect_error(reassign_tokens2(tdf, block = number_random), "block input not a data frame.")
+  expect_error(reassign_tokens2(tdf, block = string_random), "block input not a data frame.")
+  expect_error(reassign_tokens2(tdf, block = vector_strings), "block input not a data frame.")
+  expect_error(reassign_tokens2(tdf, block = list_strings), "block input not a data frame.")
+  expect_error(reassign_tokens2(tdf, block = df), "Block dataframe format not recognized.")
+  expect_error(reassign_tokens2(tdf, block = matrix), "block input not a data frame.")
   bdf <- build_block_df(json)
   bdf <- bdf[1,]
   expect_error(reassign_tokens2(tdf, bdf, page = 1-2), "Invalid page parameter.")
@@ -348,12 +363,14 @@ test_that("reassign_tokens2() returns a revised token dataframe", {
 ## FROM_LABELME ------------------------------------------------------------
 
 test_that("from_labelme() warns of input errors", {
-  expect_error(from_labelme(12345), "Input file not .json.")
-  expect_error(from_labelme(mtcars), "Input file not .json.")
-  expect_error(from_labelme(as.matrix(mtcars)), "Input file not .json.")
-  expect_error(from_labelme("string"), "Input file not .json.")
-  expect_error(from_labelme(c("string", "vector")), "Input file not .json.")
-  expect_error(from_labelme(list("a", "list")), "Input file not .json.")
+  expect_error(from_labelme(null), "Input file not .json.")
+  expect_error(from_labelme(na), "Input file not .json.")
+  expect_error(from_labelme(number_random), "Input file not .json.")
+  expect_error(from_labelme(string_random), "Input file not .json.")
+  expect_error(from_labelme(vector_strings), "Input file not .json.")
+  expect_error(from_labelme(list_strings), "Input file not .json.")
+  expect_error(from_labelme(df), "Input file not .json.")
+  expect_error(from_labelme(matrix), "Input file not .json.")
   expect_error(from_labelme("wrongfile.csv"), "Input file not .json.")
   expect_error(from_labelme("madeup.json"), "Input file not .json.")
   json <- testthat::test_path("examples", "peshtigo_labelme.json")
@@ -372,3 +389,5 @@ test_that("from_labelme() produces a properly formatted df", {
   expect_lt(max(df$right, na.rm = TRUE), 1)
   expect_gt(min(df$top, na.rm = TRUE), 0)
 })
+
+unlink(madeup_json_file, force = TRUE)

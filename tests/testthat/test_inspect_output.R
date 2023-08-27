@@ -1,13 +1,20 @@
-## Object types
+## OBJECT TYPES ----------------------------------------------------------------
 
 null <- NULL
 na <- NA
+boolean <- TRUE
 number_random <- sample(1:1000, 1)
 string_random <- paste0(sample(letters, 5), collapse = "")
 vector_strings <- c("foo", "bar")
 list_strings <- list("foo", "bar")
 df <- mtcars
 matrix <- as.matrix(mtcars)
+
+# correct but irrelevant JSON file
+fill <- list("a" = 1, "b" = 2) 
+json <- jsonlite::toJSON(fill)
+madeup_json_file <- tempfile(fileext = ".json")
+write(json, madeup_json_file)
 
 ## TEXT_FROM_DAI_RESPONSE ------------------------------------------------------
 
@@ -60,11 +67,6 @@ test_that("text_from_dai_file() warns of input errors", {
 })
 
 test_that("text_from_dai_file() warns of file not containing text", {
-  # create correct but irrelevant JSON file
-    fill <- list("a" = 1, "b" = 2) 
-    json <- jsonlite::toJSON(fill)
-    madeup_json_file <- tempfile(fileext = ".json")
-    write(json, madeup_json_file)
   expect_error(text_from_dai_file(madeup_json_file), "JSON not in right format. Is it from DAI?")
   blank <- testthat::test_path("examples", "output_blank.json")
   expect_error(text_from_dai_file(blank), "DAI found no text. Was the document blank?")
@@ -322,7 +324,7 @@ test_that("draw_paragraphs() produces a correctly named new png file", {
   skip_if_not_installed("grDevices")
   skip_if_not_installed("magick")
   realjson <- testthat::test_path("examples", "sample_v1.json")
-  draw_paragraphs(realjson, dir = tempdir())
+  draw_paragraphs(type = "async", output = realjson, dir = tempdir())
   parsed <- jsonlite::fromJSON(realjson)
   pages <- parsed[["pages"]][["pageNumber"]]
   expected_filepaths <- character()
@@ -452,7 +454,7 @@ test_that("draw_lines() produces a correctly named new png file", {
   skip_if_not_installed("grDevices")
   skip_if_not_installed("magick")
   realjson <- testthat::test_path("examples", "sample_v1.json")
-  draw_lines(realjson, dir = tempdir())
+  draw_lines(type = "async", output = realjson, dir = tempdir())
   parsed <- jsonlite::fromJSON(realjson)
   pages <- parsed[["pages"]][["pageNumber"]]
   expected_filepaths <- character()
@@ -582,7 +584,7 @@ test_that("draw_tokens() produces a correctly named new png file", {
   skip_if_not_installed("grDevices")
   skip_if_not_installed("magick")
   realjson <- testthat::test_path("examples", "sample_v1.json")
-  draw_tokens(realjson, dir = tempdir())
+  draw_tokens(type = "async", output = realjson, dir = tempdir())
   parsed <- jsonlite::fromJSON(realjson)
   pages <- parsed[["pages"]][["pageNumber"]]
   expected_filepaths <- character()
