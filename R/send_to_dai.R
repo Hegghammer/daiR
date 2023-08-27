@@ -399,7 +399,7 @@ dai_sync_tab <- function(file,
 
   loc <- tolower(loc)
 
-  if (!(loc %in% c("eu", "us") && length(loc) == 1)) {
+  if (!(length(loc) == 1) || !(loc %in% c("eu", "us"))) {
     stop("Invalid location parameter.")
     }
 
@@ -572,8 +572,8 @@ dai_async_tab <- function(files,
 
   loc <- tolower(loc)
 
-  if (!(loc %in% c("eu", "us") && length(loc) == 1)) {
-    stop("Invalid loc parameter.")
+  if (!(length(loc) == 1) || !(loc %in% c("eu", "us"))) {
+    stop("Invalid location parameter.")
     }
 
   if (!(is.numeric(pps) && round(pps) == pps && length(pps) == 1)) {

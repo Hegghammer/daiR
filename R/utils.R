@@ -80,9 +80,8 @@ is_json <- function(file) {
 
   result <- suppressMessages(try(jsonlite::fromJSON(file), silent = TRUE))
 
-  if (class(result) != "try-error") return(TRUE)
+  return(!"try-error" %in% class(result))
 
-  return(FALSE)
 }
 
 #' Check that a string is a valid colour representation
@@ -99,7 +98,7 @@ is_json <- function(file) {
 
 is_colour <- function(x) {
 
-  result <- try(col2rgb(x), silent = TRUE)
+  result <- suppressMessages(try(grDevices::col2rgb(x), silent = TRUE))
 
   return(!"try-error" %in% class(result))
 

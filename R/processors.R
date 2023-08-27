@@ -16,9 +16,20 @@
 #' df <- get_processors()
 #' }
 get_processors <- function(proj_id = get_project_id(),
-													 loc = "eu",
-													 token = dai_token()
-) {
+						   loc = "eu",
+						   token = dai_token()
+						   ) {
+	# checks
+	if (!(is.character(proj_id) && length(proj_id) == 1)) {
+    stop("Invalid proj_id parameter.")
+    }
+
+	loc <- tolower(loc)
+
+    if (!(length(loc) == 1) || !(loc %in% c("eu", "us"))) {
+    stop("Invalid loc parameter.")
+    }
+
 	base_url <- glue::glue("https://{loc}-documentai.googleapis.com")
 	path <- glue::glue("/v1/projects/{proj_id}/locations/{loc}/processors")
 	url <- glue::glue("{base_url}{path}")
@@ -48,10 +59,25 @@ get_processors <- function(proj_id = get_project_id(),
 #' info <- get_processor_info(proc_id = get_processors()$id[1])
 #' }
 get_processor_info <- function(proj_id = get_project_id(),
-															 proc_id = Sys.getenv("DAI_PROCESSOR_ID"),
-															 loc = "eu",
-															 token = dai_token()
-) {
+							   proc_id = Sys.getenv("DAI_PROCESSOR_ID"),
+							   loc = "eu",
+							   token = dai_token()
+							   ) {
+    # checks
+	if (!(is.character(proj_id) && length(proj_id) == 1)) {
+		stop("Invalid proj_id parameter.")
+		}
+
+	if (!(is.character(proc_id) && length(proc_id) == 1) || proc_id == "") {
+		stop("Invalid proc_id parameter.")
+		}
+
+	loc <- tolower(loc)
+
+    if (!(length(loc) == 1) || !(loc %in% c("eu", "us"))) {
+    stop("Invalid loc parameter.")
+    }
+
 	base_url <- glue::glue("https://{loc}-documentai.googleapis.com")
 	path <- glue::glue("/v1/projects/{proj_id}/locations/{loc}/processors/{proc_id}")
 	url <- glue::glue("{base_url}{path}")
@@ -78,10 +104,25 @@ get_processor_info <- function(proj_id = get_project_id(),
 #' df <- get_processor_versions(proc_id = get_processors()$id[1])
 #' }
 get_processor_versions <- function(proj_id = get_project_id(),
-																	 proc_id = Sys.getenv("DAI_PROCESSOR_ID"),
-																	 loc = "eu",
-																	 token = dai_token()
-) {
+								   proc_id = Sys.getenv("DAI_PROCESSOR_ID"),
+								   loc = "eu",
+								   token = dai_token()
+								   ) {
+    # checks
+	if (!(is.character(proj_id) && length(proj_id) == 1)) {
+		stop("Invalid proj_id parameter.")
+		}
+
+	if (!(is.character(proc_id) && length(proc_id) == 1) || proc_id == "") {
+		stop("Invalid proc_id parameter.")
+		}
+
+	loc <- tolower(loc)
+
+    if (!(length(loc) == 1) || !(loc %in% c("eu", "us"))) {
+    stop("Invalid loc parameter.")
+    }
+
 	base_url <- glue::glue("https://{loc}-documentai.googleapis.com")
 	path <- glue::glue("/v1/projects/{proj_id}/locations/{loc}/processors/{proc_id}/processorVersions")
 	url <- glue::glue("{base_url}{path}")

@@ -10,12 +10,6 @@ list_strings <- list("foo", "bar")
 df <- mtcars
 matrix <- as.matrix(mtcars)
 
-# correct but irrelevant JSON file
-fill <- list("a" = 1, "b" = 2) 
-json <- jsonlite::toJSON(fill)
-madeup_json_file <- tempfile(fileext = ".json")
-write(json, madeup_json_file)
-
 ## DAI_SYNC --------------------------------------------------------------------
 
 test_that("dai_sync calls out input errors", {
@@ -117,6 +111,7 @@ test_that("dai_status calls out input errors", {
   skip_on_ci()
   expect_error(dai_status(null), "Input is not a valid HTTP response.")
   expect_error(dai_status(na), "Input is not a valid HTTP response.")
+  expect_error(dai_status(boolean), "Input is not a valid HTTP response.")
   expect_error(dai_status(number_random), "Input is not a valid HTTP response.")
   expect_error(dai_status(string_random), "Input is not a valid HTTP response.")
   expect_error(dai_status(vector_strings), "Input is not a valid HTTP response.")
@@ -158,14 +153,17 @@ test_that("dai_sync_tab calls out input errors", {
   expect_error(dai_sync_tab(file = "foo.png", proj_id = matrix), "Invalid proj_id.")
   expect_error(dai_sync_tab(file = "foo.png", proj_id = "abc", loc = number_random), "Invalid location parameter.")
   expect_error(dai_sync_tab(file = "foo.png", proj_id = "abc", loc = "USA"), "Invalid location parameter.")
-  #expect_error(dai_sync_tab(file = "foo.png", proj_id = "abc", loc = c("eu", "us")), "Invalid location parameter.")
+  expect_error(dai_sync_tab(file = "foo.png", proj_id = "abc", loc = vector_strings), "Invalid location parameter.")
+  expect_error(dai_sync_tab(file = "foo.png", proj_id = "abc", loc = list_strings), "Invalid location parameter.")
+  expect_error(dai_sync_tab(file = "foo.png", proj_id = "abc", loc = df), "Invalid location parameter.")
+  expect_error(dai_sync_tab(file = "foo.png", proj_id = "abc", loc = matrix), "Invalid location parameter.")
 })
 
 test_that("dai_sync_tab informs about unsuccessful requests", {
   skip_on_cran()
   skip_if_offline()
   file <- testthat::test_path("examples", "image.jpg")
-  response <- dai_sync_tab(file, proj_id = "abc", token = NULL)
+  response <- dai_sync_tab(file, proj_id = string_random, token = NULL)
   expect_equal(response[["status_code"]], 403)
 })
 
@@ -191,23 +189,28 @@ test_that("dai_async_tab calls out input errors", {
   expect_error(dai_async_tab(files = boolean), "Invalid files parameter.")
   expect_error(dai_async_tab(files = number_random), "Invalid files parameter.")
   expect_error(dai_async_tab(files = "foo.png"), "Input file type not supported.")
-  #expect_error(dai_async_tab(files = "foo.pdf", filetype = mtcars, "Invalid filetype parameter."))
-  #expect_error(dai_async_tab(files = "foo.pdf", filetype = as.matrix(mtcars), "Invalid filetype parameter."))
-  expect_error(dai_async_tab(files = "foo.pdf", filetype = boolean, "Invalid filetype parameter."))
+  
   expect_error(dai_async_tab(files = "foo.pdf", filetype = number_random, "Invalid filetype parameter."))
-  #expect_error(dai_async_tab(files = "foo.pdf", filetype = c("gif", "pdf"), "Invalid filetype parameter."))
-  #expect_error(dai_async_tab(files = "foo.pdf", filetype = list("gif", "pdf"), "Invalid filetype parameter."))
+  expect_error(dai_async_tab(files = "foo.pdf", filetype = boolean, "Invalid filetype parameter."))
+  expect_error(dai_async_tab(files = "foo.pdf", filetype = df, "Invalid filetype parameter."))
+  expect_error(dai_async_tab(files = "foo.pdf", filetype = matrix, "Invalid filetype parameter."))
+  expect_error(dai_async_tab(files = "foo.pdf", filetype = vector_strings, "Invalid filetype parameter."))
+  expect_error(dai_async_tab(files = "foo.pdf", filetype = list_strings, "Invalid filetype parameter."))
   expect_error(dai_async_tab(files = "foo.pdf", filetype = "gif", "Mismatch between filetype parameter and actual format of files."))
   expect_error(dai_async_tab(files = "foo.gif", filetype = "tiff", "Mismatch between filetype parameter and actual format of files."))
+  
   expect_error(dai_async_tab(files = "foo.pdf", dest_folder = vector_strings), "Invalid dest_folder parameter.")
   expect_error(dai_async_tab(files = "foo.pdf", dest_folder = number_random), "Invalid dest_folder parameter.")
+  
   expect_error(dai_async_tab(files = "foo.pdf", bucket = vector_strings), "Invalid bucket parameter.")
   expect_error(dai_async_tab(files = "foo.pdf", bucket = number_random), "Invalid bucket parameter.")
+  
   expect_error(dai_async_tab(files = "foo.pdf", bucket = "abc", proj_id = vector_strings), "Invalid proj_id parameter.")
   expect_error(dai_async_tab(files = "foo.pdf", bucket = "abc", proj_id = number_random), "Invalid proj_id parameter.")
-  expect_error(dai_async_tab(files = "foo.pdf", bucket = "abc", proj_id = "abc", loc = number_random), "Invalid loc parameter.")
-  #expect_error(dai_async_tab(files = "foo.pdf", bucket = "abc", proj_id = "abc", loc = c("eu", "us")), "Invalid loc parameter.")
-  expect_error(dai_async_tab(files = "foo.pdf", bucket = "abc", proj_id = "abc", loc = "usa"), "Invalid loc parameter.")
+  
+  expect_error(dai_async_tab(files = "foo.pdf", bucket = "abc", proj_id = "abc", loc = number_random), "Invalid location parameter.")
+  expect_error(dai_async_tab(files = "foo.pdf", bucket = "abc", proj_id = "abc", loc = vector_strings), "Invalid location parameter.")
+  expect_error(dai_async_tab(files = "foo.pdf", bucket = "abc", proj_id = "abc", loc = "usa"), "Invalid location parameter.")
   expect_error(dai_async_tab(files = "foo.pdf", bucket = "abc", proj_id = "abc", pps = "five"), "Invalid pps parameter.")
   expect_error(dai_async_tab(files = "foo.pdf", bucket = "abc", proj_id = "abc", pps = 200), "Invalid pps parameter.")
   expect_error(dai_async_tab(files = "foo.pdf", bucket = "abc", proj_id = "abc", pps = 0), "Invalid pps parameter.")

@@ -325,7 +325,7 @@ test_that("reassign_tokens2() warns of input errors", {
   expect_error(reassign_tokens2(token_df = string_random), "token_df not a data frame.")
   expect_error(reassign_tokens2(token_df = vector_strings), "token_df not a data frame.")
   expect_error(reassign_tokens2(token_df = list_strings), "token_df not a data frame.")
-  #expect_error(reassign_tokens2(token_df = df), "Token dataframe not recognized. Was it made with build_token_df?")
+  expect_error(reassign_tokens2(token_df = df), "Token dataframe not recognized. Was it made with build_token_df?")
   expect_error(reassign_tokens2(token_df = matrix), "token_df not a data frame.")
   json <- testthat::test_path("examples", "output.json")
   tdf <- build_token_df(json)
@@ -363,8 +363,8 @@ test_that("reassign_tokens2() returns a revised token dataframe", {
   expect_true(identical(colnames(tdf_new), colnames(tdf_old)))
   expect_false(isTRUE(all.equal(tdf_new, tdf_old)))
   expect_false(is.unsorted(tdf_old$start_ind, na.rm = TRUE))
-  #expect_true(is.unsorted(tdf_new$start_ind, na.rm = TRUE)) not necessarily
-  # true if the block split is the last one
+  # expect_true(is.unsorted(tdf_new$start_ind, na.rm = TRUE)) 
+  # not necessarily true if the block split is the last one
 })
 
 ## FROM_LABELME ------------------------------------------------------------

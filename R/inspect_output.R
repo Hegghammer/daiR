@@ -30,9 +30,10 @@ text_from_dai_response <- function(response,
 
   parsed <- httr::content(response, as = "parsed")
 
-  #if (!("pages" %in% names(parsed$document) || "pages" %in% names(parsed))) {
-  #  stop("Input not recognized. Is it from dai_async?")
-  #}
+  if (!("pages" %in% names(parsed$document) || "pages" %in% names(parsed))) {
+    stop("Input not recognized. Is it from dai_async?")
+  }
+  
   if (!("text" %in% names(parsed$document) || "text" %in% names(parsed))) {
     stop("DAI found no text. Was the page blank?")
   }
@@ -304,7 +305,7 @@ draw_blocks <- function(type,
 		stop("Invalid dir parameter. Must be a valid folder path.")
 	}	
 	
-	if (!(length(linecol) == 1) || !(is_colour(linecol)) || is.na(linecol)) {
+	if (!(length(linecol) == 1) || !(daiR::is_colour(linecol)) || is.na(linecol)) {
 		stop("Invalid linecol parameter. Must be a single valid colour representation.")
 	}
 
@@ -312,7 +313,7 @@ draw_blocks <- function(type,
 		stop("Invalid linewd parameter. Must be a single number.")
 	}
 
-	if (!(length(fontcol) == 1) || !(is_colour(fontcol)) || is.na(fontcol)) {
+	if (!(length(fontcol) == 1) || !(daiR::is_colour(fontcol)) || is.na(fontcol)) {
 		stop("Invalid fontcol parameter. Must be a single valid colour representation.")
 	}
 
@@ -590,7 +591,7 @@ draw_paragraphs <- function(type,
 		stop("Invalid dir parameter. Must be a valid folder path.")
 	}	
 	
-	if (!(length(linecol) == 1) || !(is_colour(linecol)) || is.na(linecol)) {
+	if (!(length(linecol) == 1) || !(daiR::is_colour(linecol)) || is.na(linecol)) {
 		stop("Invalid linecol parameter. Must be a single valid colour representation.")
 	}
 
@@ -598,7 +599,7 @@ draw_paragraphs <- function(type,
 		stop("Invalid linewd parameter. Must be a single number.")
 	}
 
-	if (!(length(fontcol) == 1) || !(is_colour(fontcol)) || is.na(fontcol)) {
+	if (!(length(fontcol) == 1) || !(daiR::is_colour(fontcol)) || is.na(fontcol)) {
 		stop("Invalid fontcol parameter. Must be a single valid colour representation.")
 	}
 
@@ -873,9 +874,9 @@ draw_lines <- function(type,
 
 	if (length(dir) > 1 || !(is.character(dir))) {
 		stop("Invalid dir parameter. Must be a valid folder path.")
-	}	
-	
-	if (!(length(linecol) == 1) || !(is_colour(linecol)) || is.na(linecol)) {
+	}
+
+	if (!(length(linecol) == 1) || !(daiR::is_colour(linecol)) || is.na(linecol)) {
 		stop("Invalid linecol parameter. Must be a single valid colour representation.")
 	}
 
@@ -883,7 +884,7 @@ draw_lines <- function(type,
 		stop("Invalid linewd parameter. Must be a single number.")
 	}
 
-	if (!(length(fontcol) == 1) || !(is_colour(fontcol)) || is.na(fontcol)) {
+	if (!(length(fontcol) == 1) || !(daiR::is_colour(fontcol)) || is.na(fontcol)) {
 		stop("Invalid fontcol parameter. Must be a single valid colour representation.")
 	}
 
@@ -1160,7 +1161,7 @@ draw_tokens <- function(type,
 		stop("Invalid dir parameter. Must be a valid folder path.")
 	}	
 	
-	if (!(length(linecol) == 1) || !(is_colour(linecol)) || is.na(linecol)) {
+	if (!(length(linecol) == 1) || !(daiR::is_colour(linecol)) || is.na(linecol)) {
 		stop("Invalid linecol parameter. Must be a single valid colour representation.")
 	}
 
@@ -1168,7 +1169,7 @@ draw_tokens <- function(type,
 		stop("Invalid linewd parameter. Must be a single number.")
 	}
 
-	if (!(length(fontcol) == 1) || !(is_colour(fontcol)) || is.na(fontcol)) {
+	if (!(length(fontcol) == 1) || !(daiR::is_colour(fontcol)) || is.na(fontcol)) {
 		stop("Invalid fontcol parameter. Must be a single valid colour representation.")
 	}
 
