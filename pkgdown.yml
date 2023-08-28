@@ -2,11 +2,12 @@ pandoc: 3.1.2
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
-  Complex_file_and_folder_management: Complex_file_and_folder_management.html
+  faqs: faqs.html
   basics: basics.html
+  complex_file_and_folder_management: complex_file_and_folder_management.html
   extracting_tables: extracting_tables.html
   reconstructing_text: reconstructing_text.html
   setting_up_google_storage: setting_up_google_storage.html
   using_document_ai: using_document_ai.html
-last_built: 2023-08-28T16:55Z
+last_built: 2023-08-28T20:57Z
 

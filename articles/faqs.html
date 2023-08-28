@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Basic processing • daiR</title>
+<title>Frequently asked questions • daiR</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Basic processing">
+<meta property="og:title" content="Frequently asked questions">
 <meta property="og:description" content="daiR">
 <meta property="og:image" content="/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -120,67 +120,103 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Basic processing</h1>
+      <h1 data-toc-skip>Frequently asked questions</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/Hegghammer/daiR/blob/HEAD/vignettes/basics.Rmd" class="external-link"><code>vignettes/basics.Rmd</code></a></small>
-      <div class="hidden name"><code>basics.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/Hegghammer/daiR/blob/HEAD/vignettes/articles/faqs.Rmd" class="external-link"><code>vignettes/articles/faqs.Rmd</code></a></small>
+      <div class="hidden name"><code>faqs.Rmd</code></div>
 
     </div>
 
     
     
-<div class="section level3">
-<h3 id="process-synchronously">Process synchronously<a class="anchor" aria-label="anchor" href="#process-synchronously"></a>
-</h3>
-<p>Pass a single-page pdf or image file to Document AI and get the
-output immediately:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Hegghammer/daiR" class="external-link">daiR</a></span><span class="op">)</span></span>
-<span><span class="co">## Not run:</span></span>
-<span><span class="va">myfile</span> <span class="op">&lt;-</span> <span class="st">"&lt;sample.pdf&gt;"</span></span>
-<span><span class="va">response</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_sync.html">dai_sync</a></span><span class="op">(</span><span class="va">myfile</span><span class="op">)</span></span>
-<span><span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/text_from_dai_response.html">text_from_dai_response</a></span><span class="op">(</span><span class="va">response</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">text</span><span class="op">)</span></span></code></pre></div>
+<div class="section level2">
+<h2 id="how-much-does-google-document-ai-cost-to-use">How much does Google Document AI cost to use?<a class="anchor" aria-label="anchor" href="#how-much-does-google-document-ai-cost-to-use"></a>
+</h2>
+<p>Google charges USD 1.50 per 1,000 pages for use of the default
+processor, “Document OCR”. Specialized processors (such as form parsers
+for business use) cost more; see Google’s <a href="https://cloud.google.com/document-ai/pricing" class="external-link">documentation</a>
+for details.</p>
 </div>
-<div class="section level3">
-<h3 id="process-asynchronously">Process asynchronously<a class="anchor" aria-label="anchor" href="#process-asynchronously"></a>
-</h3>
-<p>Send larger batches for offline processing in three steps:</p>
-<div class="section level4">
-<h4 id="upload-files-to-your-google-storage-bucket">1. Upload files to your Google Storage bucket<a class="anchor" aria-label="anchor" href="#upload-files-to-your-google-storage-bucket"></a>
-</h4>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">## Not run:</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://code.markedmondson.me/googleCloudStorageR/" class="external-link">googleCloudStorageR</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">my_pdfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&lt;sample1.pdf&gt;"</span>, <span class="st">"&lt;sample2.pdf&gt;"</span><span class="op">)</span></span>
-<span><span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">my_pdfs</span>, <span class="op">~</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html" class="external-link">gcs_upload</a></span><span class="op">(</span><span class="va">.x</span>, name <span class="op">=</span> <span class="va">.x</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="section level2">
+<h2 id="how-does-document-ai-perform-compared-with-free-solutions-such-as-tesseract">How does Document AI perform compared with free solutions such as
+Tesseract?<a class="anchor" aria-label="anchor" href="#how-does-document-ai-perform-compared-with-free-solutions-such-as-tesseract"></a>
+</h2>
+<p>It depends on the document. For clean pages in English, there is
+usually no difference to speak of. But for documents with noise or
+non-latin script, Document AI tends to have substantially better
+off-the-shelf accuracy, as described in <a href="https://link.springer.com/article/10.1007/s42001-021-00149-1" class="external-link">this
+paper</a>.</p>
 </div>
-<div class="section level4">
-<h4 id="tell-document-ai-to-process-them">2. Tell Document AI to process them:<a class="anchor" aria-label="anchor" href="#tell-document-ai-to-process-them"></a>
-</h4>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">## Not run:</span></span>
-<span><span class="fu"><a href="../reference/dai_async.html">dai_async</a></span><span class="op">(</span><span class="va">my_pdfs</span><span class="op">)</span></span></code></pre></div>
+<div class="section level2">
+<h2 id="which-filetypes-can-i-submit">Which filetypes can I submit?<a class="anchor" aria-label="anchor" href="#which-filetypes-can-i-submit"></a>
+</h2>
+<p>Document AI currently handles <code>.pdf</code>,
+<code>.jpg</code>/<code>.jpeg</code>, <code>.png</code>,
+<code>.tiff</code>/<code>.tif</code>, <code>.bmp</code>, and
+<code>.webp</code> files. See Google’s <a href="https://cloud.google.com/document-ai/docs/file-types" class="external-link">documentation</a>
+for more details.</p>
 </div>
-<div class="section level4">
-<h4 id="download-the-json-output-and-extract-the-text">3. Download the json output and extract the text:<a class="anchor" aria-label="anchor" href="#download-the-json-output-and-extract-the-text"></a>
-</h4>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">## Not run:</span></span>
-<span><span class="va">bucket_contents</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html" class="external-link">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">only_jsons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"*.json"</span>, <span class="va">bucket_contents</span><span class="op">$</span><span class="va">name</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">only_jsons</span>, <span class="op">~</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html" class="external-link">gcs_get_object</a></span><span class="op">(</span><span class="va">.x</span>, saveToDisk <span class="op">=</span> <span class="va">.x</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/text_from_dai_file.html">text_from_dai_file</a></span><span class="op">(</span><span class="va">only_jsons</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">text</span><span class="op">)</span></span></code></pre></div>
+<div class="section level2">
+<h2 id="which-languages-does-document-ai-cover">Which languages does Document AI cover?<a class="anchor" aria-label="anchor" href="#which-languages-does-document-ai-cover"></a>
+</h2>
+<p>The general processor (“Document OCR”) currently handles 60
+languages, including Arabic, Chinese, Greek, Hebrew, Hindi, Japanese,
+Persian, and Russian. Notable languages <strong>not</strong> covered by
+the “Document OCR” processor include Swahili and Urdu. Some of the
+specialised Document AI processors (such as “Custom Document Extractor”)
+handle more or other languages. See Google’s <a href="https://cloud.google.com/document-ai/docs/languages" class="external-link">documentation</a>
+for more details.</p>
 </div>
+<div class="section level2">
+<h2 id="can-i-trust-the-output-to-be-perfect">Can I trust the output to be perfect?<a class="anchor" aria-label="anchor" href="#can-i-trust-the-output-to-be-perfect"></a>
+</h2>
+<p>No. Document AI is very good, but it does make mistakes. Be
+especially cautious when processing multi-column text.</p>
+</div>
+<div class="section level2">
+<h2 id="can-document-ai-process-handwriting">Can Document AI process handwriting?<a class="anchor" aria-label="anchor" href="#can-document-ai-process-handwriting"></a>
+</h2>
+<p>Yes, for most languages. See Google’s <a href="https://cloud.google.com/document-ai/docs/languages" class="external-link">documentation</a>
+for a detailed overview.</p>
+</div>
+<div class="section level2">
+<h2 id="what-about-privacy-and-security-can-i-process-sensitive-data-with-google-document-ai">What about privacy and security? Can I process sensitive data with
+Google Document AI?<a class="anchor" aria-label="anchor" href="#what-about-privacy-and-security-can-i-process-sensitive-data-with-google-document-ai"></a>
+</h2>
+<p>It depends on the data in question and on your threat model. Google
+<a href="https://cloud.google.com/document-ai/docs/security" class="external-link">says</a> it
+complies with strict privacy and security protocols and that it will not
+use customer data to train its models. It further notes that</p>
+<blockquote>
+<p>“For batch operations, the stored document is typically deleted right
+after the processing is done, with a failsafe Time to live (TTL) from a
+few hours to up to 7 days. For online (immediate response) operations,
+the document data is processed in memory and not persisted to disk.
+Google also temporarily logs some metadata about your Document AI API
+requests (such as the time the request was received and the size of the
+request) to improve our service and combat abuse.”</p>
+</blockquote>
+</div>
+<div class="section level2">
+<h2 id="do-i-need-to-use-the-dair-package-to-access-document-ai">Do I need to use the <code>daiR</code> package to access Document
+AI?<a class="anchor" aria-label="anchor" href="#do-i-need-to-use-the-dair-package-to-access-document-ai"></a>
+</h2>
+<p>No, you can also access it from Python and several other programming
+languages (see <a href="https://cloud.google.com/document-ai/docs/libraries" class="external-link">here</a> for
+an overview). You can also test process individual documents manually on
+the Document AI <a href="https://cloud.google.com/document-ai" class="external-link">website</a> (scroll down a
+little, to the section titled “Try Document AI in your environment”).
+<code>daiR</code> is designed mainly for users whose main workflow is
+already in R.</p>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-      </div>
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
+</div>
 
 </div>
 

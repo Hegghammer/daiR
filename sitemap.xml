@@ -13,13 +13,16 @@
     <loc>/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>/articles/Complex_file_and_folder_management.html</loc>
-  </url>
-  <url>
     <loc>/articles/basics.html</loc>
   </url>
   <url>
+    <loc>/articles/complex_file_and_folder_management.html</loc>
+  </url>
+  <url>
     <loc>/articles/extracting_tables.html</loc>
+  </url>
+  <url>
+    <loc>/articles/faqs.html</loc>
   </url>
   <url>
     <loc>/articles/index.html</loc>
