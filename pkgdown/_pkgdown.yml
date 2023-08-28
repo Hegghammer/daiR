@@ -20,6 +20,11 @@ reference:
       - '`dai_async_tab`'
       - '`dai_status`'
       - '`dai_notify`'
+  - title: Get tables
+    desc: ~
+    contents:
+      - '`tables_from_dai_file`'
+      - '`tables_from_dai_response`'
   - title: Inspect output
     desc: ~
     contents:
@@ -40,14 +45,23 @@ reference:
       - '`reassign_tokens2`'
       - '`from_labelme`'
       - '`redraw_blocks`'
+  - title: Processor management
+    desc: ~
+    contents:
+      - '`get_processor_info`'
+      - '`get_processor_versions`'
+      - '`get_processors`'
+
   - title: Utilities
     desc: ~
     contents:
       - '`image_to_pdf`'
+      - '`is_colour`'
       - '`is_pdf`'
       - '`is_json`'
       - '`pdf_to_binbase`'
       - '`img_to_binbase`'
+      - '`.onAttach`'
 navbar:
   type: inverse
   left:

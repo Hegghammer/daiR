@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 Pass a single-page pdf or image file to Document AI and get the output immediately:
 
 ```{r, eval=FALSE}
-library(daiR) 
+library(daiR)
 ## Not run:
 myfile <- "<sample.pdf>"
 response <- dai_sync(myfile)
