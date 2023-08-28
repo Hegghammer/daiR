@@ -156,7 +156,11 @@ img_to_binbase <- function(file) {
 
   filepath <- file.path(tempdir(), "dai_temp.tiff")
 
-  magick::image_write(img_gray, filepath, format = "tiff", compression = "JPEG")
+  magick::image_write(img_gray, 
+                      filepath, 
+                      format = "tiff", 
+                      #compression = "JPEG"
+                      )
 
   enc <- base64enc::base64encode(filepath)
 
