@@ -257,20 +257,20 @@ merge_shards <- function(source_dir,
 #' @examples
 #' \dontrun{
 #' resp <- dai_sync("page.pdf")
-#' draw_blocks(type="sync",
-#'             output=resp)
+#' draw_blocks(type = "sync",
+#'             output = resp)
 #'
 #' resp <- dai_sync_tab("page.pdf")
-#' draw_blocks(type="sync-tab",
-#'             output=resp,
-#'             doc="page.pdf")
+#' draw_blocks(type = "sync-tab",
+#'             output = resp,
+#'             doc = "page.pdf")
 #'
 #' draw_blocks(type = "async",
 #'             output = "page.json")
 #'
 #' draw_blocks(type = "async-tab",
 #'             output = "page.json",
-#'             doc="page.pdf")
+#'             doc = "page.pdf")
 #' }
 
 draw_blocks <- function(type,
@@ -542,20 +542,20 @@ draw_blocks <- function(type,
 #' @examples
 #' \dontrun{
 #' resp <- dai_sync("page.pdf")
-#' draw_paragraphs(type="sync",
-#'                 output=resp)
+#' draw_paragraphs(type = "sync",
+#'                 output = resp)
 #'
 #' resp <- dai_sync_tab("page.pdf")
 #' draw_paragraphs(type="sync-tab",
-#'                 output=resp,
-#'                 doc="page.pdf")
+#'                 output = resp,
+#'                 doc = "page.pdf")
 #'
 #' draw_paragraphs(type = "async",
 #'                 output = "page.json")
 #'
 #' draw_paragraphs(type = "async-tab",
 #'                 output = "page.json",
-#'                 doc="page.pdf")
+#'                 doc = "page.pdf")
 #' }
 
 
@@ -828,20 +828,20 @@ draw_paragraphs <- function(type,
 #' @examples
 #' \dontrun{
 #' resp <- dai_sync("page.pdf")
-#' draw_lines(type="sync",
-#'            output=resp)
+#' draw_lines(type = "sync",
+#'            output = resp)
 #'
 #' resp <- dai_sync_tab("page.pdf")
-#' draw_lines(type="sync-tab",n
-#'            output=resp,
-#'            doc="page.pdf")
+#' draw_lines(type = "sync-tab",
+#'            output = resp,
+#'            doc = "page.pdf")
 #'
 #' draw_lines(type = "async",
 #'            output = "page.json")
 #'
 #' draw_lines(type = "async-tab",
 #'            output = "page.json",
-#'            doc="page.pdf")
+#'            doc = "page.pdf")
 #' }
 
 draw_lines <- function(type,
@@ -1113,20 +1113,20 @@ draw_lines <- function(type,
 #' @examples
 #' \dontrun{
 #' resp <- dai_sync("page.pdf")
-#' draw_tokens(type="sync",
-#'             output=resp)
+#' draw_tokens(type = "sync",
+#'             output = resp)
 #'
 #' resp <- dai_sync_tab("page.pdf")
-#' draw_tokens(type="sync-tab",
-#'             output=resp,
-#'             doc="page.pdf")
+#' draw_tokens(type = "sync-tab",
+#'             output = resp,
+#'             doc = "page.pdf")
 #'
 #' draw_tokens(type = "async",
 #'             output = "page.json")
 #'
 #' draw_tokens(type = "async-tab",
 #'             output = "page.json",
-#'             doc="page.pdf")
+#'             doc = "page.pdf")
 #' }
 
 draw_tokens <- function(type,

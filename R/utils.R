@@ -92,6 +92,7 @@ is_json <- function(file) {
 #' @examples
 #' \dontrun{
 #' is_colour("red")
+#' is_colour("#12345")
 #' }
 
 is_colour <- function(x) {
