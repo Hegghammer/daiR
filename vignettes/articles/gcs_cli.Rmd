@@ -1,0 +1,125 @@
+---
+title: "Setting up GCS from the command line"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Using Google Document AI with `daiR` (or any other client library) requires the prior configuration of a Google Cloud Services account. This article describes how to achieve this using the command-line tool [gcloud CLI](https://cloud.google.com/sdk/gcloud/). The procedure is equivalent to the GUI-based one described [here](https://dair.info/articles/setting_up_google_storage.html) and [here](https://dair.info/articles/using_document_ai.html), but it minimizes interaction with the [Google Cloud Console](https://console.cloud.google.com) and arguably provides more replicability.
+
+### 1. Prepare a Google account
+
+Your gcloud CLI installation will need to be connected to a Google account for billing and such. Decide which Google account you want to be connected with this project or [create a new one](https://support.google.com/accounts/answer/27441?hl=en) if necessary. Have the login details for this account ready.
+
+### 2. Set up billing in the Google Cloud Console
+
+While logged in to your preferred Google account, go to [Google Cloud Console](https://console.cloud.google.com) and click "Try for free" and "Activate". In step 1, choose your country, select the term that best describes your organization, and check the box to accept the terms of service. In step 2, verify your mobile number. In step 3, enter your payment information (including a credit card or Paypal information) and click "Start my free trial". You will be taken to the two-factor authentication service associated with your credit card. Back on the Google website, press the blue "Proceed to verification" button. Here you may be asked to upload a photo of your credit card and a photo of an id document.
+
+### 3. Prepare id variables
+
+To facilitate the subsequent process, it is useful to create a project id and a service account id in advance and store them as environment variables. The ids need to be between 6 and 30 characters long. The strings need to be unique, so something like `my-ocr` will not work, whereas `ocr-834963` might. 
+
+Open a terminal and type the following, replacing `<a_project_id>` and `<a_service_account_id>` with your preferred strings.
+
+#### Linux and Mac 
+
+```
+PROJ_ID="<project_id>" && SA_ID="<service_account_id>"
+```
+
+#### Windows 
+
+```
+set PROJ_ID=<project_id>
+
+set SA_ID=<service_account_id>
+```
+
+### 4. Download and install gcloud CLI
+
+Follow the [instructions](https://cloud.google.com/sdk/docs/install) for your operating system. Note that on Windows, the installer takes you straight to initialization (and hence login to Google). On Mac and Linux you install the CLI first and then launch the initialization with the command `gcloud init`.  
+
+After you have clicked "Allow" in the browser, return to the terminal.
+
+On Linux, gcloud will now print something along the lines of "You are logged in as: [<YOUR_GMAIL_ADDRESS>]. This account has no projects. Would you like to create one? (Y/n)?" Here it is best to decline - type `n` then hit Enter.
+
+On Windows, it will print something like "You are logged in as: [<YOUR_GMAIL_ADDRESS>]. Pick cloud project to use:". Choose option 1 here and press Enter. 
+
+Now type: 
+
+#### Linux and Mac
+`gcloud projects create $PROJ_ID` 
+
+followed by 
+
+`gcloud config set project $PROJ_ID`
+
+#### Windows
+`gcloud projects create %PROJ_ID%`
+
+followed by
+
+`gcloud config set project %PROJ_ID%`
+
+### 5. Create a service account
+
+Next, create a service account by typing the following in the terminal:
+
+#### Linux and Mac
+```
+gcloud iam service-accounts create $SA_ID \
+--description="RStudio" \
+--display-name="RStudio"
+```
+
+#### Windows
+```
+gcloud iam service-accounts create %SA_ID% --description="RStudio" --display-name="RStudio"
+```
+
+### 6. Get key file
+
+Now get a key file - you will need it to authenticate from within RStudio:
+
+#### Linux and Mac
+```
+gcloud iam service-accounts keys create key.json \
+--iam-account=$(SA_ID)@$(PROJ_ID).iam.gserviceaccount.com
+```
+
+#### Windows
+```
+gcloud iam service-accounts keys create key.json --iam-account=%SA_ID%@%PROJ_ID%.iam.gserviceaccount.com
+```
+
+This will create and download a file titled `key.json` to your current location in the file system. Verify with `dir` (Windows) or `ls` (Mac or Linux). Move it to your preferred location and set the path as an environment variable `GCS_AUTH_FILE` in .Renviron (For example: `GCS_AUTH_FILE=/home/user/keys/key.json`).
+
+### 7. Confer permissions
+
+First give Google Cloud owner rights to this service account:
+
+#### Linux & Mac
+```
+gcloud projects add-iam-policy-binding $PROJ_ID \
+--member="serviceAccount:$(SA_ID)@$(PROJ_ID).iam.gserviceaccount.com" \
+--role="roles/owner"`
+```
+
+#### Windows 
+```
+gcloud projects add-iam-policy-binding %PROJ_ID% --member="serviceAccount:%SA_ID%@%PROJ_ID%.iam.gserviceaccount.com" --role="roles/owner"
+```
+
+Then enable the Document AI API:
+
+`gcloud services enable documentai.googleapis.com`
+
+### 8. Create processor
+
+Finally we create a processor. This is best done in the Google Cloud Console at [this link](https://console.cloud.google.com/ai/document-ai/processors). When you arrive there, make sure that the correct project is selected (see the top blue bar). You may need to search - by clicking the project field and then entering your new project id in the "search projects and folders" field, then clicking your project. Now type "processors" in the main search field and click "Processors - Document AI".
+
+Click the blue button labelled “Create processor”. On the next page, choose the “Document OCR” processor type. A pane should open on your right where you can choose a name for the processor. Call it what you like; the name is mainly for your own reference. Select a location (where you want your files to be processed), then click create. You should now see a page listing the processor’s Name, ID, Status and other attributes. The main thing you want here is the ID. Select it and copy it to the clipboard. Open your `.Renviron` file by calling `usethis::edit_r_environ()`. Add `DAI_PROCESSOR_ID="<your processor id>"` on a separate line. Save `.Renviron` and restart RStudio.
