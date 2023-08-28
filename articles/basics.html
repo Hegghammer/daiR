@@ -33,6 +33,8 @@
 </script>
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
   <div class="container">
@@ -45,7 +47,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9.7</span>
       </span>
     </div>
 
@@ -61,7 +63,7 @@
   <a href="../articles/basics.html">Quickstart</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
      
     <span class="caret"></span>
@@ -88,7 +90,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="https://github.com/hegghammer/dair/">
+  <a href="https://github.com/hegghammer/dair/" class="external-link">
     <span class="fab fa-github"></span>
      
     Github
@@ -97,7 +99,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/Hegghammer/daiR/">
+  <a href="https://github.com/Hegghammer/daiR/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -112,62 +114,63 @@
 
       
 
-      </header><script src="basics_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Basic processing</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/Hegghammer/daiR/blob/master/vignettes/basics.Rmd"><code>vignettes/basics.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Hegghammer/daiR/blob/HEAD/vignettes/basics.Rmd" class="external-link"><code>vignettes/basics.Rmd</code></a></small>
       <div class="hidden name"><code>basics.Rmd</code></div>
 
     </div>
 
     
     
-<div id="process-synchronously" class="section level3">
-<h3 class="hasAnchor">
-<a href="#process-synchronously" class="anchor"></a>Process synchronously</h3>
-<p>Pass a single-page pdf or image file to Document AI and get the output immediately:</p>
+<div class="section level3">
+<h3 id="process-synchronously">Process synchronously<a class="anchor" aria-label="anchor" href="#process-synchronously"></a>
+</h3>
+<p>Pass a single-page pdf or image file to Document AI and get the
+output immediately:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Hegghammer/daiR">daiR</a></span><span class="op">)</span> 
-<span class="co">## Not run:</span>
-<span class="va">myfile</span> <span class="op">&lt;-</span> <span class="st">"&lt;sample.pdf&gt;"</span>
-<span class="va">response</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_sync.html">dai_sync</a></span><span class="op">(</span><span class="va">myfile</span><span class="op">)</span>
-<span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/text_from_dai_response.html">text_from_dai_response</a></span><span class="op">(</span><span class="va">response</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="va">text</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Hegghammer/daiR" class="external-link">daiR</a></span><span class="op">)</span></span>
+<span><span class="co">## Not run:</span></span>
+<span><span class="va">myfile</span> <span class="op">&lt;-</span> <span class="st">"&lt;sample.pdf&gt;"</span></span>
+<span><span class="va">response</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_sync.html">dai_sync</a></span><span class="op">(</span><span class="va">myfile</span><span class="op">)</span></span>
+<span><span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/text_from_dai_response.html">text_from_dai_response</a></span><span class="op">(</span><span class="va">response</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">text</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div id="process-asynchronously" class="section level3">
-<h3 class="hasAnchor">
-<a href="#process-asynchronously" class="anchor"></a>Process asynchronously</h3>
+<div class="section level3">
+<h3 id="process-asynchronously">Process asynchronously<a class="anchor" aria-label="anchor" href="#process-asynchronously"></a>
+</h3>
 <p>Send larger batches for offline processing in three steps:</p>
-<div id="upload-files-to-your-google-storage-bucket" class="section level4">
-<h4 class="hasAnchor">
-<a href="#upload-files-to-your-google-storage-bucket" class="anchor"></a>1. Upload files to your Google Storage bucket</h4>
+<div class="section level4">
+<h4 id="upload-files-to-your-google-storage-bucket">1. Upload files to your Google Storage bucket<a class="anchor" aria-label="anchor" href="#upload-files-to-your-google-storage-bucket"></a>
+</h4>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">## Not run:</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://code.markedmondson.me/googleCloudStorageR/">googleCloudStorageR</a></span><span class="op">)</span>
-
-<span class="va">my_pdfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"&lt;sample1.pdf&gt;"</span>, <span class="st">"&lt;sample2.pdf&gt;"</span><span class="op">)</span>
-<span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">my_pdfs</span>, <span class="op">~</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload</a></span><span class="op">(</span><span class="va">.x</span>, name <span class="op">=</span> <span class="va">.x</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co">## Not run:</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://code.markedmondson.me/googleCloudStorageR/" class="external-link">googleCloudStorageR</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">my_pdfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&lt;sample1.pdf&gt;"</span>, <span class="st">"&lt;sample2.pdf&gt;"</span><span class="op">)</span></span>
+<span><span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">my_pdfs</span>, <span class="op">~</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html" class="external-link">gcs_upload</a></span><span class="op">(</span><span class="va">.x</span>, name <span class="op">=</span> <span class="va">.x</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div id="tell-document-ai-to-process-them" class="section level4">
-<h4 class="hasAnchor">
-<a href="#tell-document-ai-to-process-them" class="anchor"></a>2. Tell Document AI to process them:</h4>
+<div class="section level4">
+<h4 id="tell-document-ai-to-process-them">2. Tell Document AI to process them:<a class="anchor" aria-label="anchor" href="#tell-document-ai-to-process-them"></a>
+</h4>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">## Not run:</span>
-<span class="fu"><a href="../reference/dai_async.html">dai_async</a></span><span class="op">(</span><span class="va">my_pdfs</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co">## Not run:</span></span>
+<span><span class="fu"><a href="../reference/dai_async.html">dai_async</a></span><span class="op">(</span><span class="va">my_pdfs</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div id="download-the-json-output-and-extract-the-text" class="section level4">
-<h4 class="hasAnchor">
-<a href="#download-the-json-output-and-extract-the-text" class="anchor"></a>3. Download the json output and extract the text:</h4>
+<div class="section level4">
+<h4 id="download-the-json-output-and-extract-the-text">3. Download the json output and extract the text:<a class="anchor" aria-label="anchor" href="#download-the-json-output-and-extract-the-text"></a>
+</h4>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">## Not run:</span>
-<span class="va">bucket_contents</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span>
-<span class="va">only_jsons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">grep</a></span><span class="op">(</span><span class="st">"*.json"</span>, <span class="va">bucket_contents</span><span class="op">$</span><span class="va">name</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">only_jsons</span>, <span class="op">~</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html">gcs_get_object</a></span><span class="op">(</span><span class="va">.x</span>, saveToDisk <span class="op">=</span> <span class="va">.x</span><span class="op">)</span><span class="op">)</span>
-<span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/text_from_dai_file.html">text_from_dai_file</a></span><span class="op">(</span><span class="va">only_jsons</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="va">text</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co">## Not run:</span></span>
+<span><span class="va">bucket_contents</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html" class="external-link">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">only_jsons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"*.json"</span>, <span class="va">bucket_contents</span><span class="op">$</span><span class="va">name</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">only_jsons</span>, <span class="op">~</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html" class="external-link">gcs_get_object</a></span><span class="op">(</span><span class="va">.x</span>, saveToDisk <span class="op">=</span> <span class="va">.x</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/text_from_dai_file.html">text_from_dai_file</a></span><span class="op">(</span><span class="va">only_jsons</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">text</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
   </div>
@@ -181,11 +184,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Thomas Hegghammer.</p>
+  <p></p>
+<p>Developed by Thomas Hegghammer.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
@@ -193,6 +198,8 @@
 
   
 
+
+  
 
   </body>
 </html>

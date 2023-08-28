@@ -33,6 +33,8 @@
 </script>
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
   <div class="container">
@@ -45,7 +47,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9.7</span>
       </span>
     </div>
 
@@ -61,7 +63,7 @@
   <a href="../articles/basics.html">Quickstart</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
      
     <span class="caret"></span>
@@ -88,7 +90,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="https://github.com/hegghammer/dair/">
+  <a href="https://github.com/hegghammer/dair/" class="external-link">
     <span class="fab fa-github"></span>
      
     Github
@@ -97,7 +99,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/Hegghammer/daiR/">
+  <a href="https://github.com/Hegghammer/daiR/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -112,13 +114,13 @@
 
       
 
-      </header><script src="Complex_file_and_folder_management_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Complex file and folder management</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/Hegghammer/daiR/blob/master/vignettes/Complex_file_and_folder_management.Rmd"><code>vignettes/Complex_file_and_folder_management.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Hegghammer/daiR/blob/HEAD/vignettes/Complex_file_and_folder_management.Rmd" class="external-link"><code>vignettes/Complex_file_and_folder_management.Rmd</code></a></small>
       <div class="hidden name"><code>Complex_file_and_folder_management.Rmd</code></div>
 
     </div>
@@ -126,69 +128,108 @@
     
     
 <p><strong>Last updated 4 April 2021</strong><br><br><br></p>
-<p>The main <code>daiR</code> vignettes use deliberately simple examples involving uploads of pdf files straight into the root of the bucket and down again. In real life you may be dealing with slightly more complex scenarios.</p>
-<div id="image-files" class="section level2">
-<h2 class="hasAnchor">
-<a href="#image-files" class="anchor"></a>Image files</h2>
-<p>Document AI accepts only PDFs, GIFs and TIFFs, but sometimes your source documents are in other formats. <code>daiR</code>’s helper function <code><a href="../reference/image_to_pdf.html">image_to_pdf()</a></code> is designed to help with this. Based as it is on <code>imagemagick</code>, it converts almost any image file format to pdf. You can also pass a vector of image files and ask for a single <code>.pdf</code> output, which is useful for collating several pagewise images to a single, multipage <code>.pdf</code>.</p>
-<p>To illustrate, we can take this image of an old text from the National Park Service Website:</p>
+<p>The main <code>daiR</code> vignettes use deliberately simple examples
+involving uploads of pdf files straight into the root of the bucket and
+down again. In real life you may be dealing with slightly more complex
+scenarios.</p>
+<div class="section level2">
+<h2 id="image-files">Image files<a class="anchor" aria-label="anchor" href="#image-files"></a>
+</h2>
+<p>Document AI accepts only PDFs, GIFs and TIFFs, but sometimes your
+source documents are in other formats. <code>daiR</code>’s helper
+function <code><a href="../reference/image_to_pdf.html">image_to_pdf()</a></code> is designed to help with this.
+Based as it is on <code>imagemagick</code>, it converts almost any image
+file format to pdf. You can also pass a vector of image files and ask
+for a single <code>.pdf</code> output, which is useful for collating
+several pagewise images to a single, multipage <code>.pdf</code>.</p>
+<p>To illustrate, we can take this image of an old text from the
+National Park Service Website:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/getwd.html">setwd</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/download.file.html">download.file</a></span><span class="op">(</span><span class="st">"https://www.nps.gov/articles/images/dec-of-sentiments-loc-copy.jpg"</span>, 
-              destfile <span class="op">=</span> <span class="st">"nps.jpg"</span>, 
-              mode <span class="op">=</span> <span class="st">"wb"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">setwd</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span><span class="st">"https://www.nps.gov/articles/images/dec-of-sentiments-loc-copy.jpg"</span>, </span>
+<span>              destfile <span class="op">=</span> <span class="st">"nps.jpg"</span>, </span>
+<span>              mode <span class="op">=</span> <span class="st">"wb"</span><span class="op">)</span></span></code></pre></div>
 <p>And convert it to a pdf like so:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Hegghammer/daiR">daiR</a></span><span class="op">)</span>
-<span class="fu"><a href="../reference/image_to_pdf.html">image_to_pdf</a></span><span class="op">(</span><span class="st">"nps.jpg"</span>, <span class="st">"nps.pdf"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Hegghammer/daiR" class="external-link">daiR</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/image_to_pdf.html">image_to_pdf</a></span><span class="op">(</span><span class="st">"nps.jpg"</span>, <span class="st">"nps.pdf"</span><span class="op">)</span></span></code></pre></div>
 <p>And the file is ready for processing with Document AI.</p>
 </div>
-<div id="processing-a-folder-tree" class="section level2">
-<h2 class="hasAnchor">
-<a href="#processing-a-folder-tree" class="anchor"></a>Processing a folder tree</h2>
-<p>At other times you may want to have folders inside your bucket. A typical scenario is when your source documents are stored in a folder tree and you want to batch process everything without losing the original folder structure.</p>
-<p>Problem is, it’s technically not possible to have folders in Google Storage; files in a bucket are kept side by side in a flat structure. We can, however, <em>imitate</em> a folder structure by adding prefixes with forward slashes to filenames. This is not complicated, but requires paying attention to filenames at the upload and download stage.</p>
-<p>To illustrate, let’s create two folders in our working directory: <code>folder1</code> and <code>folder2</code>:</p>
+<div class="section level2">
+<h2 id="processing-a-folder-tree">Processing a folder tree<a class="anchor" aria-label="anchor" href="#processing-a-folder-tree"></a>
+</h2>
+<p>At other times you may want to have folders inside your bucket. A
+typical scenario is when your source documents are stored in a folder
+tree and you want to batch process everything without losing the
+original folder structure.</p>
+<p>Problem is, it’s technically not possible to have folders in Google
+Storage; files in a bucket are kept side by side in a flat structure. We
+can, however, <em>imitate</em> a folder structure by adding prefixes
+with forward slashes to filenames. This is not complicated, but requires
+paying attention to filenames at the upload and download stage.</p>
+<p>To illustrate, let’s create two folders in our working directory:
+<code>folder1</code> and <code>folder2</code>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://fs.r-lib.org">fs</a></span><span class="op">)</span>
-<span class="va">dir1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"folder1"</span><span class="op">)</span>
-<span class="va">dir2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"folder2"</span><span class="op">)</span>
-<span class="fu"><a href="http://fs.r-lib.org/reference/create.html">dir_create</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">dir1</span>, <span class="va">dir2</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p>Then we create three duplicates of the file <code>nps.pdf</code> and put two pdfs in each folder.</p>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://fs.r-lib.org" class="external-link">fs</a></span><span class="op">)</span></span>
+<span><span class="va">dir1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"folder1"</span><span class="op">)</span></span>
+<span><span class="va">dir2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"folder2"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://fs.r-lib.org/reference/create.html" class="external-link">dir_create</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">dir1</span>, <span class="va">dir2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>Then we create three duplicates of the file <code>nps.pdf</code> and
+put two pdfs in each folder.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">dest_path3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">dir1</span>, <span class="st">"nps.pdf"</span><span class="op">)</span>
-<span class="va">dest_path4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">dir1</span>, <span class="st">"nps2.pdf"</span><span class="op">)</span>
-<span class="va">dest_path5</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">dir2</span>, <span class="st">"nps3.pdf"</span><span class="op">)</span>
-<span class="va">dest_path6</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">dir2</span>, <span class="st">"nps4.pdf"</span><span class="op">)</span>
-<span class="fu"><a href="http://fs.r-lib.org/reference/copy.html">file_copy</a></span><span class="op">(</span><span class="va">dest_path2</span>, <span class="va">dest_path3</span><span class="op">)</span>
-<span class="fu"><a href="http://fs.r-lib.org/reference/copy.html">file_copy</a></span><span class="op">(</span><span class="va">dest_path2</span>, <span class="va">dest_path4</span><span class="op">)</span>
-<span class="fu"><a href="http://fs.r-lib.org/reference/copy.html">file_copy</a></span><span class="op">(</span><span class="va">dest_path2</span>, <span class="va">dest_path5</span><span class="op">)</span>
-<span class="fu"><a href="http://fs.r-lib.org/reference/copy.html">file_copy</a></span><span class="op">(</span><span class="va">dest_path2</span>, <span class="va">dest_path6</span><span class="op">)</span></code></pre></div>
-<p>To upload this entire structure to Google Storage, we create a vector of files in all subfolders with the parameter <code>recurse = TRUE</code> in the <code><a href="http://fs.r-lib.org/reference/dir_ls.html">dir_ls()</a></code> function. I’m assuming here that the working directory is otherwise empty of pdf files.</p>
+<code class="sourceCode R"><span><span class="va">dest_path3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir1</span>, <span class="st">"nps.pdf"</span><span class="op">)</span></span>
+<span><span class="va">dest_path4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir1</span>, <span class="st">"nps2.pdf"</span><span class="op">)</span></span>
+<span><span class="va">dest_path5</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir2</span>, <span class="st">"nps3.pdf"</span><span class="op">)</span></span>
+<span><span class="va">dest_path6</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir2</span>, <span class="st">"nps4.pdf"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://fs.r-lib.org/reference/copy.html" class="external-link">file_copy</a></span><span class="op">(</span><span class="va">dest_path2</span>, <span class="va">dest_path3</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://fs.r-lib.org/reference/copy.html" class="external-link">file_copy</a></span><span class="op">(</span><span class="va">dest_path2</span>, <span class="va">dest_path4</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://fs.r-lib.org/reference/copy.html" class="external-link">file_copy</a></span><span class="op">(</span><span class="va">dest_path2</span>, <span class="va">dest_path5</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://fs.r-lib.org/reference/copy.html" class="external-link">file_copy</a></span><span class="op">(</span><span class="va">dest_path2</span>, <span class="va">dest_path6</span><span class="op">)</span></span></code></pre></div>
+<p>To upload this entire structure to Google Storage, we create a vector
+of files in all subfolders with the parameter
+<code>recurse = TRUE</code> in the <code><a href="https://fs.r-lib.org/reference/dir_ls.html" class="external-link">dir_ls()</a></code> function. I’m
+assuming here that the working directory is otherwise empty of pdf
+files.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">pdfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://fs.r-lib.org/reference/dir_ls.html">dir_ls</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span>, glob <span class="op">=</span> <span class="st">"*.pdf"</span>, recurse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<p>We then iterate the <code><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload()</a></code> function over our vector:</p>
+<code class="sourceCode R"><span><span class="va">pdfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://fs.r-lib.org/reference/dir_ls.html" class="external-link">dir_ls</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, glob <span class="op">=</span> <span class="st">"*.pdf"</span>, recurse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>We then iterate the <code><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html" class="external-link">gcs_upload()</a></code> function over our
+vector:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://code.markedmondson.me/googleCloudStorageR/">googleCloudStorageR</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://purrr.tidyverse.org">purrr</a></span><span class="op">)</span>
-<span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">pdfs</span>, <span class="op">~</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html">gcs_upload</a></span><span class="op">(</span><span class="va">.x</span>, name <span class="op">=</span> <span class="va">.x</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p>If we now check the bucket contents, we see that the files are in their respective “folders”.</p>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://code.markedmondson.me/googleCloudStorageR/" class="external-link">googleCloudStorageR</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://purrr.tidyverse.org/" class="external-link">purrr</a></span><span class="op">)</span></span>
+<span><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">pdfs</span>, <span class="op">~</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html" class="external-link">gcs_upload</a></span><span class="op">(</span><span class="va">.x</span>, name <span class="op">=</span> <span class="va">.x</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>If we now check the bucket contents, we see that the files are in
+their respective “folders”.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p>Bear in mind, though, that this is an optical illusion; the files are technically still on the same level. In reality, the <code>folder1/</code> and <code>folder2/</code> elements are an integral part of the filenames.</p>
-<p>We can process these files as they are with the following command:</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html" class="external-link">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>Bear in mind, though, that this is an optical illusion; the files are
+technically still on the same level. In reality, the
+<code>folder1/</code> and <code>folder2/</code> elements are an integral
+part of the filenames.</p>
+<p>We can process these files as they are with the following
+command:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_async.html">dai_async</a></span><span class="op">(</span><span class="va">pdfs</span><span class="op">)</span> </code></pre></div>
-<p>In which case DAI returns <code>.json</code> files titled <code>folder1/&lt;job_number&gt;/0/nps-0.json</code> and so forth. We can download these the usual way:</p>
+<code class="sourceCode R"><span><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_async.html">dai_async</a></span><span class="op">(</span><span class="va">pdfs</span><span class="op">)</span> </span></code></pre></div>
+<p>In which case DAI returns <code>.json</code> files titled
+<code>folder1/&lt;job_number&gt;/0/nps-0.json</code> and so forth. We
+can download these the usual way:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">content</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span>
-<span class="va">jsons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">grep</a></span><span class="op">(</span><span class="st">"*.json$"</span>, <span class="va">content</span><span class="op">$</span><span class="va">name</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">jsons</span>, <span class="op">~</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html">gcs_get_object</a></span><span class="op">(</span><span class="va">.x</span>, saveToDisk <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">.x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p>And the json files will be stored in their respective subfolders alongside the source pdfs.</p>
-<p>Note, however, that this last script only worked because there already were folders titled <code>folder1</code> and <code>folder2</code> in our temporary directory. If there hadn’t been, R would have returned an error, because the <code><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html">gcs_get_object()</a></code> function cannot create new folders on your hard drive.</p>
-<p>If you wanted to download the files to another folder where there wasn’t a corresponding folder tree to “receive” them, you would have to use a workaround such as changing the forward slash in the bucket filepaths for an underscore (or something else) as follows:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>resp &lt;-<span class="st"> </span><span class="kw">map</span>(jsons, <span class="op">~</span><span class="st"> </span><span class="kw">gcs_get_object</span>(.x, </span>
-<span id="cb10-2"><a href="#cb10-2"></a>                                    <span class="dt">saveToDisk =</span> <span class="kw">file.path</span>(<span class="kw">tempdir</span>(), <span class="st">"folder3"</span>, <span class="kw">gsub</span>(<span class="st">"/"</span>, <span class="st">"_"</span>, .x))</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">content</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html" class="external-link">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">jsons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"*.json$"</span>, <span class="va">content</span><span class="op">$</span><span class="va">name</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">jsons</span>, <span class="op">~</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html" class="external-link">gcs_get_object</a></span><span class="op">(</span><span class="va">.x</span>, saveToDisk <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">.x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>And the json files will be stored in their respective subfolders
+alongside the source pdfs.</p>
+<p>Note, however, that this last script only worked because there
+already were folders titled <code>folder1</code> and
+<code>folder2</code> in our temporary directory. If there hadn’t been, R
+would have returned an error, because the <code><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html" class="external-link">gcs_get_object()</a></code>
+function cannot create new folders on your hard drive.</p>
+<p>If you wanted to download the files to another folder where there
+wasn’t a corresponding folder tree to “receive” them, you would have to
+use a workaround such as changing the forward slash in the bucket
+filepaths for an underscore (or something else) as follows:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>resp <span class="ot">&lt;-</span> <span class="fu">map</span>(jsons, <span class="sc">~</span> <span class="fu">gcs_get_object</span>(.x, </span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>                                    <span class="at">saveToDisk =</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">"folder3"</span>, <span class="fu">gsub</span>(<span class="st">"/"</span>, <span class="st">"_"</span>, .x))</span></code></pre></div>
 </div>
   </div>
 
@@ -203,11 +244,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Thomas Hegghammer.</p>
+  <p></p>
+<p>Developed by Thomas Hegghammer.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
@@ -215,6 +258,8 @@
 
   
 
+
+  
 
   </body>
 </html>

@@ -39,6 +39,8 @@
 </script>
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
   <div class="container">
@@ -51,7 +53,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9.7</span>
       </span>
     </div>
 
@@ -67,7 +69,7 @@
   <a href="articles/basics.html">Quickstart</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
      
     <span class="caret"></span>
@@ -94,7 +96,7 @@
   <a href="reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="https://github.com/hegghammer/dair/">
+  <a href="https://github.com/hegghammer/dair/" class="external-link">
     <span class="fab fa-github"></span>
      
     Github
@@ -103,7 +105,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/Hegghammer/daiR/">
+  <a href="https://github.com/Hegghammer/daiR/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -120,105 +122,122 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="dair-ocr-with-google-document-ai-in-r" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#dair-ocr-with-google-document-ai-in-r" class="anchor"></a>daiR: OCR with Google Document AI in R</h1></div>
+<div class="section level1">
+<div class="page-header"><h1 id="dair-ocr-with-google-document-ai-in-r">daiR: OCR with Google Document AI in R<a class="anchor" aria-label="anchor" href="#dair-ocr-with-google-document-ai-in-r"></a>
+</h1></div>
 <!-- badges: start -->
 
-<p><strong>daiR</strong> is an R package for <a href="https://cloud.google.com/document-ai">Google Document AI</a>, a powerful server-based OCR processor with support for over 60 languages. The package provides an inferface for the Document AI API and comes with additional tools for output file parsing and text reconstruction.</p>
+<p><strong>daiR</strong> is an R package for <a href="https://cloud.google.com/document-ai" class="external-link">Google Document AI</a>, a powerful server-based OCR processor with support for over 60 languages. The package provides an inferface for the Document AI API and comes with additional tools for output file parsing and text reconstruction.</p>
 <p><img src="reference/figures/frontpage_image.png" width="400" class="center"></p>
-<div id="use" class="section level2">
-<h2 class="hasAnchor">
-<a href="#use" class="anchor"></a>Use</h2>
+<div class="section level2">
+<h2 id="use">Use<a class="anchor" aria-label="anchor" href="#use"></a>
+</h2>
 <p>Quick OCR short documents:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">## NOT RUN</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Hegghammer/daiR">daiR</a></span><span class="op">)</span>
-<span class="va">response</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dai_sync.html">dai_sync</a></span><span class="op">(</span><span class="st">"file.pdf"</span><span class="op">)</span>
-<span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/text_from_dai_response.html">text_from_dai_response</a></span><span class="op">(</span><span class="va">response</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="va">text</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co">## NOT RUN</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Hegghammer/daiR" class="external-link">daiR</a></span><span class="op">)</span></span>
+<span><span class="va">response</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dai_sync.html">dai_sync</a></span><span class="op">(</span><span class="st">"file.pdf"</span><span class="op">)</span></span>
+<span><span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/text_from_dai_response.html">text_from_dai_response</a></span><span class="op">(</span><span class="va">response</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">text</span><span class="op">)</span></span></code></pre></div>
 <p>Batch process asynchronously via Google Storage:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">## NOT RUN</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://code.markedmondson.me/googleCloudStorageR/">googleCloudStorageR</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://purrr.tidyverse.org">purrr</a></span><span class="op">)</span>
-<span class="va">my_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"file1.pdf"</span>, <span class="st">"file2.pdf"</span>, <span class="st">"file3.pdf"</span><span class="op">)</span>
-<span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">my_files</span>, <span class="va">gcs_upload</span><span class="op">)</span>
-<span class="fu"><a href="reference/dai_async.html">dai_async</a></span><span class="op">(</span><span class="va">my_files</span><span class="op">)</span>
-<span class="va">contents</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span>
-<span class="va">output_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">grep</a></span><span class="op">(</span><span class="st">"json$"</span>, <span class="va">contents</span><span class="op">$</span><span class="va">name</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">output_files</span>, <span class="op">~</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html">gcs_get_object</a></span><span class="op">(</span><span class="va">.x</span>, saveToDisk <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">.x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">sample_text</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/text_from_dai_file.html">text_from_dai_file</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">output_files</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="va">sample_text</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co">## NOT RUN</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://code.markedmondson.me/googleCloudStorageR/" class="external-link">googleCloudStorageR</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://purrr.tidyverse.org/" class="external-link">purrr</a></span><span class="op">)</span></span>
+<span><span class="va">my_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"file1.pdf"</span>, <span class="st">"file2.pdf"</span>, <span class="st">"file3.pdf"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">my_files</span>, <span class="va">gcs_upload</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/dai_async.html">dai_async</a></span><span class="op">(</span><span class="va">my_files</span><span class="op">)</span></span>
+<span><span class="va">contents</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html" class="external-link">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">output_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"json$"</span>, <span class="va">contents</span><span class="op">$</span><span class="va">name</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">output_files</span>, <span class="op">~</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html" class="external-link">gcs_get_object</a></span><span class="op">(</span><span class="va">.x</span>, saveToDisk <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">.x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">sample_text</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/text_from_dai_file.html">text_from_dai_file</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">output_files</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">sample_text</span><span class="op">)</span></span></code></pre></div>
 <p>Turn images of tables into R dataframes:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">## NOT RUN:</span>
-<span class="va">response</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dai_sync_tab.html">dai_sync_tab</a></span><span class="op">(</span><span class="st">"tables.pdf"</span><span class="op">)</span>
-<span class="va">dfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/tables_from_dai_response.html">tables_from_dai_response</a></span><span class="op">(</span><span class="va">response</span><span class="op">)</span> </code></pre></div>
+<code class="sourceCode R"><span><span class="co">## NOT RUN:</span></span>
+<span><span class="va">response</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dai_sync_tab.html">dai_sync_tab</a></span><span class="op">(</span><span class="st">"tables.pdf"</span><span class="op">)</span></span>
+<span><span class="va">dfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/tables_from_dai_response.html">tables_from_dai_response</a></span><span class="op">(</span><span class="va">response</span><span class="op">)</span> </span></code></pre></div>
 </div>
-<div id="requirements" class="section level2">
-<h2 class="hasAnchor">
-<a href="#requirements" class="anchor"></a>Requirements</h2>
-<p>Google Document AI is a <a href="https://cloud.google.com/document-ai/pricing">paid service</a> that requires a <a href="https://console.cloud.google.com/">Google Cloud</a> account and a <a href="https://cloud.google.com/storage">Google Storage</a> bucket. I recommend using Mark Edmondson’s <code>googleCloudStorageR</code> <a href="https://github.com/cloudyr/googleCloudStorageR">package</a> in combination with <code>daiR</code>. See <a href="http://dair.info/">vignettes</a> for more on authentication and setup.</p>
+<div class="section level2">
+<h2 id="requirements">Requirements<a class="anchor" aria-label="anchor" href="#requirements"></a>
+</h2>
+<p>Google Document AI is a <a href="https://cloud.google.com/document-ai/pricing" class="external-link">paid service</a> that requires a <a href="https://console.cloud.google.com/" class="external-link">Google Cloud</a> account and a <a href="https://cloud.google.com/storage" class="external-link">Google Storage</a> bucket. I recommend using Mark Edmondson’s <code>googleCloudStorageR</code> <a href="https://github.com/cloudyr/googleCloudStorageR" class="external-link">package</a> in combination with <code>daiR</code>. See <a href="http://dair.info/" class="external-link">vignettes</a> for more on authentication and setup.</p>
 </div>
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
 <p>Download from CRAN:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"daiR"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"daiR"</span><span class="op">)</span></span></code></pre></div>
 <p>Or install the latest development version from Github:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"hegghammer/daiR"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"hegghammer/daiR"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=daiR">https://​cloud.r-project.org/​package=daiR</a>
-</li>
-<li>Browse source code at <br><a href="https://github.com/Hegghammer/daiR/">https://​github.com/​Hegghammer/​daiR/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/Hegghammer/daiR/issues">https://​github.com/​Hegghammer/​daiR/​issues</a>
-</li>
-</ul>
-</div>
-<div class="license">
-<h2>License</h2>
-<ul class="list-unstyled">
-<li>
-<a href="https://opensource.org/licenses/mit-license.php">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
-</li>
-</ul>
-</div>
-<div class="developers">
-<h2>Developers</h2>
-<ul class="list-unstyled">
-<li>Thomas Hegghammer <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-6253-1518" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li><a href="https://cloud.r-project.org/package=daiR" class="external-link">View on CRAN</a></li>
+<li><a href="https://github.com/Hegghammer/daiR/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/Hegghammer/daiR/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="license">
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li><a href="https://CRAN.R-project.org/package=daiR"><img src="https://www.r-pkg.org/badges/version/daiR" alt="CRAN status"></a></li>
-<li><a href="https://github.com/Hegghammer/daiR/actions/workflows/package-check.yml"><img src="https://github.com/Hegghammer/daiR/actions/workflows/package-check.yml/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://codecov.io/gh/Hegghammer/daiR?branch=master"><img src="https://codecov.io/gh/Hegghammer/daiR/branch/master/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li>
+<a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
+</li>
 </ul>
 </div>
+
+<div class="community">
+<h2 data-toc-skip>Community</h2>
+<ul class="list-unstyled">
+<li><a href="CONTRIBUTING.html">Contributing guide</a></li>
+<li><a href="CODE_OF_CONDUCT.html">Code of conduct</a></li>
+</ul>
 </div>
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing daiR</a></li>
+</ul>
+</div>
+
+<div class="developers">
+<h2 data-toc-skip>Developers</h2>
+<ul class="list-unstyled">
+<li>Thomas Hegghammer <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-6253-1518" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+</ul>
+</div>
+
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://CRAN.R-project.org/package=daiR" class="external-link"><img src="https://www.r-pkg.org/badges/version/daiR" alt="CRAN status"></a></li>
+<li><a href="https://github.com/Hegghammer/daiR/actions/workflows/package-check.yml" class="external-link"><img src="https://github.com/Hegghammer/daiR/actions/workflows/package-check.yml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://codecov.io/gh/Hegghammer/daiR?branch=master" class="external-link"><img src="https://codecov.io/gh/Hegghammer/daiR/branch/master/graph/badge.svg" alt="Codecov test coverage"></a></li>
+</ul>
+</div>
+
+  </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Thomas Hegghammer.</p>
+  <p></p>
+<p>Developed by Thomas Hegghammer.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
@@ -226,6 +245,8 @@
 
   
 
+
+  
 
   </body>
 </html>

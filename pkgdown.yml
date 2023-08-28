@@ -1,5 +1,5 @@
-pandoc: 2.7.3
-pkgdown: 1.6.1
+pandoc: 3.1.2
+pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   Complex_file_and_folder_management: Complex_file_and_folder_management.html
@@ -8,5 +8,5 @@ articles:
   reconstructing_text: reconstructing_text.html
   setting_up_google_storage: setting_up_google_storage.html
   using_document_ai: using_document_ai.html
-last_built: 2021-06-24T11:51Z
+last_built: 2023-08-28T16:34Z
 
