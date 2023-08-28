@@ -169,7 +169,9 @@ test_that("dai_sync_tab calls out input errors", {
 test_that("dai_sync_tab informs about unsuccessful requests", {
   skip_on_cran()
   skip_if_offline()
-  file <- testthat::test_path("examples", "image.jpg")
+  #file <- testthat::test_path("examples", "image.jpg")
+  #file <- testthat::test_path("examples", "image.tiff")
+  file <- testthat::test_path("examples", "image.png") # jpeg problem on Mac
   response <- dai_sync_tab(file, proj_id = string_random, token = NULL)
   expect_equal(response[["status_code"]], 403)
 })
