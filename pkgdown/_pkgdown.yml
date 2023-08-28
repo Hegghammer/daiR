@@ -80,7 +80,9 @@ navbar:
       -  text: Correcting text output from Google Document AI
          href: articles/reconstructing_text.html
       -  text: Complex file and folder management
-         href: articles/Complex_file_and_folder_management.html
+         href: articles/complex_file_and_folder_management.html
+    - text: FAQs
+      href: articles/faqs.html
     - text: "Reference"
       href: reference/index.html
     - icon: fab fa-github

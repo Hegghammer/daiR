@@ -1,0 +1,44 @@
+---
+title: "Frequently asked questions"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## How much does Google Document AI cost to use?
+
+Google charges USD 1.50 per 1,000 pages for use of the default processor, "Document OCR". Specialized processors (such as form parsers for business use) cost more; see Google's [documentation](https://cloud.google.com/document-ai/pricing) for details. 
+
+## How does Document AI perform compared with free solutions such as Tesseract?
+
+It depends on the document. For clean pages in English, there is usually no difference to speak of. But for documents with noise or non-latin script, Document AI tends to have substantially better off-the-shelf accuracy, as described in [this paper](https://link.springer.com/article/10.1007/s42001-021-00149-1). 
+
+## Which filetypes can I submit?
+
+Document AI currently handles `.pdf`, `.jpg`/`.jpeg`, `.png`, `.tiff`/`.tif`, `.bmp`, and `.webp` files. See Google's [documentation](https://cloud.google.com/document-ai/docs/file-types) for more details.
+
+## Which languages does Document AI cover?
+
+The general processor ("Document OCR") currently handles 60 languages, including Arabic, Chinese, Greek, Hebrew, Hindi, Japanese, Persian, and Russian. Notable languages **not** covered by the "Document OCR" processor include Swahili and Urdu. Some of the specialised Document AI processors (such as "Custom Document Extractor") handle more or other languages. See Google's [documentation](https://cloud.google.com/document-ai/docs/languages) for more details.
+
+## Can I trust the output to be perfect?
+
+No. Document AI is very good, but it does make mistakes. Be especially cautious when processing multi-column text.  
+
+## Can Document AI process handwriting?
+
+Yes, for most languages. See Google's [documentation](https://cloud.google.com/document-ai/docs/languages) for a detailed overview.
+
+## What about privacy and security? Can I process sensitive data with Google Document AI?
+
+It depends on the data in question and on your threat model. Google [says](https://cloud.google.com/document-ai/docs/security) it complies with strict privacy and security protocols and that it will not use customer data to train its models. It further notes that 
+
+> "For batch operations, the stored document is typically deleted right after the processing is done, with a failsafe Time to live (TTL) from a few hours to up to 7 days. For online (immediate response) operations, the document data is processed in memory and not persisted to disk. Google also temporarily logs some metadata about your Document AI API requests (such as the time the request was received and the size of the request) to improve our service and combat abuse."
+
+## Do I need to use the `daiR` package to access Document AI?
+
+No, you can also access it from Python and several other programming languages (see [here](https://cloud.google.com/document-ai/docs/libraries) for an overview). You can also test process individual documents manually on the Document AI [website](https://cloud.google.com/document-ai) (scroll down a little, to the section titled "Try Document AI in your environment"). `daiR` is designed mainly for users whose main workflow is already in R.

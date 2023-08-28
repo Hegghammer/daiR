@@ -12,3 +12,4 @@
 ^index\.md$
 ^cran-comments\.md$
 ^CRAN-RELEASE$
+^vignettes/articles$

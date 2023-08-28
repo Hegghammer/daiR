@@ -18,5 +18,6 @@ Checks whether a string is a valid colour representation.
 \examples{
 \dontrun{
 is_colour("red")
+is_colour("#12345")
 }
 }

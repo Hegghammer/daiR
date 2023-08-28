@@ -54,19 +54,19 @@ Not vectorized, but documents can be multi-page.
 \examples{
 \dontrun{
 resp <- dai_sync("page.pdf")
-draw_paragraphs(type="sync",
-                output=resp)
+draw_paragraphs(type = "sync",
+                output = resp)
 
 resp <- dai_sync_tab("page.pdf")
 draw_paragraphs(type="sync-tab",
-                output=resp,
-                doc="page.pdf")
+                output = resp,
+                doc = "page.pdf")
 
 draw_paragraphs(type = "async",
                 output = "page.json")
 
 draw_paragraphs(type = "async-tab",
                 output = "page.json",
-                doc="page.pdf")
+                doc = "page.pdf")
 }
 }
