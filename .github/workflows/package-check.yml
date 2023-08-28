@@ -65,6 +65,7 @@ jobs:
           done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "22.04"))')
           sudo apt-get install ghostscript
           sudo apt-get install libfreetype6-dev
+          sudo apt-get install imagemagick
           sudo mv /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/policy.xml.off
       - name: Install dependencies
         run: |
