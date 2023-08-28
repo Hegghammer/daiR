@@ -21,6 +21,7 @@ opts_chunk$set(
 
 **Last updated 4 April 2021**
 \
+**Command line users: See [here](https://dair.info/articles/gcs_cli.html) for GCS setup using gcloud CLI.**
 \
 \
 

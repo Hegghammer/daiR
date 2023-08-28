@@ -45,4 +45,4 @@ No, you can also access it from Python and several other programming languages (
 
 ### Is there an easier way to set up a Google Cloud Services account for use with `daiR`?
 
-Unfortunately not. But there is a [command line way](articles/gcs_cli.html) involving [gcloud CLI](https://cloud.google.com/sdk/gcloud/) if you prefer that.
+Unfortunately not. But there is a [command line way](https://dair.info/articles/gcs_cli.html) involving [gcloud CLI](https://cloud.google.com/sdk/gcloud/) if you prefer that.
