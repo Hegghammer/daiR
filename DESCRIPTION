@@ -23,7 +23,6 @@ RoxygenNote: 7.2.3
 Imports: 
     base64enc,
     beepr,
-    curl,
     data.table,
     fs,
     gargle,
@@ -44,7 +43,6 @@ Suggests:
     ngram,
     qpdf,
     rmarkdown,
-    sodium,
     testthat (>= 3.0.0),
     usethis,
     utils

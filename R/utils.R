@@ -59,9 +59,7 @@ is_pdf <- function(file) {
 
   result <- suppressMessages(try(pdftools::pdf_info(file), silent = TRUE))
 
-  if (class(result) != "try-error") return(TRUE)
-
-  return(FALSE)
+  return(!(inherits(result, "try-error")))
 }
 
 #' Check that a file is JSON
@@ -80,7 +78,7 @@ is_json <- function(file) {
 
   result <- suppressMessages(try(jsonlite::fromJSON(file), silent = TRUE))
 
-  return(!"try-error" %in% class(result))
+  return(!(inherits(result, "try-error")))
 
 }
 
@@ -100,7 +98,7 @@ is_colour <- function(x) {
 
   result <- suppressMessages(try(grDevices::col2rgb(x), silent = TRUE))
 
-  return(!"try-error" %in% class(result))
+  return(!(inherits(result, "try-error")))
 
  }
 
