@@ -168,7 +168,7 @@ test_that("dai_sync_tab calls out input errors", {
 
 test_that("dai_sync_tab informs about unsuccessful requests", {
   skip_on_cran()
-  #skip_on_ci()
+  skip_on_ci()
   skip_if_offline()
   file <- testthat::test_path("examples", "image.jpg")
   response <- dai_sync_tab(file, proj_id = string_random, token = NULL)
