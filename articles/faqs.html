@@ -158,6 +158,19 @@ paper</a>.</p>
 for more details.</p>
 </div>
 <div class="section level3">
+<h3 id="how-much-can-i-process-at-once">How much can I process at once?<a class="anchor" aria-label="anchor" href="#how-much-can-i-process-at-once"></a>
+</h3>
+<p>Current rate limits for the “Document OCR” processor: - Synchronous
+processing: 120 requests per minute per processor - Asynchronous
+processing: 5 concurrent requests per processor, max 5000 files per
+request.</p>
+<p>Current file size limits for the “Document OCR” processor: -
+Synchronous processing: 20 MB per file, maximum 15 pages - Asynchronous
+processing: 1 GB per file, maximum 500 pages</p>
+<p>See Google’s documentation <a href="https://cloud.google.com/document-ai/quotas" class="external-link">here</a> and <a href="https://cloud.google.com/document-ai/quotas#processor_limits" class="external-link">here</a>
+for details.</p>
+</div>
+<div class="section level3">
 <h3 id="which-languages-does-document-ai-cover">Which languages does Document AI cover?<a class="anchor" aria-label="anchor" href="#which-languages-does-document-ai-cover"></a>
 </h3>
 <p>The general processor (“Document OCR”) currently handles 60
@@ -173,6 +186,38 @@ for more details.</p>
 </h3>
 <p>No. Document AI is very good, but it does make mistakes. Be
 especially cautious when processing multi-column text.</p>
+</div>
+<div class="section level3">
+<h3 id="how-many-different-processors-are-there">How many different processors are there?<a class="anchor" aria-label="anchor" href="#how-many-different-processors-are-there"></a>
+</h3>
+<p>Google Document AI ecosystem contains three categories of processors:
+General, specialized, and custom. The specialized and custom ones are
+mainly for high-accuracy parsing of particular types of forms such as US
+driver’s licences or tax documents.</p>
+<p>There are two types of general processors: “Document OCR” and “Form
+Parser” (Two others, “Intelligent Document Quality Processor” and
+“Document splitter”, are in the works but currently not publicly
+available). Of these, “Document OCR” is intended for general OCR tasks.
+The <code>daiR</code> package currently calls only “Document OCR”. The
+“Intelligent Document Quality Processor” will be added when it becomes
+publicly available.</p>
+<p>Finally, each type comes in several versions, some stable and others
+in beta. The current stable version of “Document OCR” was trained in
+September 2020, while the latest release candidate was trained in
+November 2022. See Google’s <a href="https://cloud.google.com/document-ai/docs/processors-list" class="external-link">documentation</a>
+for an updated list. With <code>daiR</code> you can choose between
+different versions of “Document OCR”.</p>
+</div>
+<div class="section level3">
+<h3 id="can-i-finetune-document-ai-on-my-own-data">Can I finetune Document AI on my own data?<a class="anchor" aria-label="anchor" href="#can-i-finetune-document-ai-on-my-own-data"></a>
+</h3>
+<p>No, you cannot finetune the general processors with your own data the
+way you can with <a href="https://cloud.google.com/translate/automl/docs/" class="external-link">Google
+Translate</a>. Document AI does offer something called <a href="https://cloud.google.com/document-ai/docs/workbench/uptrain-processor" class="external-link">uptraining</a>,
+but it is only for specialized processors (form parsers and such). You
+can also train a custom <a href="https://cloud.google.com/document-ai/docs/workbench/build-custom-classification-processor" class="external-link">document
+classifier</a> which sorts documents into different categories prior to
+processing.</p>
 </div>
 <div class="section level3">
 <h3 id="can-document-ai-process-handwriting">Can Document AI process handwriting?<a class="anchor" aria-label="anchor" href="#can-document-ai-process-handwriting"></a>
