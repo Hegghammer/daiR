@@ -160,20 +160,25 @@ for more details.</p>
 <div class="section level3">
 <h3 id="how-much-can-i-process-at-once">How much can I process at once?<a class="anchor" aria-label="anchor" href="#how-much-can-i-process-at-once"></a>
 </h3>
-<p>Current rate limits for the “Document OCR” processor: - Synchronous
-processing: 120 requests per minute per processor - Asynchronous
-processing: 5 concurrent requests per processor, max 5000 files per
-request.</p>
-<p>Current file size limits for the “Document OCR” processor: -
-Synchronous processing: 20 MB per file, maximum 15 pages - Asynchronous
-processing: 1 GB per file, maximum 500 pages</p>
-<p>See Google’s documentation <a href="https://cloud.google.com/document-ai/quotas" class="external-link">here</a> and <a href="https://cloud.google.com/document-ai/quotas#processor_limits" class="external-link">here</a>
+<p>Rate limits:</p>
+<ul>
+<li>Synchronous processing: 120 requests per minute per processor</li>
+<li>Asynchronous processing: 5 concurrent requests per processor, max
+5000 files per request.</li>
+</ul>
+<p>File size limits:</p>
+<ul>
+<li>Synchronous processing: 20 MB per file, maximum 15 pages</li>
+<li>Asynchronous processing: 1 GB per file, maximum 500 pages</li>
+</ul>
+<p>These limits are for the “Document OCR” processor. They may change in
+the future. See Google’s documentation <a href="https://cloud.google.com/document-ai/quotas" class="external-link">here</a> and <a href="https://cloud.google.com/document-ai/quotas#processor_limits" class="external-link">here</a>
 for details.</p>
 </div>
 <div class="section level3">
 <h3 id="which-languages-does-document-ai-cover">Which languages does Document AI cover?<a class="anchor" aria-label="anchor" href="#which-languages-does-document-ai-cover"></a>
 </h3>
-<p>The general processor (“Document OCR”) currently handles 60
+<p>The general processor (“Document OCR”) currently handles over 60
 languages, including Arabic, Chinese, Greek, Hebrew, Hindi, Japanese,
 Persian, and Russian. Notable languages <strong>not</strong> covered by
 the “Document OCR” processor include Swahili and Urdu. Some of the
