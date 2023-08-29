@@ -18,7 +18,7 @@ draw_blocks(
 }
 \arguments{
 \item{type}{one of "sync", "async", "sync-tab" or "async-tab", depending on
-the function used to process the document.}
+the function used to process the original document.}
 
 \item{output}{either a HTTP response object (from \code{dai_sync()} or
 \code{dai_sync_tab()}) or the path to a JSON file (from \code{dai_async} or
