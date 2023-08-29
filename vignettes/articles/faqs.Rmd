@@ -23,19 +23,21 @@ Document AI currently handles `.pdf`, `.jpg`/`.jpeg`, `.png`, `.tiff`/`.tif`, `.
 
 ### How much can I process at once?
 
-Current rate limits for the "Document OCR" processor:
+Rate limits:
+
 - Synchronous processing: 120 requests per minute per processor 
 - Asynchronous processing: 5 concurrent requests per processor, max 5000 files per request. 
 
-Current file size limits for the "Document OCR" processor:
+File size limits:
+
 - Synchronous processing: 20 MB per file, maximum 15 pages
 - Asynchronous processing: 1 GB per file, maximum 500 pages
 
-See Google's documentation [here](https://cloud.google.com/document-ai/quotas) and [here](https://cloud.google.com/document-ai/quotas#processor_limits) for details.
+These limits are for the "Document OCR" processor. They may change in the future. See Google's documentation [here](https://cloud.google.com/document-ai/quotas) and [here](https://cloud.google.com/document-ai/quotas#processor_limits) for details.
 
 ### Which languages does Document AI cover?
 
-The general processor ("Document OCR") currently handles 60 languages, including Arabic, Chinese, Greek, Hebrew, Hindi, Japanese, Persian, and Russian. Notable languages **not** covered by the "Document OCR" processor include Swahili and Urdu. Some of the specialised Document AI processors (such as "Custom Document Extractor") handle more or other languages. See Google's [documentation](https://cloud.google.com/document-ai/docs/languages) for more details.
+The general processor ("Document OCR") currently handles over 60 languages, including Arabic, Chinese, Greek, Hebrew, Hindi, Japanese, Persian, and Russian. Notable languages **not** covered by the "Document OCR" processor include Swahili and Urdu. Some of the specialised Document AI processors (such as "Custom Document Extractor") handle more or other languages. See Google's [documentation](https://cloud.google.com/document-ai/docs/languages) for more details.
 
 ### Can I trust the output to be perfect?
 
