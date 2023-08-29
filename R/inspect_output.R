@@ -237,7 +237,7 @@ merge_shards <- function(source_dir,
 #' document.
 #'
 #' @param type one of "sync", "async", "sync-tab" or "async-tab", depending on
-#' the function used to process the document.
+#' the function used to process the original document.
 #' @param output either a HTTP response object (from `dai_sync()` or
 #' `dai_sync_tab()`) or the path to a JSON file (from `dai_async` or
 #' `dai_async_tab()`).

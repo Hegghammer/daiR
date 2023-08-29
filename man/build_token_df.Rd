@@ -4,10 +4,14 @@
 \alias{build_token_df}
 \title{Build token dataframe}
 \usage{
-build_token_df(json)
+build_token_df(type, output)
 }
 \arguments{
-\item{json}{filepath of a JSON file obtained using \code{dai_async()}}
+\item{type}{one of "sync" or "async" depending on
+the function used to process the original document.}
+
+\item{output}{either a HTTP response object (from \code{dai_sync()}) or
+the path to a JSON file (from \code{dai_async}).}
 }
 \value{
 a token data frame
@@ -19,13 +23,15 @@ order DAI proposes to read them. Columns are location variables
 such as page coordinates and block bounding box numbers.
 }
 \details{
-The location variables are: start index, end index,
-left boundary, right boundary, top boundary, bottom boundary,
+The location variables are: token, start index, end index,
+confidence, left boundary, right boundary, top boundary, bottom boundary,
 page number, and block number. Start and end indices refer to
 character position in the string containing the full text.
 }
 \examples{
 \dontrun{
-token_df <- build_token_df("pdf_output.json")
+token_df <- build_token_df(type = "async", output = "pdf_output.json")
+resp <- dai_sync("file.pdf")
+token_df <- build_token_df(type = "sync", output = resp)
 }
 }

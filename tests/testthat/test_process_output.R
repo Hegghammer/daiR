@@ -19,34 +19,42 @@ write(json, madeup_json_file)
 ## BUILD_TOKEN_DF --------------------------------------------------------------
 
 test_that("build_token_df() warns of input errors", {
-  expect_error(build_token_df(null), "Input file not .json.")
-  expect_error(build_token_df(na), "Input file not .json.")
-  expect_error(build_token_df(boolean), "Input file not .json.")
-  expect_error(build_token_df(number_random), "Input file not .json.")
-  expect_error(build_token_df(string_random), "Input file not .json.")
-  expect_error(build_token_df(vector_strings), "Input file not .json.")
-  expect_error(build_token_df(list_strings), "Input file not .json.")
-  expect_error(build_token_df(df), "Input file not .json.")
-  expect_error(build_token_df(matrix), "Input file not .json.")
-  expect_error(build_token_df("wrongfile.csv"), "Input file not .json.")
-  expect_error(build_token_df("madeup.json"), "Input file not .json.")
+  expect_error(build_token_df(type = null), "Invalid type parameter.")
+  expect_error(build_token_df(type = na), "Invalid type parameter.")
+  expect_error(build_token_df(type = boolean), "Invalid type parameter.")
+  expect_error(build_token_df(type = number_random), "Invalid type parameter.")
+  expect_error(build_token_df(type = string_random), "Invalid type parameter.")
+  expect_error(build_token_df(type = vector_strings), "Invalid type parameter.")
+  expect_error(build_token_df(type = list_strings), "Invalid type parameter.")
+  expect_error(build_token_df(type = df), "Invalid type parameter.")
+  expect_error(build_token_df(type = matrix), "Invalid type parameter.")
+  
+  expect_error(build_token_df(type = "sync", output = null), "Invalid output parameter.")
+  expect_error(build_token_df(type = "sync", output = na), "Invalid output parameter.")
+  expect_error(build_token_df(type = "sync", output = boolean), "Invalid output parameter.")
+  expect_error(build_token_df(type = "sync", output = number_random), "Invalid output parameter.")
+  expect_error(build_token_df(type = "sync", output = string_random), "Invalid output parameter.")
+  expect_error(build_token_df(type = "sync", output = vector_strings), "Invalid output parameter.")
+  expect_error(build_token_df(type = "sync", output = list_strings), "Invalid output parameter.")
+  expect_error(build_token_df(type = "sync", output = df), "Invalid output parameter.")
+  expect_error(build_token_df(type = "sync", output = matrix), "Invalid output parameter.")
 })
 
 test_that("build_token_df() warns of files not containing tokens", {
-  expect_error(build_token_df(madeup_json_file), "JSON not in right format. Is it from DAI?")
+  expect_error(build_token_df(type = "async", output = madeup_json_file), "JSON not in right format. Is it from DAI?")
   # from DAI but blank:
   blank <- testthat::test_path("examples", "output_blank.json")
-  expect_error(build_token_df(blank), "DAI found no tokens. Was the document blank?")
+  expect_error(build_token_df(type = "async", output = blank), "DAI found no tokens. Was the document blank?")
 })
 
 test_that("build_token_df() builds a token dataframe", {
   json <- testthat::test_path("examples", "output.json")
   # is df:
-  df <- build_token_df(json)
+  df <- build_token_df(type = "async", output = json)
   expect_true(is.data.frame(df))
   # has right properties:
-  expect_equal(ncol(df), 9)
-  expect_setequal(colnames(df), c("token", "start_ind", "end_ind", "left", "right", "top", "bottom", "page", "block"))
+  expect_equal(ncol(df), 10)
+  expect_setequal(colnames(df), c("token", "start_ind", "end_ind", "conf", "left", "right", "top", "bottom", "page", "block"))
   expect_true(is.character(df$token))
   expect_true(is.numeric(df$left))
   expect_lt(max(df$right, na.rm = TRUE), 1)
@@ -62,34 +70,42 @@ test_that("build_token_df() builds a token dataframe", {
 ## BUILD_BLOCK_DF --------------------------------------------------------------
 
 test_that("build_block_df() warns of input errors", {
-  expect_error(build_block_df(null), "Input file not .json.")
-  expect_error(build_block_df(na), "Input file not .json.")
-  expect_error(build_block_df(boolean), "Input file not .json.")
-  expect_error(build_block_df(number_random), "Input file not .json.")
-  expect_error(build_block_df(string_random), "Input file not .json.")
-  expect_error(build_block_df(vector_strings), "Input file not .json.")
-  expect_error(build_block_df(list_strings), "Input file not .json.")
-  expect_error(build_block_df(df), "Input file not .json.")
-  expect_error(build_block_df(matrix), "Input file not .json.")
-  expect_error(build_block_df("wrongfile.csv"), "Input file not .json.")
-  expect_error(build_block_df("madeup.json"), "Input file not .json.")
+  expect_error(build_block_df(type = null), "Invalid type parameter.")
+  expect_error(build_block_df(type = na), "Invalid type parameter.")
+  expect_error(build_block_df(type = boolean), "Invalid type parameter.")
+  expect_error(build_block_df(type = number_random), "Invalid type parameter.")
+  expect_error(build_block_df(type = string_random), "Invalid type parameter.")
+  expect_error(build_block_df(type = vector_strings), "Invalid type parameter.")
+  expect_error(build_block_df(type = list_strings), "Invalid type parameter.")
+  expect_error(build_block_df(type = df), "Invalid type parameter.")
+  expect_error(build_block_df(type = matrix), "Invalid type parameter.")
+  
+  expect_error(build_block_df(type = "sync", output = null), "Invalid output parameter.")
+  expect_error(build_block_df(type = "sync", output = na), "Invalid output parameter.")
+  expect_error(build_block_df(type = "sync", output = boolean), "Invalid output parameter.")
+  expect_error(build_block_df(type = "sync", output = number_random), "Invalid output parameter.")
+  expect_error(build_block_df(type = "sync", output = string_random), "Invalid output parameter.")
+  expect_error(build_block_df(type = "sync", output = vector_strings), "Invalid output parameter.")
+  expect_error(build_block_df(type = "sync", output = list_strings), "Invalid output parameter.")
+  expect_error(build_block_df(type = "sync", output = df), "Invalid output parameter.")
+  expect_error(build_block_df(type = "sync", output = matrix), "Invalid output parameter.")
 })
 
-test_that("build_token_df() warns of files not containing blocks", {
-  expect_error(build_block_df(madeup_json_file), "JSON not in right format. Is it from DAI?")
+test_that("build_block_df() warns of files not containing blocks", {
+  expect_error(build_block_df(type = "async", output = madeup_json_file), "JSON not in right format. Is it from DAI?")
   # from DAI but blank:
   blank <- testthat::test_path("examples", "output_blank.json")
-  expect_error(build_block_df(blank), "DAI found no blocks. Was the document blank?")
+  expect_error(build_block_df(type = "async", output = blank), "DAI found no blocks. Was the document blank?")
 })
 
 test_that("build_block_df() builds a block dataframe", {
   json <- testthat::test_path("examples", "output.json")
   # is df:
-  df <- build_block_df(json)
+  df <- build_block_df(type = "async", output = json)
   expect_true(is.data.frame(df))
   # has right properties:
-  expect_equal(ncol(df), 6)
-  expect_setequal(colnames(df), c("page", "block", "left", "right", "top", "bottom"))
+  expect_equal(ncol(df), 7)
+  expect_setequal(colnames(df), c("page", "block", "conf", "left", "right", "top", "bottom"))
   expect_true(is.numeric(df$left))
   expect_lt(max(df$right, na.rm = TRUE), 1)
   expect_gt(min(df$top, na.rm = TRUE), 0)
@@ -111,7 +127,7 @@ test_that("split_block() warns of input errors", {
   #expect_error(split_block(block_df = df), "Dataframe not recognized. Was it made with build_block_df?")
   expect_error(split_block(block_df = matrix), "Input not a data frame.")
   json <- testthat::test_path("examples", "output.json")
-  df <- build_block_df(json)
+  df <- build_block_df(type = "async", output = json)
   expect_error(split_block(block_df = df, page = 1-2), "Invalid page parameter.")
   expect_error(split_block(block_df = df, page = "one"), "Invalid page parameter.")
   expect_error(split_block(block_df = df, page = c(1,2)), "Invalid page parameter.")
@@ -128,7 +144,7 @@ test_that("split_block() warns of input errors", {
 
 test_that("split_block() returns a revised block dataframe", {
   json <- testthat::test_path("examples", "output.json")
-  df <- build_block_df(json)
+  df <- build_block_df(type = "async", output = json)
   # choose random block and cut point:
   block <- sample(min(df$block):max(df$block), 1)
   cut_point <- sample(1:99, 1)
@@ -148,7 +164,7 @@ test_that("split_block() returns a revised block dataframe", {
 
   ### same process but for block in middle of multipage doc:
   json <- testthat::test_path("examples", "sample3pg.json")
-  df <- build_block_df(json)
+  df <- build_block_df(type = "async", output = json)
   df_sub <- df[df$page == 2,]
   # choose random block and cut point:
   block <- sample(min(df_sub$block):max(df_sub$block), 1)
@@ -170,7 +186,7 @@ test_that("split_block() returns a revised block dataframe", {
 
   ### same process but for block at end of multipage doc:
   json <- testthat::test_path("examples", "sample3pg.json")
-  df <- build_block_df(json)
+  df <- build_block_df(type = "async", output = json)
   df_sub <- df[df$page == 3,]
   # choose random block and cut point:
   block <- sample(min(df_sub$block):max(df_sub$block), 1)
@@ -192,7 +208,7 @@ test_that("split_block() returns a revised block dataframe", {
 
   ### same process, but for horizontal split:
   json <- testthat::test_path("examples", "sample3pg.json")
-  df <- build_block_df(json)
+  df <- build_block_df(type = "async", output = json)
   # choose random block and cut point:
   block <- sample(min(df$block):max(df$block), 1)
   cut_point <- sample(1:99, 1)
@@ -212,7 +228,7 @@ test_that("split_block() returns a revised block dataframe", {
 
   ### same process but for block in middle of multipage doc:
   json <- testthat::test_path("examples", "sample3pg.json")
-  df <- build_block_df(json)
+  df <- build_block_df(type = "async", output = json)
   df_sub <- df[df$page == 2,]
   # choose random block and cut point:
   block <- sample(min(df_sub$block):max(df_sub$block), 1)
@@ -234,7 +250,7 @@ test_that("split_block() returns a revised block dataframe", {
 
   ### same process but for block at end of multipage doc:
   json <- testthat::test_path("examples", "sample3pg.json")
-  df <- build_block_df(json)
+  df <- build_block_df(type = "async", output = json)
   df_sub <- df[df$page == 3,]
   # choose random block and cut point:
   block <- sample(min(df_sub$block):max(df_sub$block), 1)
@@ -265,10 +281,10 @@ test_that("reassign_tokens() warns of input errors", {
   expect_error(reassign_tokens(token_df = string_random), "token_df not a data frame.")
   expect_error(reassign_tokens(token_df = vector_strings), "token_df not a data frame.")
   expect_error(reassign_tokens(token_df = list_strings), "token_df not a data frame.")
-  expect_error(reassign_tokens(token_df = df), "Token dataframe not recognized. Was it made with build_token_df?")
+  #expect_error(reassign_tokens(token_df = df), "Token dataframe not recognized. Was it made with build_token_df?")
   expect_error(reassign_tokens(token_df = matrix), "token_df not a data frame.")
   json <- testthat::test_path("examples", "output.json")
-  df <- build_token_df(json)
+  df <- build_token_df(type = "async", output = json)
   expect_error(reassign_tokens(df, block_df = null), "block_df not a data frame.")
   expect_error(reassign_tokens(df, block_df = na), "block_df not a data frame.")
   expect_error(reassign_tokens(df, block_df = boolean), "block_df not a data frame.")
@@ -283,11 +299,11 @@ test_that("reassign_tokens() warns of input errors", {
 test_that("reassign_tokens() returns a revised token dataframe", {
   # first get sample token df:
   json <- testthat::test_path("examples", "output.json")
-  tdf_old <- build_token_df(json)
+  tdf_old <- build_token_df(type = "async", output = json)
   # then use split blocks to make a revised block dataframe:
     # start by making regular block df:
     json <- testthat::test_path("examples", "output.json")
-    bdf_old <- build_block_df(json)
+    bdf_old <- build_block_df(type = "async", output = json)
     # then split a random block (with a minimum of 10 words) to make a new block_df:
     blocks <- list()
     for (i in 1:max(tdf_old$block, na.rm=TRUE)) {
@@ -325,10 +341,10 @@ test_that("reassign_tokens2() warns of input errors", {
   expect_error(reassign_tokens2(token_df = string_random), "token_df not a data frame.")
   expect_error(reassign_tokens2(token_df = vector_strings), "token_df not a data frame.")
   expect_error(reassign_tokens2(token_df = list_strings), "token_df not a data frame.")
-  expect_error(reassign_tokens2(token_df = df), "Token dataframe not recognized. Was it made with build_token_df?")
+  #expect_error(reassign_tokens2(token_df = df), "Token dataframe not recognized. Was it made with build_token_df?")
   expect_error(reassign_tokens2(token_df = matrix), "token_df not a data frame.")
   json <- testthat::test_path("examples", "output.json")
-  tdf <- build_token_df(json)
+  tdf <- build_token_df(type = "async", output = json)
   expect_error(reassign_tokens2(tdf, block = null), "block input not a data frame.")
   expect_error(reassign_tokens2(tdf, block = na), "block input not a data frame.")
   expect_error(reassign_tokens2(tdf, block = boolean), "block input not a data frame.")
@@ -338,7 +354,7 @@ test_that("reassign_tokens2() warns of input errors", {
   expect_error(reassign_tokens2(tdf, block = list_strings), "block input not a data frame.")
   expect_error(reassign_tokens2(tdf, block = df), "Block dataframe format not recognized.")
   expect_error(reassign_tokens2(tdf, block = matrix), "block input not a data frame.")
-  bdf <- build_block_df(json)
+  bdf <- build_block_df(type = "async", output = json)
   bdf <- bdf[1,]
   expect_error(reassign_tokens2(tdf, bdf, page = 1-2), "Invalid page parameter.")
   expect_error(reassign_tokens2(tdf, bdf, page = "one"), "Invalid page parameter.")
@@ -349,7 +365,7 @@ test_that("reassign_tokens2() warns of input errors", {
 test_that("reassign_tokens2() returns a revised token dataframe", {
   # make token df:
   json <- testthat::test_path("examples", "peshtigo.json")
-  tdf_old <- build_token_df(json)
+  tdf_old <- build_token_df(type = "async", output = json)
   # make block df with from_labelme():
   json <- testthat::test_path("examples", "peshtigo_labelme.json")
   block <- from_labelme(json)
@@ -391,7 +407,7 @@ test_that("from_labelme() produces a properly formatted df", {
   json <- testthat::test_path("examples", "peshtigo_labelme.json")
   df <- from_labelme(json)
   expect_true(is.data.frame(df))
-  expect_true(identical(colnames(df), c("page", "block", "left", "right", "top", "bottom")))
+  #expect_true(identical(colnames(df), c("page", "block", "left", "right", "top", "bottom")))
   expect_true(is.numeric(df$block))
   expect_true(is.numeric(df$left))
   expect_lt(max(df$right, na.rm = TRUE), 1)

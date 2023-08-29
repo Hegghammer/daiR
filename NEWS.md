@@ -1,3 +1,7 @@
+# daiR 0.9.8
+- Changed the `build_token_df()` and `build_block_df()` functions so they can take as input response objects from `dai_sync()` in addition to json files from `dai_async()`. 
+- Changed the `build_token_df()` and `build_block_df()` functions to include confidence scores in the dataframe, so as to enable filtering on confidence.
+
 # daiR 0.9.7
 - Changed the "`draw_*`" functions so they work with response objects (from `dai_sync()` and `dai_sync_tab()`) as well as with json files from `dai_async_tab()`.
 - Changed the "`draw_*`" functions to allow customizing color and thickness of lines around bounding boxes.

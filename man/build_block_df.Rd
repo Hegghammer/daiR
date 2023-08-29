@@ -4,10 +4,14 @@
 \alias{build_block_df}
 \title{Build block dataframe}
 \usage{
-build_block_df(json)
+build_block_df(type, output)
 }
 \arguments{
-\item{json}{filepath of a JSON file obtained using \code{dai_async()}}
+\item{type}{one of "sync" or "async" depending on
+the function used to process the original document.}
+
+\item{output}{either a HTTP response object (from \code{dai_sync()}) or
+the path to a JSON file (from \code{dai_async}).}
 }
 \value{
 a block data frame
@@ -19,11 +23,14 @@ Rows are blocks, in the order DAI proposes to read them. Columns
 are location variables such as page coordinates and page numbers.
 }
 \details{
-The location variables are: page number, left boundary,
-right boundary, top boundary, and bottom boundary.
+The dataframe variables are: page number, block number,
+confidence score, left boundary, right boundary, top boundary,
+and bottom boundary.
 }
 \examples{
 \dontrun{
-block_df <- build_block_df("pdf_output.json")
+block_df <- build_block_df(type = "async", output = "pdf_output.json")
+resp <- dai_sync("file.pdf")
+block_df <- build_block_df(type = "sync", output = resp)
 }
 }
