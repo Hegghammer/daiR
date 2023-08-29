@@ -49,10 +49,10 @@ dai_sync <- function(file,
     }
 
   extension <- tolower(stringr::str_extract(file, "(?<=\\.)\\w{3,4}$"))
-  supported <- c("bmp", "gif", "jpeg", "jpg", "pdf", "png", "tiff")
+  supported <- c("bmp", "gif", "jpeg", "jpg", "pdf", "png", "tiff", "webp")
 
   if (!(extension %in% supported)) {
-    stop("Unsupported file format. See documentation for details.")
+    stop("Unsupported file format. DAI accepts only bmp, gif, jpeg, jpg, pdf, png, tif, tiff, and webp.")
     }
 
   if (extension == "pdf" && !(is_pdf(file))) {
@@ -204,10 +204,10 @@ dai_async <- function(files,
     }
 
   extensions <- tolower(stringr::str_extract_all(files, "(?<=\\.)\\w{3,4}$"))
-  supported <- c("pdf", "gif", "tiff")
+  supported <- c("bmp", "gif", "jpeg", "jpg", "pdf", "png", "tiff", "webp")
 
   if (!(all(unique(extensions) %in% supported))) {
-    stop("Files contain unsupported file types. Only .pdf, .gif, and .tiff accepted.")
+    stop("Unsupported file formats. DAI accepts only bmp, gif, jpeg, jpg, pdf, png, tif, tiff, and webp.")
     }
 
   if (length(dest_folder) > 1) {

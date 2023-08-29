@@ -21,6 +21,18 @@ It depends on the document. For clean pages in English, there is usually no diff
 
 Document AI currently handles `.pdf`, `.jpg`/`.jpeg`, `.png`, `.tiff`/`.tif`, `.bmp`, and `.webp` files. See Google's [documentation](https://cloud.google.com/document-ai/docs/file-types) for more details.
 
+### How much can I process at once?
+
+Current rate limits for the "Document OCR" processor:
+- Synchronous processing: 120 requests per minute per processor 
+- Asynchronous processing: 5 concurrent requests per processor, max 5000 files per request. 
+
+Current file size limits for the "Document OCR" processor:
+- Synchronous processing: 20 MB per file, maximum 15 pages
+- Asynchronous processing: 1 GB per file, maximum 500 pages
+
+See Google's documentation [here](https://cloud.google.com/document-ai/quotas) and [here](https://cloud.google.com/document-ai/quotas#processor_limits) for details.
+
 ### Which languages does Document AI cover?
 
 The general processor ("Document OCR") currently handles 60 languages, including Arabic, Chinese, Greek, Hebrew, Hindi, Japanese, Persian, and Russian. Notable languages **not** covered by the "Document OCR" processor include Swahili and Urdu. Some of the specialised Document AI processors (such as "Custom Document Extractor") handle more or other languages. See Google's [documentation](https://cloud.google.com/document-ai/docs/languages) for more details.
@@ -28,6 +40,18 @@ The general processor ("Document OCR") currently handles 60 languages, including
 ### Can I trust the output to be perfect?
 
 No. Document AI is very good, but it does make mistakes. Be especially cautious when processing multi-column text.  
+
+### How many different processors are there?
+
+Google Document AI ecosystem contains three categories of processors: General, specialized, and custom. The specialized and custom ones are mainly for high-accuracy parsing of particular types of forms such as US driver's licences or tax documents. 
+ 
+There are two types of general processors: "Document OCR" and "Form Parser" (Two others, "Intelligent Document Quality Processor" and "Document splitter", are in the works but currently not publicly available). Of these, "Document OCR" is intended for general OCR tasks. The `daiR` package currently calls only "Document OCR". The "Intelligent Document Quality Processor" will be added when it becomes publicly available.  
+
+Finally, each type comes in several versions, some stable and others in beta. The current stable version of "Document OCR" was trained in September 2020, while the latest release candidate was trained in November 2022. See Google's [documentation](https://cloud.google.com/document-ai/docs/processors-list) for an updated list. With `daiR` you can choose between different versions of "Document OCR".
+
+### Can I finetune Document AI on my own data?
+
+No, you cannot finetune the general processors with your own data the way you can with [Google Translate](https://cloud.google.com/translate/automl/docs/). Document AI does offer something called [uptraining](https://cloud.google.com/document-ai/docs/workbench/uptrain-processor), but it is only for specialized processors (form parsers and such). You can also train a custom [document classifier](https://cloud.google.com/document-ai/docs/workbench/build-custom-classification-processor) which sorts documents into different categories prior to processing.
 
 ### Can Document AI process handwriting?
 

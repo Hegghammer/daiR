@@ -13,3 +13,8 @@
 ^cran-comments\.md$
 ^CRAN-RELEASE$
 ^vignettes/articles$
+^paper\.md$
+^paper\.bib$
+^CODE_OF_CONDUCT\.md$
+^CONTRIBUTING\.md$
+^daiR\.code-workspace$
