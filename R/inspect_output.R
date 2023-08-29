@@ -327,13 +327,11 @@ draw_blocks <- function(type,
 		return(boxes)
 	}
 
-	transpose_block <- function(x) {
-		A <- purrr::map(x, unlist)
-		B <- purrr::map(A, data.frame)
-		C <- purrr::map(B, t)
-		D <- rbind(C[[1]], C[[2]], C[[3]], C[[4]])
-		rownames(D) <- 1:4
-		return(as.data.frame(D))
+	transpose_block <- function(lst) {
+        xs <- c(lst[[1]][["x"]], lst[[2]][["x"]], lst[[3]][["x"]], lst[[4]][["x"]])
+        ys <- c(lst[[1]][["y"]], lst[[2]][["y"]], lst[[3]][["y"]], lst[[4]][["y"]])
+        df <- data.frame(xs, ys)
+        return(df)
 	}
 
 	transpose_page <- function(x) {
@@ -613,13 +611,11 @@ draw_paragraphs <- function(type,
 		return(boxes)
 	}
 
-	transpose_block <- function(x) {
-		A <- purrr::map(x, unlist)
-		B <- purrr::map(A, data.frame)
-		C <- purrr::map(B, t)
-		D <- rbind(C[[1]], C[[2]], C[[3]], C[[4]])
-		rownames(D) <- c(1, 2, 3, 4)
-		return(as.data.frame(D))
+	transpose_block <- function(lst) {
+        xs <- c(lst[[1]][["x"]], lst[[2]][["x"]], lst[[3]][["x"]], lst[[4]][["x"]])
+        ys <- c(lst[[1]][["y"]], lst[[2]][["y"]], lst[[3]][["y"]], lst[[4]][["y"]])
+        df <- data.frame(xs, ys)
+        return(df)
 	}
 
 	transpose_page <- function(x) {
@@ -898,13 +894,11 @@ draw_lines <- function(type,
 		return(boxes)
 	}
 
-	transpose_block <- function(x) {
-		A <- purrr::map(x, unlist)
-		B <- purrr::map(A, data.frame)
-		C <- purrr::map(B, t)
-		D <- rbind(C[[1]], C[[2]], C[[3]], C[[4]])
-		rownames(D) <- c(1, 2, 3, 4)
-		return(as.data.frame(D))
+	transpose_block <- function(lst) {
+        xs <- c(lst[[1]][["x"]], lst[[2]][["x"]], lst[[3]][["x"]], lst[[4]][["x"]])
+        ys <- c(lst[[1]][["y"]], lst[[2]][["y"]], lst[[3]][["y"]], lst[[4]][["y"]])
+        df <- data.frame(xs, ys)
+        return(df)
 	}
 
 	transpose_page <- function(x) {
@@ -1183,13 +1177,11 @@ draw_tokens <- function(type,
 		return(boxes)
 	}
 
-	transpose_block <- function(x) {
-		A <- purrr::map(x, unlist)
-		B <- purrr::map(A, data.frame)
-		C <- purrr::map(B, t)
-		D <- rbind(C[[1]], C[[2]], C[[3]], C[[4]])
-		rownames(D) <- c(1, 2, 3, 4)
-		return(as.data.frame(D))
+	transpose_block <- function(lst) {
+        xs <- c(lst[[1]][["x"]], lst[[2]][["x"]], lst[[3]][["x"]], lst[[4]][["x"]])
+        ys <- c(lst[[1]][["y"]], lst[[2]][["y"]], lst[[3]][["y"]], lst[[4]][["y"]])
+        df <- data.frame(xs, ys)
+        return(df)
 	}
 
 	transpose_page <- function(x) {
