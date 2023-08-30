@@ -117,9 +117,8 @@ build_token_df <- function(
     }
 
     # get page numbers as single vector
-    page <- list()
     if (type == "sync") { pages_tokens <- pages_tokens_sync } else { pages_tokens <- pages_tokens_async }
-
+    page <- integer()
     for (i in seq_along(pages_tokens)) {
         if (is.null(pages_tokens[[i]])) {
             instances <- 0
@@ -129,9 +128,8 @@ build_token_df <- function(
             }
         }
         pg <- rep(i, each = instances)
-        page <- append(page, pg)
+        page <- c(page, pg)
     }
-    page <- unlist(page)
 
     # get boundaries as single vectors
     if (type == "sync") {
@@ -211,125 +209,96 @@ build_token_df <- function(
 #' block_df <- build_block_df(type = "sync", output = resp)
 #' }
 
-build_block_df <- function(
-                            type,
-                            output
-                            ) {
+    build_block_df <- function(
+        type,
+        output
+    ) {
 
-    # checks
-    if (!(length(type) == 1) || !(type %in% c("sync", "async", "sync-tab", "async-tab"))) {
-        stop("Invalid type parameter.")
-    }
-
-    if (!(inherits(output, "response") || is_json(output))) {
-        stop("Invalid output parameter.")
-    }
-
-    if (type == "sync") {
-
-        output_sync <- httr::content(output)
-
-        # extract a list with pagewise sets of block boundary boxes
-        pages_sync <- output_sync$document$pages
-        pages_blocks_sync <- purrr::map(pages_sync, ~.x$blocks)
-        pagewise_block_sets_sync <- purrr::map(pages_blocks_sync, get_vertices)
-        pagewise_block_sets_sync <- purrr::map(pagewise_block_sets_sync, transpose_page)
-        
-        # get block numbers as single vector
-        block <- list()
-        for (i in pagewise_block_sets_sync) {
-            b <- seq_along(i)
-            block <- append(block, b)
+        # checks
+        if (!(length(type) == 1) || !(type %in% c("sync", "async", "sync-tab", "async-tab"))) {
+            stop("Invalid type parameter.")
         }
-        block <- unlist(block)
 
-        # get confidence scores as single vector
-        conf <- numeric()
-        for (i in pages_blocks_sync) {
-            for (j in i) {
-                con <- j$layout$confidence
-                conf <- c(conf, con)
+        if (!(inherits(output, "response") || is_json(output))) {
+            stop("Invalid output parameter.")
+        }
+
+        if (type == "sync") {
+
+            output_sync <- httr::content(output)
+
+            # extract a list with pagewise sets of block boundary boxes
+            pages_sync <- output_sync$document$pages
+            pages_blocks_sync <- purrr::map(pages_sync, ~.x$blocks)
+            pagewise_block_sets_sync <- purrr::map(pages_blocks_sync, get_vertices)
+            pagewise_block_sets_sync <- purrr::map(pagewise_block_sets_sync, transpose_page)
+
+            # get confidence scores as single vector
+            conf <- numeric()
+            for (i in pages_blocks_sync) {
+                for (j in i) {
+                    con <- j$layout$confidence
+                    conf <- c(conf, con)
+                }
             }
+        }
+
+        else if (type == "async") {
+
+            output_async <- jsonlite::fromJSON(output)
+
+            if (!("pages" %in% names(output_async))) {
+                stop("JSON not in right format. Is it from DAI?")
+            }
+
+            if (!("text" %in% names(output_async))) {
+                stop("DAI found no blocks. Was the document blank?")
+            }
+
+            # extract a list with pagewise sets of block boundary boxes
+            pages_blocks_async <- output_async$pages$blocks
+            pagewise_block_sets_async <- purrr::map(pages_blocks_async, ~.x$layout$boundingPoly$normalizedVertices)
+
+            # get confidence scores as single vector
+            conf <- unlist(purrr::map(pages_blocks_async, ~.x$layout$confidence))
+
+        }
+
+        # get page numbers as single vector
+        page <- integer()
+        if (type == "sync") { pages_blocks <- pages_blocks_sync } else { pages_blocks <- pages_blocks_async }
+        for (i in seq_along(pages_blocks)) {
+            if (is.null(pages_blocks[[i]])) {
+                instances <- 0
+            } else {
+                if (type == "sync") { instances <- length(pages_blocks[[i]]) }
+                else { instances <- nrow(pages_blocks[[i]])
+                }
+            }
+            pg <- rep(i, each = instances)
+            page <- c(page, pg)
+        }
+
+        # get block numbers as single vector
+        if (type == "sync") { pagewise_block_coords <- pagewise_block_sets_sync } else { pagewise_block_coords <- pagewise_block_sets_async}
+        block <- integer()
+        for (i in pagewise_block_coords) {
+            b <- seq_along(i)
+            block <- c(block, b)
         }
 
         # get coordinates as single vectors
-        left <-  unlist(purrr::map(pagewise_block_sets_sync, ~ purrr::map(.x, ~ min(.x$x))))
-        right <- unlist(purrr::map(pagewise_block_sets_sync, ~ purrr::map(.x, ~ max(.x$x))))
-        top <- unlist(purrr::map(pagewise_block_sets_sync, ~ purrr::map(.x, ~ min(.x$y))))
-        bottom <- unlist(purrr::map(pagewise_block_sets_sync, ~ purrr::map(.x, ~ max(.x$y))))
-        
-        # get page numbers as single vector
-        page <- list()
-        for (i in seq_along(pages_blocks_sync)) {
-            if (is.null(pages_blocks_sync[[i]])) {
-                instances <- 0
-            } else {
-                instances <- length(pages_blocks_sync[[i]])
-            }
-            pg <- rep(i, each = instances)
-            page <- append(page, pg)
-        }
-        page <- unlist(page)
+        left <-  unlist(purrr::map(pagewise_block_coords, ~ purrr::map(.x, ~ min(.x$x))))
+        right <- unlist(purrr::map(pagewise_block_coords, ~ purrr::map(.x, ~ max(.x$x))))
+        top <- unlist(purrr::map(pagewise_block_coords, ~ purrr::map(.x, ~ min(.x$y))))
+        bottom <- unlist(purrr::map(pagewise_block_coords, ~ purrr::map(.x, ~ max(.x$y))))
 
         # combine all vectors to dataframe
         df <- data.frame(page, block, conf, left, right, top, bottom)
+
+        return(df)
+
     }
-
-    else if (type == "async") {
-
-        output_async <- jsonlite::fromJSON(output)
-        
-        if (!("pages" %in% names(output_async))) {
-            stop("JSON not in right format. Is it from DAI?")
-        }
-
-        if (!("text" %in% names(output_async))) {
-            stop("DAI found no blocks. Was the document blank?")
-        }
-
-        # extract a list with pagewise sets of block boundary boxes
-        pages_blocks_async <- output_async$pages$blocks
-        pagewise_block_sets_async <- purrr::map(pages_blocks_async, ~.x$layout$boundingPoly$normalizedVertices)
-
-        # get block numbers as single vector
-        block <- list()
-        for (i in pagewise_block_sets_async) {
-            b <- seq_along(i)
-            block <- append(block, b)
-        }
-        block <- unlist(block)
-
-        # get confidence scores as single vector
-        conf <- unlist(purrr::map(pages_blocks_async, ~.x$layout$confidence))
-
-        # extract all boundaries as single vectors
-        left <-  unlist(purrr::map(pagewise_block_sets_async, ~ purrr::map(.x, ~ min(.x$x))))
-        right <- unlist(purrr::map(pagewise_block_sets_async, ~ purrr::map(.x, ~ max(.x$x))))
-        top <- unlist(purrr::map(pagewise_block_sets_async, ~ purrr::map(.x, ~ min(.x$y))))
-        bottom <- unlist(purrr::map(pagewise_block_sets_async, ~ purrr::map(.x, ~ max(.x$y))))
-
-        # get page numbers as single vector
-        page <- list()
-
-        for (i in seq_along(pages_blocks_async)) {
-            if (is.null(pages_blocks_async[[i]])) {
-                instances <- 0
-            } else {
-                instances <- nrow(pages_blocks_async[[i]])
-            }
-            pg <- rep(i, each = instances)
-            page <- append(page, pg)
-        }
-
-        page <- unlist(page)
-
-        # combine all vectors to dataframe
-        df <- data.frame(page, block, conf, left, right, top, bottom)
-    }
-
-    return(df)
-
-}
 
 #' Split a block bounding box
 #'
