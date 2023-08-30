@@ -41,42 +41,21 @@ build_token_df <- function(
 
     if (type == "sync") {
 
-        # Helper functions
-        get_vertices <- function(lst) {
-            boxes <- purrr::map(lst, ~.x$layout$boundingPoly$normalizedVertices)
-            return(boxes)
-        }
-
-        transpose_block <- function(lst) {
-            xs <- c(lst[[1]][["x"]], lst[[2]][["x"]], lst[[3]][["x"]], lst[[4]][["x"]])
-            ys <- c(lst[[1]][["y"]], lst[[2]][["y"]], lst[[3]][["y"]], lst[[4]][["y"]])
-            df <- data.frame(xs, ys)
-            return(df)
-        }
-
-        transpose_page <- function(x) {
-            blocks <- purrr::map(x, transpose_block)
-            return(blocks)
-        }
-
         output_sync <- httr::content(output)
+        text <- output_sync$document$text
+        pages_sync <- output_sync$document$pages
 
         # get pagewise indices
-        pages_sync <- output_sync$document$pages
         pages_tokens_sync <- purrr::map(pages_sync, ~.x$tokens)
 
         # extract all start indices as single vector
-        start_ind_sync <- integer()
+        start_ind <- integer()
         for (i in pages_tokens_sync) {
             for (j in i) {
-                ind <- j[["layout"]][["textAnchor"]][["textSegments"]][[1]][["startIndex"]]
-                start_ind_sync <- c(start_ind_sync, as.integer(ind))
+                ind <- as.integer(j[["layout"]][["textAnchor"]][["textSegments"]][[1]][["startIndex"]]) + 1
+                start_ind <- c(start_ind, ind)
             }
         }
-
-        # shifting them by one, because the token really starts at (index + 1)
-        start_ind_shift_sync <- as.integer(start_ind_sync) + 1
-        start_ind <- c(1, start_ind_shift_sync)
 
         # extract all end indices as single vector
         end_ind <- integer()
@@ -87,20 +66,6 @@ build_token_df <- function(
             }
         }
 
-        # extract all tokens as single vector
-        text <- output_sync$document$text
-
-        token <- character()
-
-        for (i in seq_along(start_ind)) {
-            tok <- substr(text,
-                          start_ind[i],
-                          end_ind[i]
-            )
-            token <- c(token, tok)
-        }
-
-
         # get confidence scores as single vector
         conf <- numeric()
         for (i in pages_tokens_sync) {
@@ -108,70 +73,6 @@ build_token_df <- function(
                 con <- j$layout$confidence
                 conf <- c(conf, con)
             }
-        }
-
-        # get coordinates as single vectors
-        pagewise_token_sets_sync <- purrr::map(pages_tokens_sync, get_vertices)
-        pagewise_token_sets_sync <- purrr::map(pagewise_token_sets_sync, transpose_page)
-        left <-  unlist(purrr::map(pagewise_token_sets_sync, ~ purrr::map(.x, ~ min(.x$x))))
-        right <- unlist(purrr::map(pagewise_token_sets_sync, ~ purrr::map(.x, ~ max(.x$x))))
-        top <- unlist(purrr::map(pagewise_token_sets_sync, ~ purrr::map(.x, ~ min(.x$y))))
-        bottom <- unlist(purrr::map(pagewise_token_sets_sync, ~ purrr::map(.x, ~ max(.x$y))))
-
-        # get page numbers as single vector
-        page <- list()
-        for (i in seq_along(pages_tokens_sync)) {
-            if (is.null(pages_tokens_sync[[i]])) {
-                instances <- 0
-            } else {
-                instances <- length(pages_tokens_sync[[i]])
-            }
-            pg <- rep(i, each = instances)
-            page <- append(page, pg)
-        }
-        page <- unlist(page)
-
-        # combine all vectors to dataframe
-        df <- data.frame(token,
-                         start_ind,
-                         end_ind,
-                         conf,
-                         left,
-                         right,
-                         top,
-                         bottom,
-                         page,
-                         block = NA
-        )
-
-        # get block numbers
-
-        # first extract vector of pagewise sets of blocks
-        pages_blocks_sync <- purrr::map(pages_sync, ~.x$blocks)
-        pagewise_block_sets_sync <- purrr::map(pages_blocks_sync, get_vertices)
-        pagewise_block_sets_sync <- purrr::map(pagewise_block_sets_sync, transpose_page)
-
-        # then assign block numbers by location.
-        for (i in seq_along(pagewise_block_sets_sync)) {
-
-            # create temporary sub-dataframe for that page
-            df_sub <- df[df$page == i, ]
-
-            # set counter for block number
-            count <- 1
-
-            #loop over blocks
-            for (j in pagewise_block_sets_sync[[i]]) {
-
-                # assign number to token rows that fall within the box
-                df_sub$block[df_sub$right > mean(c(j$x[1], j$x[4])) &
-                                 df_sub$left < mean(c(j$x[2], j$x[3])) &
-                                 df_sub$bottom > mean(c(j$y[1], j$y[2])) &
-                                 df_sub$top < mean(c(j$y[3], j$y[4]))] <- count
-                count <- count + 1
-            }
-            # add the block numbers from that page to the main df
-            df$block[df$page == i] <- df_sub$block
         }
 
     } else if (type == "async") {
@@ -186,102 +87,99 @@ build_token_df <- function(
             stop("DAI found no tokens. Was the document blank?")
         }
 
+        text <- output_async$text
+
         # get pagewise indices
         pages_tokens_async <- output_async$pages$tokens
         pagewise_token_indices_async <- purrr::map(pages_tokens_async, ~.x$layout$textAnchor$textSegments)
 
-        # extract all start indices as single vector,
-        # shifting them by one, because the token really starts at (index + 1)
-        start_ind_raw_async <- unlist(purrr::map(pagewise_token_indices_async, ~ purrr::map(.x, ~.x$startIndex)))
-        start_ind_shift_async <- as.integer(start_ind_raw_async) + 1
-        start_ind <- c(1, start_ind_shift_async)
+        # extract all start indices as single vector, shifting them by one, because the token really starts at (index + 1)
+        start_ind <- as.integer(unlist(purrr::map(pagewise_token_indices_async, ~ purrr::map(.x, ~.x$startIndex)))) + 1
 
         # extract all end indices as single vector
         end_ind <- unlist(purrr::map(pagewise_token_indices_async, ~ purrr::map(.x, ~.x$endIndex)))
 
-        # extract all tokens as single vector
-        text <- output_async$text
-
-        token <- character()
-
-        for (i in seq_along(start_ind)) {
-            tok <- substr(text,
-                          start_ind[i],
-                          end_ind[i]
-            )
-            token <- c(token, tok)
-        }
-
         # get confidence scores as single vector
         conf <- unlist(purrr::map(pages_tokens_async, ~.x$layout$confidence))
 
-        # extract all boundaries as single vectors
-        pagewise_token_coords_async <- purrr::map(pages_tokens_async, ~.x$layout$boundingPoly$normalizedVertices)
-        left <-  unlist(purrr::map(pagewise_token_coords_async, ~ purrr::map(.x, ~ min(.x$x))))
-        right <- unlist(purrr::map(pagewise_token_coords_async, ~ purrr::map(.x, ~ max(.x$x))))
-        top <- unlist(purrr::map(pagewise_token_coords_async, ~ purrr::map(.x, ~ min(.x$y))))
-        bottom <- unlist(purrr::map(pagewise_token_coords_async, ~ purrr::map(.x, ~ max(.x$y))))
+    }
+    # insert implicit start index
+    start_ind <- c(1, start_ind)
 
-        # get page numbers as single vector
-        page <- list()
-
-        for (i in seq_along(pages_tokens_async)) {
-            if (is.null(pages_tokens_async[[i]])) {
-                instances <- 0
-            } else {
-                instances <- nrow(pages_tokens_async[[i]])
-            }
-            pg <- rep(i, each = instances)
-            page <- append(page, pg)
-        }
-
-        page <- unlist(page)
-
-        # combine all vectors to dataframe
-        df <- data.frame(token,
-                         start_ind,
-                         end_ind,
-                         conf,
-                         left,
-                         right,
-                         top,
-                         bottom,
-                         page,
-                         block = NA
+    # get all tokens as single vector
+    token <- character()
+    for (i in seq_along(start_ind)) {
+        tok <- substr(text,
+                      start_ind[i],
+                      end_ind[i]
         )
+        token <- c(token, tok)
+    }
 
-        # get block numbers
+    # get page numbers as single vector
+    page <- list()
+    if (type == "sync") { pages_tokens <- pages_tokens_sync } else { pages_tokens <- pages_tokens_async }
 
-        # first extract vector of pagewise sets of blocks
-        pages_blocks_async <- output_async$pages$blocks
-
-        pagewise_block_sets_async <- purrr::map(pages_blocks_async, ~.x$layout$boundingPoly$normalizedVertices)
-
-        # then assign block numbers by location
-        for (i in seq_along(pagewise_block_sets_async)) {
-
-            # create temporary sub-dataframe for that page
-            df_sub <- df[df$page == i, ]
-
-            # set counter for block number
-            count <- 1
-
-            #loop over blocks
-            for (j in pagewise_block_sets_async[[i]]) {
-
-                # assign number to token rows that fall within the box
-                df_sub$block[df_sub$right > mean(c(j$x[1], j$x[4])) &
-                                 df_sub$left < mean(c(j$x[2], j$x[3])) &
-                                 df_sub$bottom > mean(c(j$y[1], j$y[2])) &
-                                 df_sub$top < mean(c(j$y[3], j$y[4]))] <- count
-                count <- count + 1
+    for (i in seq_along(pages_tokens)) {
+        if (is.null(pages_tokens[[i]])) {
+            instances <- 0
+        } else {
+            if (type == "sync") { instances <- length(pages_tokens[[i]]) }
+            else { instances <- nrow(pages_tokens[[i]])
             }
-
-            # add the block numbers from that page to the main df
-            df$block[df$page == i] <- df_sub$block
-
         }
+        pg <- rep(i, each = instances)
+        page <- append(page, pg)
+    }
+    page <- unlist(page)
 
+    # get boundaries as single vectors
+    if (type == "sync") {
+        pagewise_token_coords <- purrr::map(pages_tokens_sync, get_vertices)
+        pagewise_token_coords <- purrr::map(pagewise_token_coords, transpose_page)
+    } else { pagewise_token_coords <- purrr::map(pages_tokens_async, ~.x$layout$boundingPoly$normalizedVertices)}
+
+    left <-  unlist(purrr::map(pagewise_token_coords, ~ purrr::map(.x, ~ min(.x$x))))
+    right <- unlist(purrr::map(pagewise_token_coords, ~ purrr::map(.x, ~ max(.x$x))))
+    top <- unlist(purrr::map(pagewise_token_coords, ~ purrr::map(.x, ~ min(.x$y))))
+    bottom <- unlist(purrr::map(pagewise_token_coords, ~ purrr::map(.x, ~ max(.x$y))))
+
+    # combine all vectors to dataframe
+    df <- data.frame(token,
+                     start_ind,
+                     end_ind,
+                     conf,
+                     left,
+                     right,
+                     top,
+                     bottom,
+                     page,
+                     block = NA
+                    )
+
+    # get block numbers, assigning by token location
+    if (type == "sync") {
+        pages_blocks_sync <- purrr::map(pages_sync, ~.x$blocks)
+        pages_blocks_coords <- purrr::map(pages_blocks_sync, get_vertices)
+        pages_blocks <- purrr::map(pages_blocks_coords, transpose_page)
+    } else {
+        pages_blocks_async <- output_async$pages$blocks
+        pages_blocks <- purrr::map(pages_blocks_async, ~.x$layout$boundingPoly$normalizedVertices)
+    }
+
+    for (i in seq_along(pages_blocks)) {
+        df_sub <- df[df$page == i, ]
+        count <- 1
+        for (j in pages_blocks[[i]]) {
+
+            # assign number to token rows that fall within the box
+            df_sub$block[df_sub$right > mean(c(j$x[1], j$x[4])) &
+                             df_sub$left < mean(c(j$x[2], j$x[3])) &
+                             df_sub$bottom > mean(c(j$y[1], j$y[2])) &
+                             df_sub$top < mean(c(j$y[3], j$y[4]))] <- count
+            count <- count + 1
+        }
+        df$block[df$page == i] <- df_sub$block
     }
 
     return(df)
@@ -328,24 +226,6 @@ build_block_df <- function(
     }
 
     if (type == "sync") {
-
-        # Helper functions
-        get_vertices <- function(lst) {
-            boxes <- purrr::map(lst, ~.x$layout$boundingPoly$normalizedVertices)
-            return(boxes)
-        }
-
-        transpose_block <- function(lst) {
-            xs <- c(lst[[1]][["x"]], lst[[2]][["x"]], lst[[3]][["x"]], lst[[4]][["x"]])
-            ys <- c(lst[[1]][["y"]], lst[[2]][["y"]], lst[[3]][["y"]], lst[[4]][["y"]])
-            df <- data.frame(xs, ys)
-            return(df)
-        }
-
-        transpose_page <- function(x) {
-            blocks <- purrr::map(x, transpose_block)
-            return(blocks)
-        }
 
         output_sync <- httr::content(output)
 
@@ -997,4 +877,38 @@ redraw_blocks <- function(json,
 
   message(glue::glue("Generated {pages} annotated image(s)."))
 
+}
+
+#' Get vertices
+#'
+#' @description Helper function for extracting coordinates from DAI reponse objects
+#'
+#' @param lst a list
+
+get_vertices <- function(lst) {
+    boxes <- purrr::map(lst, ~.x$layout$boundingPoly$normalizedVertices)
+    return(boxes)
+}
+
+#' Transpose blocks
+#'
+#' @description Helper function for converting coordinates from DAI reponse objects
+#'
+#' @param lst a list
+transpose_block <- function(lst) {
+    xs <- c(lst[[1]][["x"]], lst[[2]][["x"]], lst[[3]][["x"]], lst[[4]][["x"]])
+    ys <- c(lst[[1]][["y"]], lst[[2]][["y"]], lst[[3]][["y"]], lst[[4]][["y"]])
+    df <- data.frame(xs, ys)
+    return(df)
+}
+
+#' Transpose page
+#'
+#' @description Helper function for converting coordinates from DAI reponse objects
+#'
+#' @param x a list element in a response object converted with httr::content().
+
+transpose_page <- function(x) {
+    blocks <- purrr::map(x, transpose_block)
+    return(blocks)
 }
