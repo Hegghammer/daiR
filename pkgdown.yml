@@ -4,11 +4,12 @@ pkgdown_sha: ~
 articles:
   faqs: faqs.html
   gcs_cli: gcs_cli.html
+  searchable_pdfs: searchable_pdfs.html
   basics: basics.html
   complex_file_and_folder_management: complex_file_and_folder_management.html
   extracting_tables: extracting_tables.html
   reconstructing_text: reconstructing_text.html
   setting_up_google_storage: setting_up_google_storage.html
   using_document_ai: using_document_ai.html
-last_built: 2023-08-29T22:48Z
+last_built: 2023-08-31T02:53Z
 

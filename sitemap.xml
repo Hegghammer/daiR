@@ -34,6 +34,9 @@
     <loc>/articles/reconstructing_text.html</loc>
   </url>
   <url>
+    <loc>/articles/searchable_pdfs.html</loc>
+  </url>
+  <url>
     <loc>/articles/setting_up_google_storage.html</loc>
   </url>
   <url>
@@ -131,6 +134,9 @@
   </url>
   <url>
     <loc>/reference/is_pdf.html</loc>
+  </url>
+  <url>
+    <loc>/reference/make_hocr.html</loc>
   </url>
   <url>
     <loc>/reference/merge_shards.html</loc>
