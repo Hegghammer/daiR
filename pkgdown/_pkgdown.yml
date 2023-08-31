@@ -51,7 +51,10 @@ reference:
       - '`get_processor_info`'
       - '`get_processor_versions`'
       - '`get_processors`'
-
+  - title: Create XML
+    desc: ~
+    contents: 
+      - '`make_hocr`'
   - title: Utilities
     desc: ~
     contents:

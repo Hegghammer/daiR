@@ -853,6 +853,7 @@ redraw_blocks <- function(json,
 #' @description Helper function for extracting coordinates from DAI reponse objects
 #'
 #' @param lst a list
+#' @keywords internal
 
 get_vertices <- function(lst) {
     boxes <- purrr::map(lst, ~.x$layout$boundingPoly$normalizedVertices)
@@ -864,6 +865,7 @@ get_vertices <- function(lst) {
 #' @description Helper function for converting coordinates from DAI reponse objects
 #'
 #' @param lst a list
+#' @keywords internal
 transpose_block <- function(lst) {
     xs <- c(lst[[1]][["x"]], lst[[2]][["x"]], lst[[3]][["x"]], lst[[4]][["x"]])
     ys <- c(lst[[1]][["y"]], lst[[2]][["y"]], lst[[3]][["y"]], lst[[4]][["y"]])
@@ -876,6 +878,7 @@ transpose_block <- function(lst) {
 #' @description Helper function for converting coordinates from DAI reponse objects
 #'
 #' @param x a list element in a response object converted with httr::content().
+#' @keywords internal
 
 transpose_page <- function(x) {
     blocks <- purrr::map(x, transpose_block)
