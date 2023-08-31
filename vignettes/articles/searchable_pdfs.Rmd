@@ -68,6 +68,21 @@ And you should now have a searchable PDF in the `temp` directory.
 include_graphics("sample_searchable.png")
 ```
 
+Note that you can also open the `.hocr` file in a web browser and read the extracted text there. Just right-click on it in the file explorer, click "open with", and select your browser. This works for `.hocr` files generated from documents in all the languages that DAI covers.
+
+### Note on encoding
+
+`make_hocr` handles non-Latin scripts and right-to-left languages just fine, but unfortunately `hocr-pdf` cannot as yet embed non-Latin script in pdfs. This means there is currently no way of creating searchable pdfs from documents with such scripts OCRed in Document AI -- at least to my knowledge. To generate searchable pdfs from such documents, you can use Tesseract, but then you get the output from a different OCR engine.
+
+Languages tested:
+- English: `make_hocr()` and `hocr-pdf` both work.
+- Arabic: `make_hocr()` works, but `hocr-pdf` does not. 
+- Chinese: `make_hocr()` works, but `hocr-pdf` does not. 
+- Japanese: `make_hocr()` works, but `hocr-pdf` does not.
+- Russian: `make_hocr()` works, but `hocr-pdf` does not.
+
+### Cleanup
+
 To remove the directory with the example files:
 ```{r eval = FALSE}
 unlink("temp", recursive = TRUE)

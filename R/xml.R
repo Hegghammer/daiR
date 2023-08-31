@@ -16,7 +16,7 @@
 #' generate searchable PDFs and many other things. This function generates
 #' a file compliant with the official HOCR specification 
 #' (https://github.com/kba/hocr-spec) complete with token-level confidence 
-#' scores.
+#' scores. It also works with non-latin scripts and right-to-left languages.
 #' 
 #' @export
 #'
@@ -70,7 +70,7 @@ make_hocr <- function(type,
 
     if (type == "sync") {
 
-        parsed_sync <- httr::content(resp)
+        parsed_sync <- httr::content(output)
 
         # Add metadata
         langs <- paste(parsed_sync[["document"]][["pages"]][[1]][["detectedLanguages"]][[1]][["languageCode"]])
