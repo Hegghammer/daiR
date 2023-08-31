@@ -1,6 +1,6 @@
 Package: daiR
 Title: Interface with Google Cloud Document AI API
-Version: 0.9.8
+Version: 0.9.9
 Authors@R: 
     person(given = "Thomas",
            family = "Hegghammer",
@@ -35,7 +35,8 @@ Imports:
     pdftools,
     purrr,
     readtext,
-    stringr
+    stringr,
+    xml2
 Suggests: 
     covr,
     dplyr,
