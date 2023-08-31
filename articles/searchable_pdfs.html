@@ -206,9 +206,36 @@ using the <code><a href="https://rdrr.io/r/base/system.html" class="external-lin
 <p>And you should now have a searchable PDF in the <code>temp</code>
 directory.</p>
 <p><img src="sample_searchable.png" width="50%"></p>
+<p>Note that you can also open the <code>.hocr</code> file in a web
+browser and read the extracted text there. Just right-click on it in the
+file explorer, click “open with”, and select your browser. This works
+for <code>.hocr</code> files generated from documents in all the
+languages that DAI covers.</p>
+<div class="section level3">
+<h3 id="note-on-encoding">Note on encoding<a class="anchor" aria-label="anchor" href="#note-on-encoding"></a>
+</h3>
+<p><code>make_hocr</code> handles non-Latin scripts and right-to-left
+languages just fine, but unfortunately <code>hocr-pdf</code> cannot as
+yet embed non-Latin script in pdfs. This means there is currently no way
+of creating searchable pdfs from documents with such scripts OCRed in
+Document AI – at least to my knowledge. To generate searchable pdfs from
+such documents, you can use Tesseract, but then you get the output from
+a different OCR engine.</p>
+<p>Languages tested: - English: <code><a href="../reference/make_hocr.html">make_hocr()</a></code> and
+<code>hocr-pdf</code> both work. - Arabic: <code><a href="../reference/make_hocr.html">make_hocr()</a></code>
+works, but <code>hocr-pdf</code> does not. - Chinese:
+<code><a href="../reference/make_hocr.html">make_hocr()</a></code> works, but <code>hocr-pdf</code> does not. -
+Japanese: <code><a href="../reference/make_hocr.html">make_hocr()</a></code> works, but <code>hocr-pdf</code> does
+not. - Russian: <code><a href="../reference/make_hocr.html">make_hocr()</a></code> works, but
+<code>hocr-pdf</code> does not.</p>
+</div>
+<div class="section level3">
+<h3 id="cleanup">Cleanup<a class="anchor" aria-label="anchor" href="#cleanup"></a>
+</h3>
 <p>To remove the directory with the example files:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="st">"temp"</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
