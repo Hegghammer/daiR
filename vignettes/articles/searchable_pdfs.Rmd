@@ -22,7 +22,7 @@ Note that hocr-pdf only handles individual `.jpg` images, and it works best if t
 
 In this illustration, we will use a single, "ready made" `.jpg`. Conversion from PDF to `.jpg` can be done quite easily with packages like `pdftools` or `magick`.
 
-```{r}
+```{r echo = FALSE, out.width = "50%"}
 include_graphics("sample.jpg")
 ```
 
@@ -43,7 +43,7 @@ resp <- dai_sync("temp/sample.jpg")
 Then we generate the HOCR file:
 
 ```{r eval = FALSE}
-make_hocr(type = "sync", output = resp, dir = "temp", output_filename = "sample.hocr")
+make_hocr(type = "sync", output = resp, dir = "temp", outfile_name = "sample.hocr")
 ```
 
 Note that the two files `sample.jpg` and `sample.hocr` carry the same name (`sample`) and reside in the same directory (`temp`). Both conditions are necessary for `hocr-pdf` to work.
@@ -64,11 +64,11 @@ system("hocr-pdf temp > temp/sample.pdf")
 
 And you should now have a searchable PDF in the `temp` directory.
 
-```{r}
+```{r echo = FALSE, out.width = "50%"}
 include_graphics("sample_searchable.png")
 ```
 
 To remove the directory with the example files:
 ```{r eval = FALSE}
-unlink("temp")
+unlink("temp", recursive = TRUE)
 ```
