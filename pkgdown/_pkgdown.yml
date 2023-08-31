@@ -81,6 +81,8 @@ navbar:
          href: articles/reconstructing_text.html
       -  text: Complex file and folder management
          href: articles/complex_file_and_folder_management.html
+      -  text: Creating searchable PDFs
+         href: articles/searchable_pdfs
     - text: FAQs
       href: articles/faqs.html
     - text: "Reference"
