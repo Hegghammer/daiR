@@ -30,7 +30,7 @@ text obtained from optical character recognition. It can be used to
 generate searchable PDFs and many other things. This function generates
 a file compliant with the official HOCR specification
 (https://github.com/kba/hocr-spec) complete with token-level confidence
-scores.
+scores. It also works with non-latin scripts and right-to-left languages.
 }
 \examples{
 \dontrun{
