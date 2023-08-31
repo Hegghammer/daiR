@@ -23,26 +23,26 @@ Note that hocr-pdf only handles individual `.jpg` images, and it works best if t
 In this illustration, we will use a single, "ready made" `.jpg`. Conversion from PDF to `.jpg` can be done quite easily with packages like `pdftools` or `magick`.
 
 ```{r}
-include_graphics("man/figures/sample.jpg")
+include_graphics("sample.jpg")
 ```
 
 Let us start by downloading the image into a temporary subdirectory of our working directory.
 
-```{r}
+```{r, eval = FALSE}
 dir.create("temp")
-download.file("https://dair.info/reference/figures/sample.jpg", "temp/sample.jpg")
+download.file("https://dair.info/articles/sample.jpg", "temp/sample.jpg")
 ```
 
 Then we process the image synchronously with Document AI.
 
-```{r setup}
+```{r, eval = FALSE}
 library(daiR)
 resp <- dai_sync("temp/sample.jpg")
 ```
 
 Then we generate the HOCR file:
 
-```{r}
+```{r eval = FALSE}
 make_hocr(type = "sync", output = resp, dir = "temp", output_filename = "sample.hocr")
 ```
 
@@ -58,17 +58,17 @@ hocr-pdf temp > temp/sample.pdf
 
 In R:
 
-```{r}
+```{r, eval = FALSE}
 system("hocr-pdf temp > temp/sample.pdf")
 ```
 
 And you should now have a searchable PDF in the `temp` directory.
 
 ```{r}
-include_graphics("man/figures/sample_searchable.png")
+include_graphics("sample_searchable.png")
 ```
 
 To remove the directory with the example files:
-```{r}
+```{r eval = FALSE}
 unlink("temp")
 ```
