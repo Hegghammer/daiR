@@ -178,20 +178,18 @@ procedure works well.</p>
 <code>.jpg</code>. Conversion from PDF to <code>.jpg</code> can be done
 quite easily with packages like <code>pdftools</code> or
 <code>magick</code>.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">include_graphics</span><span class="op">(</span><span class="st">"sample.jpg"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sample.jpg" width="1280"></p>
+<p><img src="sample.jpg" width="50%"></p>
 <p>Let us start by downloading the image into a temporary subdirectory
 of our working directory.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="st">"temp"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span><span class="st">"https://dair.info/articles/sample.jpg"</span>, <span class="st">"temp/sample.jpg"</span><span class="op">)</span></span></code></pre></div>
 <p>Then we process the image synchronously with Document AI.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Hegghammer/daiR" class="external-link">daiR</a></span><span class="op">)</span></span>
 <span><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_sync.html">dai_sync</a></span><span class="op">(</span><span class="st">"temp/sample.jpg"</span><span class="op">)</span></span></code></pre></div>
 <p>Then we generate the HOCR file:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/make_hocr.html">make_hocr</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"sync"</span>, output <span class="op">=</span> <span class="va">resp</span>, dir <span class="op">=</span> <span class="st">"temp"</span>, output_filename <span class="op">=</span> <span class="st">"sample.hocr"</span><span class="op">)</span></span></code></pre></div>
 <p>Note that the two files <code>sample.jpg</code> and
 <code>sample.hocr</code> carry the same name (<code>sample</code>) and
@@ -201,17 +199,15 @@ necessary for <code>hocr-pdf</code> to work.</p>
 <code>hocr-pdf</code> utility, either in the terminal or from within R
 using the <code><a href="https://rdrr.io/r/base/system.html" class="external-link">system()</a></code> command.</p>
 <p>In the terminal:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="ex">hocr-pdf</span> temp <span class="op">&gt;</span> temp/sample.pdf</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">hocr-pdf</span> temp <span class="op">&gt;</span> temp/sample.pdf</span></code></pre></div>
 <p>In R:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.html" class="external-link">system</a></span><span class="op">(</span><span class="st">"hocr-pdf temp &gt; temp/sample.pdf"</span><span class="op">)</span></span></code></pre></div>
 <p>And you should now have a searchable PDF in the <code>temp</code>
 directory.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">include_graphics</span><span class="op">(</span><span class="st">"sample_searchable.png"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sample_searchable.png" width="432"></p>
+<p><img src="sample_searchable.png" width="50%"></p>
 <p>To remove the directory with the example files:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="st">"temp"</span><span class="op">)</span></span></code></pre></div>
   </div>
 
