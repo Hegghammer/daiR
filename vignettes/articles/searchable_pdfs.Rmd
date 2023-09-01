@@ -75,6 +75,7 @@ Note that you can also open the `.hocr` file in a web browser and read the extra
 `make_hocr` handles non-Latin scripts and right-to-left languages just fine, but unfortunately `hocr-pdf` cannot as yet embed non-Latin script in pdfs. This means there is currently no way of creating searchable pdfs from documents with such scripts OCRed in Document AI -- at least to my knowledge. To generate searchable pdfs from such documents, you can use Tesseract, but then you get the output from a different OCR engine.
 
 Languages tested:
+
 - English: `make_hocr()` and `hocr-pdf` both work.
 - Arabic: `make_hocr()` works, but `hocr-pdf` does not. 
 - Chinese: `make_hocr()` works, but `hocr-pdf` does not. 
