@@ -1,6 +1,6 @@
-#' Make HOCR file
+#' Make hOCR file
 #'
-#' @description Creates a HOCR file from Document AI output.
+#' @description Creates a hOCR file from Document AI output.
 
 #' @param type one of "sync" or "async" depending on
 #' the function used to process the original document.
@@ -14,7 +14,7 @@
 #' @details hOCR is an open standard of data representation for formatted
 #' text obtained from optical character recognition. It can be used to
 #' generate searchable PDFs and many other things. This function generates
-#' a file compliant with the official HOCR specification 
+#' a file compliant with the official hOCR specification 
 #' (https://github.com/kba/hocr-spec) complete with token-level confidence 
 #' scores. It also works with non-latin scripts and right-to-left languages.
 #' 
@@ -66,7 +66,7 @@ make_hocr <- function(type,
     hocr_stem <- fs::path_package("extdata", "hocr_stem.xml", package = "daiR")
     doc <- xml2::read_xml(hocr_stem)
 
-    message("Generating hocr file. This may take a few seconds.")
+    message("Generating hOCR file. This may take a few seconds.")
 
     if (type == "sync") {
 
@@ -415,5 +415,5 @@ make_hocr <- function(type,
     }
     dest <- file.path(dir, outfile_name)
     xml2::write_xml(doc, dest)
-    message(glue::glue("HOCR file named '{outfile_name}' generated in {dir}."))
+    message(glue::glue("hOCR file named '{outfile_name}' generated in {dir}."))
 }

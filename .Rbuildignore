@@ -11,6 +11,7 @@
 ^pkgdown$
 ^index\.md$
 ^cran-comments\.md$
+^cran-comments_old\.md$
 ^CRAN-RELEASE$
 ^vignettes/articles$
 ^paper\.md$

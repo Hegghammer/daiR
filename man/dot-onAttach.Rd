@@ -11,6 +11,9 @@
 
 \item{pkgname}{name of package}
 }
+\value{
+no return value, called for side effects
+}
 \description{
 Run when daiR is attached
 }

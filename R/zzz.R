@@ -3,6 +3,7 @@
 #' @importFrom googleCloudStorageR gcs_upload
 #' @param libname name of library
 #' @param pkgname name of package
+#' @return no return value, called for side effects
 
 .onAttach <- function(libname, pkgname) {
 

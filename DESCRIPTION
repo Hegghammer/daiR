@@ -2,24 +2,21 @@ Package: daiR
 Title: Interface with Google Cloud Document AI API
 Version: 0.9.9
 Authors@R: 
-    person(given = "Thomas",
-           family = "Hegghammer",
-           role = c("aut", "cre"),
-           email = "hegghammer@gmail.com",
+    person("Thomas", "Hegghammer", , "hegghammer@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-6253-1518"))
-Description: R interface for the Google Cloud Services 'Document AI API' 
-    <https://cloud.google.com/document-ai/> with additional tools for output file 
-    parsing and text reconstruction. 'Document AI' is a powerful server-based 
-    OCR processor that extracts text and tables from images and pdf files with 
-    high accuracy. 'daiR' gives R users programmatic access to this processor and 
-    additional tools to handle and visualize the output. See the package website 
-    <https://dair.info/> for more information and examples.
-Depends: R (>= 3.1.0)
+Description: R interface for the Google Cloud Services 'Document AI API'
+    <https://cloud.google.com/document-ai/> with additional tools for
+    output file parsing and text reconstruction. 'Document AI' is a
+    powerful server-based OCR processor that extracts text and tables from
+    images and PDF files with high accuracy. 'daiR' gives R users
+    programmatic access to this processor and additional tools to handle
+    and visualize the output. See the package website <https://dair.info/>
+    for more information and examples.
 License: MIT + file LICENSE
-Encoding: UTF-8
-LazyData: true
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+URL: https://github.com/Hegghammer/daiR, https://dair.info
+BugReports: https://github.com/Hegghammer/daiR/issues
+Depends: 
+    R (>= 4.2.0)
 Imports: 
     base64enc,
     beepr,
@@ -28,6 +25,7 @@ Imports:
     gargle,
     glue,
     googleCloudStorageR,
+    graphics,
     grDevices,
     httr,
     jsonlite,
@@ -35,19 +33,19 @@ Imports:
     pdftools,
     purrr,
     readtext,
+    stats,
     stringr,
+    utils,
     xml2
 Suggests: 
-    covr,
-    dplyr,
     knitr,
     ngram,
-    qpdf,
     rmarkdown,
-    testthat (>= 3.0.0),
-    usethis,
-    utils
-VignetteBuilder: knitr
-URL: https://github.com/Hegghammer/daiR, https://dair.info
-BugReports: https://github.com/Hegghammer/daiR/issues
+    testthat (>= 3.1.10)
+VignetteBuilder: 
+    knitr
 Config/testthat/edition: 3
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3

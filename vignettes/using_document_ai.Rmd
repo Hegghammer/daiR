@@ -182,7 +182,7 @@ Then we would iterate it over our file vector:
 map(big_batch, process_slowly)
 ```
 
-This will hold up your console for a while, so it may be worth doing in the background as an RStudio [job](https://blog.rstudio.com/2019/03/14/rstudio-1-2-jobs/). 
+This will hold up your console for a while, so it may be worth doing in the background as an RStudio [job](https://posit.co/blog/rstudio-1-2-jobs/). 
 
 Finding the optimal wait time for the `Sys-sleep()` may require some trial and error. As a rule of thumb, it should approximate the time it takes for DAI to process *one* of your files. This, in turn, depends on the size of the files, for a 100-page pdf will take a lot longer to process than a single-page one. In my experience, a 10-second interval works fine for a batch of single-page pdfs. Multi-page pdfs require proportionally more time. If your files vary in size, calibrate the wait time to the largest file, or you may get 429s (HTTP code for "rate limit exceeded") half way through the iteration.
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/xml.R
 \name{make_hocr}
 \alias{make_hocr}
-\title{Make HOCR file}
+\title{Make hOCR file}
 \usage{
 make_hocr(type, output, outfile_name = "out.hocr", dir = getwd())
 }
@@ -22,13 +22,13 @@ either \code{.hocr}, \code{.html}, or \code{.xml}.}
 no return value, called for side effects.
 }
 \description{
-Creates a HOCR file from Document AI output.
+Creates a hOCR file from Document AI output.
 }
 \details{
 hOCR is an open standard of data representation for formatted
 text obtained from optical character recognition. It can be used to
 generate searchable PDFs and many other things. This function generates
-a file compliant with the official HOCR specification
+a file compliant with the official hOCR specification
 (https://github.com/kba/hocr-spec) complete with token-level confidence
 scores. It also works with non-latin scripts and right-to-left languages.
 }
