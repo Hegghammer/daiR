@@ -1,3 +1,8 @@
+This is a resubmission.
+
+* The file LICENSE has been changed to match the CRAN template.
+
+############################
 
 This is a new submission. 
 
