@@ -22,7 +22,7 @@ Note that hocr-pdf only handles individual `.jpg` images, and it works best if t
 
 In this illustration, we will use a single, "ready made" `.jpg`. Conversion from PDF to `.jpg` can be done quite easily with packages like `pdftools` or `magick`.
 
-```{r echo = FALSE, out.width = "50%"}
+```{r, echo = FALSE, out.width = "50%"}
 include_graphics("sample.jpg")
 ```
 
@@ -42,7 +42,7 @@ resp <- dai_sync("temp/sample.jpg")
 
 Then we generate the HOCR file:
 
-```{r eval = FALSE}
+```{r, eval = FALSE}
 make_hocr(type = "sync", output = resp, dir = "temp", outfile_name = "sample.hocr")
 ```
 
@@ -52,7 +52,7 @@ If `hocr-tools` is installed, we can now run the `hocr-pdf` utility, either in t
 
 In the terminal: 
 
-```{bash}
+```{bash, eval = FALSE}
 hocr-pdf temp > temp/sample.pdf
 ```
 
@@ -64,7 +64,7 @@ system("hocr-pdf temp > temp/sample.pdf")
 
 And you should now have a searchable PDF in the `temp` directory.
 
-```{r echo = FALSE, out.width = "50%"}
+```{r, echo = FALSE, out.width = "50%"}
 include_graphics("sample_searchable.png")
 ```
 
@@ -85,6 +85,6 @@ Languages tested:
 ### Cleanup
 
 To remove the directory with the example files:
-```{r eval = FALSE}
+```{r, eval = FALSE}
 unlink("temp", recursive = TRUE)
 ```
