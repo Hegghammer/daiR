@@ -13,6 +13,9 @@
     <loc>/LICENSE-text.html</loc>
   </url>
   <url>
+    <loc>/LICENSE.html</loc>
+  </url>
+  <url>
     <loc>/articles/basics.html</loc>
   </url>
   <url>
@@ -44,6 +47,9 @@
   </url>
   <url>
     <loc>/authors.html</loc>
+  </url>
+  <url>
+    <loc>/cran-comments_old.html</loc>
   </url>
   <url>
     <loc>/index.html</loc>
