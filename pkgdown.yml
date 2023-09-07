@@ -1,4 +1,4 @@
-pandoc: 3.1.2
+pandoc: 3.1.6.1
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
@@ -11,5 +11,5 @@ articles:
   reconstructing_text: reconstructing_text.html
   setting_up_google_storage: setting_up_google_storage.html
   using_document_ai: using_document_ai.html
-last_built: 2023-08-31T20:55Z
+last_built: 2023-09-07T13:44Z
 
