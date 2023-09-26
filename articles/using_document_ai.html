@@ -266,6 +266,34 @@ asynchronous processing, because <code><a href="../reference/dai_sync.html">dai_
 source file to a lightweight, grayscale image before passing it to DAI.
 The other is scaling; If you have a large pdf or many files, it is
 usually easier to process them asynchronously.</p>
+<p>However, it is possible to iterate <code><a href="../reference/dai_sync.html">dai_sync()</a></code> over a
+vector of filepaths, and this can make sense for medium sized batches. I
+recommend adding a small pause so as not to run into rate limit issues.
+A sample script might look like this:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## NOT RUN</span></span>
+<span><span class="co"># Create vector of document filepaths</span></span>
+<span><span class="va">myfiles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"file1.png"</span>, <span class="st">"file2.png"</span>, <span class="st">"file3.png"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Create custom function</span></span>
+<span><span class="va">ocr_and_save</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">filepath</span>, <span class="va">destdir</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_sync.html">dai_sync</a></span><span class="op">(</span><span class="va">filepath</span><span class="op">)</span></span>
+<span>  <span class="va">stem</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"\\.png"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="va">filepath</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/text_from_dai_response.html">text_from_dai_response</a></span><span class="op">(</span><span class="va">resp</span>,</span>
+<span>                         save_to_file <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                         dest_dir <span class="op">=</span> <span class="va">destdir</span>,</span>
+<span>                         filename <span class="op">=</span> <span class="va">stem</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># Create output directory if it does not exist</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="st">"output"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Loop over vector. Add print statement so you know where you are in case it stops</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">myfiles</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></span><span class="op">(</span><span class="st">"Processing file {i} of {length(myfiles)} .."</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu">ocr_and_save</span><span class="op">(</span><span class="va">myfiles</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="st">"output"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="asynchronous-processing">Asynchronous processing<a class="anchor" aria-label="anchor" href="#asynchronous-processing"></a>
@@ -273,22 +301,24 @@ usually easier to process them asynchronously.</p>
 <p>In asynchronous (offline) processing, you don’t send DAI the actual
 document, but rather its location on Google Storage so that DAI can
 process it “in its own time”. While slower than synchronous OCR, it
-allows for batch processing. The <code>daiR</code> function
-<code><a href="../reference/dai_async.html">dai_async()</a></code> is vectorized, so you can send multiple files
-with a single call. For this vignette, however, we’ll just use a single
-document; the same as in the previous example.</p>
+allows for batch processing and makes the process less vulnerable to
+interruptions (like laptop battery death or inadvertent closing of your
+console). The <code>daiR</code> function <code><a href="../reference/dai_async.html">dai_async()</a></code> is
+vectorized, so you can send multiple files with a single call. For this
+vignette, however, we’ll just use a single document; the same as in the
+previous example.</p>
 <p>The first step is to upload the source file(s) to a Google Storage
 bucket where DAI can find it.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://code.markedmondson.me/googleCloudStorageR/" class="external-link">googleCloudStorageR</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html" class="external-link">gcs_upload</a></span><span class="op">(</span><span class="st">"CIA.pdf"</span><span class="op">)</span></span></code></pre></div>
 <p>Let’s check that our file made it safely:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html" class="external-link">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>We’re now ready to send it off to Document AI with
 <code>daiR</code>’s workhorse function, <code><a href="../reference/dai_async.html">dai_async()</a></code>, as
 follows:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">response2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_async.html">dai_async</a></span><span class="op">(</span><span class="st">"CIA.pdf"</span><span class="op">)</span></span></code></pre></div>
 <p>A few words about this function. Its core parameter,
 <code>files</code>, tells DAI what to process. You can submit either
@@ -320,11 +350,11 @@ Just pass the response object from your <code><a href="../reference/dai_async.ht
 the parentheses, and it will tell you whether the job is finished. It
 won’t tell you how much time remains, but in my experience, processing
 takes about 5-20 seconds per page.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/dai_status.html">dai_status</a></span><span class="op">(</span><span class="va">response2</span><span class="op">)</span></span></code></pre></div>
 <p>When <code><a href="../reference/dai_status.html">dai_status()</a></code> says “SUCCEEDED”, the json output
 files are waiting for you in the bucket.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html" class="external-link">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Output file names look cryptic, but there’s a logic to them, namely:
 <code>"&lt;job_number&gt;/&lt;document_number&gt;/&lt;filename&gt;-&lt;shard_number&gt;.json"</code>
@@ -332,15 +362,15 @@ Our file will thus take the form
 <code>"&lt;job_number&gt;/0/CIA-0.json"</code>, with
 <code>&lt;job_number&gt;</code> changing from one processing call to the
 next. Let us store the name in a vector for simplicity:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## NOT RUN</span></span>
 <span><span class="va">our_file</span> <span class="op">&lt;-</span> <span class="st">"&lt;job_number&gt;/0/CIA-0.json"</span></span></code></pre></div>
 <p>Now let’s download it and save it under a simpler name:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html" class="external-link">gcs_get_object</a></span><span class="op">(</span><span class="va">our_file</span>, saveToDisk <span class="op">=</span> <span class="st">"CIA.json"</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>Finally we extract the text using
 <code>text_from_dai_file</code>:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/text_from_dai_file.html">text_from_dai_file</a></span><span class="op">(</span><span class="st">"CIA.json"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">text</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -359,23 +389,23 @@ solution is to make a function that sends files off individually with a
 small wait in between. Say we have a vector called
 <code>big_batch</code> containing thousands of filenames. First we would
 make a function like this:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">process_slowly</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">file</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="../reference/dai_async.html">dai_async</a></span><span class="op">(</span><span class="va">file</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">15</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <p>Then we would iterate it over our file vector:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## NOT RUN</span></span>
 <span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">big_batch</span>, <span class="va">process_slowly</span><span class="op">)</span></span></code></pre></div>
 <p>This will hold up your console for a while, so it may be worth doing
 in the background as an RStudio <a href="https://posit.co/blog/rstudio-1-2-jobs/" class="external-link">job</a>.</p>
-<p>Finding the optimal wait time for the <code>Sys-sleep()</code> may
+<p>Finding the optimal wait time for <code><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep()</a></code> may
 require some trial and error. As a rule of thumb, it should approximate
 the time it takes for DAI to process <em>one</em> of your files. This,
 in turn, depends on the size of the files, for a 100-page pdf will take
 a lot longer to process than a single-page one. In my experience, a
-10-second interval works fine for a batch of single-page pdfs.
+10-second interval is ample time for a batch of single-page PDFs.
 Multi-page pdfs require proportionally more time. If your files vary in
 size, calibrate the wait time to the largest file, or you may get 429s
 (HTTP code for “rate limit exceeded”) half way through the
@@ -384,6 +414,27 @@ iteration.</p>
 the overall processing time. DAI starts processing the first files it
 receives right away, so when your loop ends, DAI will be mostly done
 with the OCR as well.</p>
+</div>
+<div class="section level2">
+<h2 id="merging-shards">Merging shards<a class="anchor" aria-label="anchor" href="#merging-shards"></a>
+</h2>
+<p>If you have long PDFs, DAI will break the output into shards, meaning
+that, for a single PDF file, you may get back multiple JSON files named
+<code>*-1.json</code>, <code>*-2.json</code>m, etc.</p>
+<p>To weave the text back together again, you can use the
+<code><a href="../reference/merge_shards.html">merge_shards()</a></code> function. It works on text files, not JSON
+files, so you need to extract the text from the JSONs first. You also
+need to keep the name stem – turning <code>document-1.json</code> into
+<code>document-1.txt</code> and so forth – so that
+<code><a href="../reference/merge_shards.html">merge_shards()</a></code> knows which pieces belong together. This can
+be done by setting the <code>save_to_file</code> parameter to
+<code>TRUE</code> in <code><a href="../reference/text_from_dai_file.html">text_from_dai_file()</a></code>.</p>
+<p>Here is a sample workflow:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="do">## NOT RUN</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>shards <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"longdoc-1.json"</span>, <span class="st">"longdoc-2.json"</span>, <span class="st">"longdoc-3.json"</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="fu">c</span>(<span class="st">"txt_split"</span>, <span class="st">"txt_joined"</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="fu">map</span>(shards, <span class="sc">~</span> <span class="fu">text_from_dai_file</span>(.x, <span class="at">save_to_file =</span> <span class="cn">TRUE</span>, <span class="at">dest_dir =</span> <span class="st">"txt_split"</span>)</span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="fu">merge_shards</span>(<span class="at">source_dir =</span> <span class="st">"txt_split"</span>, <span class="at">dest_dir =</span> <span class="st">"txt_joined"</span>)</span></code></pre></div>
 </div>
 <div class="footnotes footnotes-end-of-document">
 <hr>
