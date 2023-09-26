@@ -64,7 +64,7 @@ That's it. If these things are in place, you can start processing right after lo
 
 **A note on access tokens**: Unlike some other GCS wrappers, daiR does not authenticate on startup and store access tokens in the environment. Instead it generates tokens on a per-call basis. If you prefer to generate one token per session, you can use `dai_token()` to store your token in an object and pass that object directly into the API call functions using the latter's `token =` parameter. This also means you can use auth functions from pretty much any other GCS wrapper to generate your token.
 
-```{r, eval=FALSE}
+```{r, eval = FALSE}
 library(daiR)
 ```
 
@@ -76,7 +76,7 @@ The quickest and easiest way to OCR with DAI is through synchronous processing. 
 
 We can try with a sample pdf from the CIA's Freedom of Information Act Electronic Reading Room: 
 
-```{r, eval=FALSE}
+```{r, eval = FALSE}
 setwd(tempdir())
 download.file("https://www.cia.gov/readingroom/docs/AGH%2C%20LASLO_0011.pdf", 
               destfile = "CIA.pdf", 
@@ -85,22 +85,51 @@ download.file("https://www.cia.gov/readingroom/docs/AGH%2C%20LASLO_0011.pdf",
 
 We send it to Document AI with `dai_sync()` and store the HTTP response in an object, for example `response`.
 
-```{r, eval=FALSE}
+```{r, eval = FALSE}
 response1 <- dai_sync("CIA.pdf")
 ```
 
 Then we extract the text with `text_from_dai_response()`:
 
-```{r, eval=FALSE}
+```{r, eval = FALSE}
 text <- text_from_dai_response(response1)
 cat(text)
 ```
 
 Synchronous processing is very convenient, but has two limitations. One is that OCR accuracy may be slightly reduced compared with asynchronous processing, because `dai_sync()` converts the source file to a lightweight, grayscale image before passing it to DAI. The other is scaling; If you have a large pdf or many files, it is usually easier to process them asynchronously.
 
+However, it is possible to iterate `dai_sync()` over a vector of filepaths, and this can make sense for medium sized batches. I recommend adding a small pause so as not to run into rate limit issues. A sample script might look like this:
+
+```{r, eval = FALSE}
+## NOT RUN
+# Create vector of document filepaths
+myfiles <- c("file1.png", "file2.png", "file3.png")
+
+# Create custom function
+ocr_and_save <- function(filepath, destdir) {
+  resp <- dai_sync(filepath)
+  stem <- gsub("\\.png", "", basename(filepath))
+  text_from_dai_response(resp,
+                         save_to_file = TRUE,
+                         dest_dir = destdir,
+                         filename = stem)
+  Sys.sleep(2)
+}
+
+# Create output directory if it does not exist
+dir.create("output")
+
+# Loop over vector. Add print statement so you know where you are in case it stops
+for (i in seq_along(myfiles)) {
+  print(glue::glue("Processing file {i} of {length(myfiles)} .."))
+  ocr_and_save(myfiles[i], "output")
+}
+```
+
+
 ## Asynchronous processing
 
-In asynchronous (offline) processing, you don't send DAI the actual document, but rather its location on Google Storage so that DAI can process it "in its own time". While slower than synchronous OCR, it allows for batch processing. The `daiR` function `dai_async()` is vectorized, so you can send multiple files with a single call. For this vignette, however, we'll just use a single document; the same as in the previous example.
+In asynchronous (offline) processing, you don't send DAI the actual document, but rather its location on Google Storage so that DAI can process it "in its own time". While slower than synchronous OCR, it allows for batch processing and makes the process less vulnerable to interruptions (like laptop battery death or inadvertent closing of your console). The `daiR` function `dai_async()` is vectorized, so you can send multiple files with a single call. For this vignette, however, we'll just use a single document; the same as in the previous example.
 
 The first step is to upload the source file(s) to a Google Storage bucket where DAI can find it.^[Note that if you do not have a `GCS_DEFAULT_BUCKET` variable in your .Renviron file, you will need to either set a default bucket for the current session with `gcs_global_bucket("<a bucket name>")` or supply a `bucket = "<a bucket name>"` parameter explicitly inside `gcs_upload()`.]
 
@@ -184,7 +213,7 @@ map(big_batch, process_slowly)
 
 This will hold up your console for a while, so it may be worth doing in the background as an RStudio [job](https://posit.co/blog/rstudio-1-2-jobs/). 
 
-Finding the optimal wait time for the `Sys-sleep()` may require some trial and error. As a rule of thumb, it should approximate the time it takes for DAI to process *one* of your files. This, in turn, depends on the size of the files, for a 100-page pdf will take a lot longer to process than a single-page one. In my experience, a 10-second interval works fine for a batch of single-page pdfs. Multi-page pdfs require proportionally more time. If your files vary in size, calibrate the wait time to the largest file, or you may get 429s (HTTP code for "rate limit exceeded") half way through the iteration.
+Finding the optimal wait time for `Sys.sleep()` may require some trial and error. As a rule of thumb, it should approximate the time it takes for DAI to process *one* of your files. This, in turn, depends on the size of the files, for a 100-page pdf will take a lot longer to process than a single-page one. In my experience, a 10-second interval is ample time for a batch of single-page PDFs. Multi-page pdfs require proportionally more time. If your files vary in size, calibrate the wait time to the largest file, or you may get 429s (HTTP code for "rate limit exceeded") half way through the iteration.
 
 Although this procedure is relatively slow, it need not add much to the overall processing time. DAI starts processing the first files it receives right away, so when your loop ends, DAI will be mostly done with the OCR as well. 
 
@@ -192,4 +221,20 @@ Although this procedure is relatively slow, it need not add much to the overall 
 #cleanup
 contents <- gcs_list_objects()
 map(contents$name, gcs_delete_object)
+```
+
+# Merging shards
+
+If you have long PDFs, DAI will break the output into shards, meaning that, for a single PDF file, you may get back multiple JSON files named `*-1.json`, `*-2.json`m, etc. 
+
+To weave the text back together again, you can use the `merge_shards()` function. It works on text files, not JSON files, so you need to extract the text from the JSONs first. You also need to keep the name stem -- turning `document-1.json` into `document-1.txt` and so forth -- so that `merge_shards()` knows which pieces belong together. This can be done by setting the `save_to_file` parameter to `TRUE` in `text_from_dai_file()`.
+
+Here is a sample workflow: 
+
+```{r}
+## NOT RUN
+shards <- c("longdoc-1.json", "longdoc-2.json", "longdoc-3.json")
+dir.create(c("txt_split", "txt_joined")
+map(shards, ~ text_from_dai_file(.x, save_to_file = TRUE, dest_dir = "txt_split")
+merge_shards(source_dir = "txt_split", dest_dir = "txt_joined")
 ```
