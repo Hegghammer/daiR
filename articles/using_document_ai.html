@@ -420,7 +420,7 @@ with the OCR as well.</p>
 </h2>
 <p>If you have long PDFs, DAI will break the output into shards, meaning
 that, for a single PDF file, you may get back multiple JSON files named
-<code>*-1.json</code>, <code>*-2.json</code>m, etc.</p>
+<code>*-1.json</code>, <code>*-2.json</code>, etc.</p>
 <p>To weave the text back together again, you can use the
 <code><a href="../reference/merge_shards.html">merge_shards()</a></code> function. It works on text files, not JSON
 files, so you need to extract the text from the JSONs first. You also
@@ -432,9 +432,10 @@ be done by setting the <code>save_to_file</code> parameter to
 <p>Here is a sample workflow:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="do">## NOT RUN</span></span>
 <span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>shards <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"longdoc-1.json"</span>, <span class="st">"longdoc-2.json"</span>, <span class="st">"longdoc-3.json"</span>)</span>
-<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="fu">c</span>(<span class="st">"txt_split"</span>, <span class="st">"txt_joined"</span>)</span>
-<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="fu">map</span>(shards, <span class="sc">~</span> <span class="fu">text_from_dai_file</span>(.x, <span class="at">save_to_file =</span> <span class="cn">TRUE</span>, <span class="at">dest_dir =</span> <span class="st">"txt_split"</span>)</span>
-<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="fu">merge_shards</span>(<span class="at">source_dir =</span> <span class="st">"txt_split"</span>, <span class="at">dest_dir =</span> <span class="st">"txt_joined"</span>)</span></code></pre></div>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">"txt_split"</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">"txt_joined"</span>)</span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="fu">map</span>(shards, <span class="sc">~</span> <span class="fu">text_from_dai_file</span>(.x, <span class="at">save_to_file =</span> <span class="cn">TRUE</span>, <span class="at">dest_dir =</span> <span class="st">"txt_split"</span>)</span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="fu">merge_shards</span>(<span class="at">source_dir =</span> <span class="st">"txt_split"</span>, <span class="at">dest_dir =</span> <span class="st">"txt_joined"</span>)</span></code></pre></div>
 </div>
 <div class="footnotes footnotes-end-of-document">
 <hr>
