@@ -217,8 +217,8 @@ Finding the optimal wait time for `Sys.sleep()` may require some trial and error
 
 Although this procedure is relatively slow, it need not add much to the overall processing time. DAI starts processing the first files it receives right away, so when your loop ends, DAI will be mostly done with the OCR as well. 
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
-#cleanup
+```{r, echo = FALSE, message = FALSE, warning = FALSE, eval = FALSE}
+# Cleanup
 contents <- gcs_list_objects()
 map(contents$name, gcs_delete_object)
 ```
@@ -231,7 +231,7 @@ To weave the text back together again, you can use the `merge_shards()` function
 
 Here is a sample workflow: 
 
-```{r}
+```{r, eval = FALSE}
 ## NOT RUN
 shards <- c("longdoc-1.json", "longdoc-2.json", "longdoc-3.json")
 dir.create(c("txt_split", "txt_joined")
