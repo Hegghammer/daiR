@@ -64,3 +64,24 @@ Or install the latest development version from Github:
 devtools::install_github("hegghammer/daiR")
 ```
 
+## Citation
+
+To cite `daiR` in publications, please use
+
+>Hegghammer, T., (2021). daiR: an R package for OCR with Google Document AI. *Journal of Open Source Software*, 6(68), 3538, https://doi.org/10.21105/joss.03538
+
+Bibtex:
+```
+@article{Hegghammer2021,
+  doi = {10.21105/joss.03538},
+  url = {https://doi.org/10.21105/joss.03538},
+  year = {2021},
+  publisher = {The Open Journal},
+  volume = {6},
+  number = {68},
+  pages = {3538},
+  author = {Thomas Hegghammer},
+  title = {daiR: an R package for OCR with Google Document AI},
+  journal = {Journal of Open Source Software}
+}
+```
