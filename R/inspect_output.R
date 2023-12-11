@@ -62,6 +62,8 @@ text_from_dai_response <- function(response,
     stop("Filename too long.")
   }
 
+	dest_dir <- normalizePath(dest_dir, winslash = "/")
+
   # get text
   if ("text" %in% names(parsed$document)) {
     text <- parsed$document$text
@@ -131,6 +133,8 @@ text_from_dai_file <- function(file,
     stop("Invalid dest_dir argument. Must be a valid folder path.")
   }
 
+	dest_dir <- normalizePath(dest_dir, winslash = "/")
+
   # get text
   text <- output$text
 
@@ -186,6 +190,9 @@ merge_shards <- function(source_dir,
   if (!(is.character(dest_dir))) {
     stop("Invalid dest_dir argument. Must be a valid folder path.")
     }
+
+	source_dir <- normalizePath(source_dir, winslash = "/")												 
+  dest_dir <- normalizePath(dest_dir, winslash = "/")
 
   files <- list.files(source_dir, pattern = "*txt$", full.names = TRUE)
 
@@ -320,6 +327,8 @@ draw_blocks <- function(type,
 	if (!(is.numeric(fontsize) && length(fontsize) == 1)) {
 		stop("Invalid fontsize parameter. Must be a single number.")
 	}
+
+  dir <- normalizePath(dir, winslash = "/")
 
 	# Helper functions
 	get_vertices <- function(lst) {
@@ -605,6 +614,8 @@ draw_paragraphs <- function(type,
 		stop("Invalid fontsize parameter. Must be a single number.")
 	}
 
+  dir <- normalizePath(dir, winslash = "/")
+
 	# Helper functions
 	get_vertices <- function(lst) {
 		boxes <- purrr::map(lst, ~.x$layout$boundingPoly$normalizedVertices)
@@ -888,6 +899,8 @@ draw_lines <- function(type,
 		stop("Invalid fontsize parameter. Must be a single number.")
 	}
 
+	dir <- normalizePath(dir, winslash = "/")
+
 	# Helper functions
 	get_vertices <- function(lst) {
 		boxes <- purrr::map(lst, ~.x$layout$boundingPoly$normalizedVertices)
@@ -1170,6 +1183,8 @@ draw_tokens <- function(type,
 	if (!(is.numeric(fontsize) && length(fontsize) == 1)) {
 		stop("Invalid fontsize parameter. Must be a single number.")
 	}
+
+	dir <- normalizePath(dir, winslash = "/")
 
 	# Helper functions
 	get_vertices <- function(lst) {

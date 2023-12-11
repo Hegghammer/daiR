@@ -755,6 +755,8 @@ redraw_blocks <- function(json,
     stop("Token dataframe format not recognized.")
   }
 
+  dir <- normalizePath(dir, winslash = "/")
+
   # parse the json
   parsed <- jsonlite::fromJSON(json)
 
