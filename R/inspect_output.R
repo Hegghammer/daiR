@@ -74,11 +74,11 @@ text_from_dai_response <- function(response,
   # save to file if requested
   if (isTRUE(save_to_file)) {
     write(text, file.path(dest_dir, paste0(filename, ".txt")))
-    } else {
-      return(text)
-      }
-
+  } else {
+    return(text)
   }
+
+}
 
 #' Get text from output file
 #'
@@ -105,21 +105,21 @@ text_from_dai_file <- function(file,
   # checks
   if (!(is.character(file) && length(file) == 1)) {
     stop("Invalid file input.")
-    }
+  }
 
   if (!(is_json(file))) {
     stop("Input file not .json. Is the file in your working directory?")
-    }
+  }
 
   output <- jsonlite::fromJSON(file)
 
   if (!("pages" %in% names(output))) {
     stop("JSON not in right format. Is it from DAI?")
-    }
+  }
 
   if (!("text" %in% names(output))) {
     stop("DAI found no text. Was the document blank?")
-    }
+  }
 
   if (!(save_to_file %in% c(TRUE, FALSE))) {
     stop("Invalid save_to_file argument. Must be either TRUE or FALSE.")
@@ -141,10 +141,10 @@ text_from_dai_file <- function(file,
   if (isTRUE(save_to_file)) {
     stem <- gsub("\\.json", "", basename(file))
     write(text, file.path(dest_dir, paste0(stem, ".txt")))
-    } else {
-      return(text)
-    }
+  } else {
+    return(text)
   }
+}
 
 #' Merge shards
 #'
@@ -177,32 +177,32 @@ merge_shards <- function(source_dir,
 
   if (length(source_dir) > 1) {
     stop("Invalid source_dir argument. Must be a valid folder path.")
-    }
+  }
 
   if (!(is.character(source_dir))) {
     stop("Invalid source_dir argument. Must be a valid folder path.")
-    }
+  }
 
   if (!(length(dest_dir) == 1)) {
     stop("Invalid dest_dir argument. Must be a valid folder path.")
-    }
+  }
 
   if (!(is.character(dest_dir))) {
     stop("Invalid dest_dir argument. Must be a valid folder path.")
-    }
+  }
 
-	source_dir <- normalizePath(source_dir, winslash = "/")												 
-  dest_dir <- normalizePath(dest_dir, winslash = "/")
+	source_dir <- normalizePath(source_dir, winslash = "/")
+	dest_dir <- normalizePath(dest_dir, winslash = "/")
 
   files <- list.files(source_dir, pattern = "*txt$", full.names = TRUE)
 
   if (length(files) == 0) {
     stop("No .txt files found.")
-    }
+  }
 
-  if (isFALSE(grepl("-\\d{1,3}\\.txt", files)) && isFALSE(grepl("-page-\\d{1,4}-to-\\d{1,4}", files))) {
-    stop("The .txt files are incorrectly formatted. Are they from Document AI output shards?")
-    }
+	if (isFALSE(grepl("-\\d{1,3}\\.txt", files)) && isFALSE(grepl("-page-\\d{1,4}-to-\\d{1,4}", files))) {
+		stop("The .txt files are incorrectly formatted. Are they from Document AI output shards?")
+  }
 
   all <- grep("-\\d{1,3}\\.txt", files, value = TRUE)
 
@@ -210,7 +210,7 @@ merge_shards <- function(source_dir,
 
   v1 <- all[!all %in% v1beta2]
 
-  v1beta2_stems <- unique(gsub("\\-page-\\d{1,4}-to-\\d{1,4}\\.txt", "", v1beta2))
+	v1beta2_stems <- unique(gsub("\\-page-\\d{1,4}-to-\\d{1,4}\\.txt", "", v1beta2))
 
   v1_stems <- unique(gsub("-\\d{1,2}\\.txt", "", v1))
 
@@ -219,9 +219,9 @@ merge_shards <- function(source_dir,
       cluster <- grep(v1beta2_stems[i], v1beta2, value = TRUE)
       cluster_df <- readtext::readtext(cluster)
       text <- paste(cluster_df$text, collapse = "\n")
-      write(text, file.path(dest_dir, paste0(basename(v1beta2_stems[i]), ".txt")))
-      }
+			write(text, file.path(dest_dir, paste0(basename(v1beta2_stems[i]), ".txt")))
     }
+  }
 
   if (length(v1) > 0) {
     for (i in seq_along(v1_stems)) {
@@ -229,8 +229,8 @@ merge_shards <- function(source_dir,
       cluster_df <- readtext::readtext(cluster)
       text <- paste(cluster_df$text, collapse = "\n")
       write(text, file.path(dest_dir, paste0(basename(v1_stems[i]), ".txt")))
-      }
     }
+  }
 
   message("Shards merged.")
 
@@ -281,14 +281,14 @@ merge_shards <- function(source_dir,
 #' }
 
 draw_blocks <- function(type,
-						output,
-						doc = NA,
-						prefix = NULL,
-						dir = getwd(),
-						linecol = "red",
-						linewd = 3,
-						fontcol = "blue",
-						fontsize = 4
+												output,
+												doc = NA,
+												prefix = NULL,
+												dir = getwd(),
+												linecol = "red",
+												linewd = 3,
+												fontcol = "blue",
+												fontsize = 4
 ) {
 
 	# checks
@@ -330,24 +330,6 @@ draw_blocks <- function(type,
 
   dir <- normalizePath(dir, winslash = "/")
 
-	# Helper functions
-	get_vertices <- function(lst) {
-		boxes <- purrr::map(lst, ~.x$layout$boundingPoly$normalizedVertices)
-		return(boxes)
-	}
-
-	transpose_block <- function(lst) {
-        xs <- c(lst[[1]][["x"]], lst[[2]][["x"]], lst[[3]][["x"]], lst[[4]][["x"]])
-        ys <- c(lst[[1]][["y"]], lst[[2]][["y"]], lst[[3]][["y"]], lst[[4]][["y"]])
-        df <- data.frame(xs, ys)
-        return(df)
-	}
-
-	transpose_page <- function(x) {
-		blocks <- purrr::map(x, transpose_block)
-		return(blocks)
-	}
-
 	if (type == "sync") {
 
 		if (!(inherits(output, "response"))) {
@@ -362,7 +344,7 @@ draw_blocks <- function(type,
 		pagewise_block_sets <- purrr::map(pagewise_block_sets, transpose_page)
 
 		# decode base64 and save to temp images
-		page_imgs_base64 <- unlist(purrr::map(pages, ~.x$image$content))
+		page_imgs_base64 <- purrr::map_chr(pages, ~.x$image$content)
 		imgs <- character()
 		for (i in seq_along(page_imgs_base64)) {
 			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
@@ -616,24 +598,6 @@ draw_paragraphs <- function(type,
 
   dir <- normalizePath(dir, winslash = "/")
 
-	# Helper functions
-	get_vertices <- function(lst) {
-		boxes <- purrr::map(lst, ~.x$layout$boundingPoly$normalizedVertices)
-		return(boxes)
-	}
-
-	transpose_block <- function(lst) {
-        xs <- c(lst[[1]][["x"]], lst[[2]][["x"]], lst[[3]][["x"]], lst[[4]][["x"]])
-        ys <- c(lst[[1]][["y"]], lst[[2]][["y"]], lst[[3]][["y"]], lst[[4]][["y"]])
-        df <- data.frame(xs, ys)
-        return(df)
-	}
-
-	transpose_page <- function(x) {
-		paragraphs <- purrr::map(x, transpose_block)
-		return(paragraphs)
-	}
-
 	if (type == "sync") {
 
 		if (!(inherits(output, "response"))) {
@@ -648,7 +612,7 @@ draw_paragraphs <- function(type,
 		pagewise_block_sets <- purrr::map(pagewise_block_sets, transpose_page)
 
 		# decode base64 and save to temp images
-		page_imgs_base64 <- unlist(purrr::map(pages, ~.x$image$content))
+		page_imgs_base64 <- purrr::map_chr(pages, ~.x$image$content)
 		imgs <- character()
 		for (i in seq_along(page_imgs_base64)) {
 			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
@@ -901,24 +865,6 @@ draw_lines <- function(type,
 
 	dir <- normalizePath(dir, winslash = "/")
 
-	# Helper functions
-	get_vertices <- function(lst) {
-		boxes <- purrr::map(lst, ~.x$layout$boundingPoly$normalizedVertices)
-		return(boxes)
-	}
-
-	transpose_block <- function(lst) {
-        xs <- c(lst[[1]][["x"]], lst[[2]][["x"]], lst[[3]][["x"]], lst[[4]][["x"]])
-        ys <- c(lst[[1]][["y"]], lst[[2]][["y"]], lst[[3]][["y"]], lst[[4]][["y"]])
-        df <- data.frame(xs, ys)
-        return(df)
-	}
-
-	transpose_page <- function(x) {
-		lines <- purrr::map(x, transpose_block)
-		return(lines)
-	}
-
 	if (type == "sync") {
 
 		if (!(inherits(output, "response"))) {
@@ -933,7 +879,7 @@ draw_lines <- function(type,
 		pagewise_block_sets <- purrr::map(pagewise_block_sets, transpose_page)
 
 		# decode base64 and save to temp images
-		page_imgs_base64 <- unlist(purrr::map(pages, ~.x$image$content))
+		page_imgs_base64 <- purrr::map_chr(pages, ~.x$image$content)
 		imgs <- character()
 		for (i in seq_along(page_imgs_base64)) {
 			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
@@ -1186,24 +1132,6 @@ draw_tokens <- function(type,
 
 	dir <- normalizePath(dir, winslash = "/")
 
-	# Helper functions
-	get_vertices <- function(lst) {
-		boxes <- purrr::map(lst, ~.x$layout$boundingPoly$normalizedVertices)
-		return(boxes)
-	}
-
-	transpose_block <- function(lst) {
-        xs <- c(lst[[1]][["x"]], lst[[2]][["x"]], lst[[3]][["x"]], lst[[4]][["x"]])
-        ys <- c(lst[[1]][["y"]], lst[[2]][["y"]], lst[[3]][["y"]], lst[[4]][["y"]])
-        df <- data.frame(xs, ys)
-        return(df)
-	}
-
-	transpose_page <- function(x) {
-		tokens <- purrr::map(x, transpose_block)
-		return(tokens)
-	}
-
 	if (type == "sync") {
 
 		if (!(inherits(output, "response"))) {
@@ -1218,7 +1146,7 @@ draw_tokens <- function(type,
 		pagewise_block_sets <- purrr::map(pagewise_block_sets, transpose_page)
 
 		# decode base64 and save to temp images
-		page_imgs_base64 <- unlist(purrr::map(pages, ~.x$image$content))
+		page_imgs_base64 <- purrr::map_chr(pages, ~.x$image$content)
 		imgs <- character()
 		for (i in seq_along(page_imgs_base64)) {
 			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))

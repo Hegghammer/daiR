@@ -201,7 +201,7 @@ make_hocr <- function(type,
                         all_token_segments <- purrr::map(tokens, ~.x[["layout"]][["textAnchor"]][["textSegments"]][[1]])
                         if (is.null(all_token_segments[[1]][["startIndex"]])) all_token_segments[[1]][["startIndex"]] <- 0
 
-                        all_token_confs <- unlist(purrr::map(tokens, ~.x[["layout"]][["confidence"]]))
+                        all_token_confs <- purrr::map_chr(tokens, ~.x[["layout"]][["confidence"]])
                         all_token_confs <- round(all_token_confs * 100, 2)
                         line_start_ind <- as.integer(line_segments[[l]][["startIndex"]])
                         line_end_ind <- as.integer(line_segments[[l]][["endIndex"]])

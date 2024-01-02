@@ -100,7 +100,7 @@ build_token_df <- function(
         end_ind <- unlist(purrr::map(pagewise_token_indices_async, ~ purrr::map(.x, ~.x$endIndex)))
 
         # get confidence scores as single vector
-        conf <- unlist(purrr::map(pages_tokens_async, ~.x$layout$confidence))
+        conf <- purrr::map_chr(pages_tokens_async, ~.x$layout$confidence)
 
     }
     # insert implicit start index
@@ -260,7 +260,7 @@ build_token_df <- function(
             pagewise_block_sets_async <- purrr::map(pages_blocks_async, ~.x$layout$boundingPoly$normalizedVertices)
 
             # get confidence scores as single vector
-            conf <- unlist(purrr::map(pages_blocks_async, ~.x$layout$confidence))
+            conf <- purrr::map_chr(pages_blocks_async, ~.x$layout$confidence)
 
         }
 
@@ -852,7 +852,7 @@ redraw_blocks <- function(json,
 
 #' Get vertices
 #'
-#' @description Helper function for extracting coordinates from DAI reponse objects
+#' @description Helper function for extracting coordinates from DAI response objects
 #'
 #' @param lst a list
 #'
@@ -865,7 +865,7 @@ get_vertices <- function(lst) {
 
 #' Transpose blocks
 #'
-#' @description Helper function for converting coordinates from DAI reponse objects
+#' @description Helper function for converting coordinates from DAI response objects
 #'
 #' @param lst a list
 #'
@@ -879,7 +879,7 @@ transpose_block <- function(lst) {
 
 #' Transpose page
 #'
-#' @description Helper function for converting coordinates from DAI reponse objects
+#' @description Helper function for converting coordinates from DAI response objects
 #'
 #' @param x a list element in a response object converted with httr::content().
 #' 

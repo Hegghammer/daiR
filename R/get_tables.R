@@ -68,9 +68,8 @@ tables_from_dai_response <- function(object) {
   # Function to compile cell entries into a row vector
   resp_get_row_vector <- function(elem) {
     cells <- elem$cells
-    vector <- unlist(purrr::map(cells, resp_get_cell_text))
+    vector <- purrr::map_chr(cells, resp_get_cell_text)
     return(vector)
-
     }
 
   # Function to build a table from row vectors
@@ -85,7 +84,6 @@ tables_from_dai_response <- function(object) {
     }
     table <- stats::setNames(table, headervectors[[1]])
     return(table)
-
     }
 
   # Get reference text for indices
@@ -190,7 +188,7 @@ tables_from_dai_file <- function(file) {
   # Function to compile cell entries into a row vector
   file_get_row_vector <- function(elem) {
     cells <- elem$layout$textAnchor$textSegments
-    vector <- unlist(purrr::map(cells, file_get_cell_text))
+    vector <- purrr::map_chr(cells, file_get_cell_text)
     return(vector)
   }
 
