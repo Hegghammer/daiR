@@ -100,7 +100,7 @@ build_token_df <- function(
         end_ind <- unlist(purrr::map(pagewise_token_indices_async, ~ purrr::map(.x, ~.x$endIndex)))
 
         # get confidence scores as single vector
-        conf <- purrr::map_chr(pages_tokens_async, ~.x$layout$confidence)
+        conf <- unlist(purrr::map(pages_tokens_async, ~.x$layout$confidence))
 
     }
     # insert implicit start index
@@ -260,7 +260,7 @@ build_token_df <- function(
             pagewise_block_sets_async <- purrr::map(pages_blocks_async, ~.x$layout$boundingPoly$normalizedVertices)
 
             # get confidence scores as single vector
-            conf <- purrr::map_chr(pages_blocks_async, ~.x$layout$confidence)
+            conf <- unlist(purrr::map(pages_blocks_async, ~.x$layout$confidence))
 
         }
 
