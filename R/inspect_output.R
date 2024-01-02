@@ -345,14 +345,7 @@ draw_blocks <- function(type,
 
 		# decode base64 and save to temp images
 		page_imgs_base64 <- purrr::map_chr(pages, ~.x$image$content)
-		imgs <- character()
-		for (i in seq_along(page_imgs_base64)) {
-			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
-			outconn <- file(path, "wb")
-			base64enc::base64decode(page_imgs_base64[i], outconn)
-			close(outconn)
-			imgs <- c(imgs, path)
-		}
+		imgs <- purrr::map2_chr(page_imgs_base64, seq_along(page_imgs_base64), decode_and_save)
 
 	} else if (type == "async") {
 
@@ -367,14 +360,7 @@ draw_blocks <- function(type,
 
 		# decode base64 and save to temp images
 		page_imgs_base64 <- parsed$pages$image$content
-		imgs <- character()
-		for (i in seq_along(page_imgs_base64)) {
-			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
-			outconn <- file(path, "wb")
-			base64enc::base64decode(page_imgs_base64[i], outconn)
-			close(outconn)
-			imgs <- c(imgs, path)
-		}
+		imgs <- purrr::map2_chr(page_imgs_base64, seq_along(page_imgs_base64), decode_and_save)
 
 	} else if (type == "sync-tab") {
 
@@ -425,81 +411,12 @@ draw_blocks <- function(type,
 		} else {
 			imgs <- doc
 		}
-
 	}
 
-	# loop over the pagewise sets
-	for (i in seq_along(pagewise_block_sets)) {
+  # Plot bounding boxes
+	purrr::map2(pagewise_block_sets, seq_along(pagewise_block_sets), ~ process_image(.x, .y, imgs, type, output, prefix, dir, filename, dest, linecol, linewd, fontcol, fontsize, boxtype = "blocks"))
 
-		img <- magick::image_read(imgs[i])
-
-		# get image dimensions
-		info <- magick::image_info(img)
-
-		# prepare for plotting on image
-		canvas <- magick::image_draw(img)
-
-		# set counter for box number
-		counter <- 1
-
-		#loop over boxes on the page
-		for (box in pagewise_block_sets[[i]]) {
-
-			# handle NAs in boxes on top or left edge
-			if (is.na(box$y[1])) box$y[1] <- 0
-			if (is.na(box$y[2])) box$y[2] <- 0
-			if (is.na(box$x[1])) box$x[1] <- 0
-			if (is.na(box$x[4])) box$x[4] <- 0
-
-			# transform from relative to absolute coordinates
-			box$x1 <- box$x * info$width
-
-			box$y1 <- box$y * info$height
-
-			# draw polygon
-			graphics::polygon(x = box$x1,
-												y = box$y1,
-												border = linecol,
-												lwd = linewd
-			)
-
-			graphics::text(x = box$x1[1],
-										 y = box$y1[1],
-										 label = counter,
-										 col = fontcol,
-										 cex = fontsize,
-										 family = "Liberation Sans"
-			)
-
-			counter <- counter + 1
-
-		}
-
-		# write annotated image to file
-
-		if (type %in% c("async", "async-tab")) {
-			default_prefix <- substr(basename(output), 1, nchar(basename(output)) - 5)
-		} else {
-			default_prefix <- "document"
-		}
-
-		if (is.null(prefix)) {
-			filename <- glue::glue("{default_prefix}_page{i}_blocks.png")
-		} else {
-			filename <- glue::glue("{prefix}_page{i}_blocks.png")
-		}
-
-		dest <- file.path(dir, filename)
-
-		magick::image_write(canvas, format = "png", dest)
-
-		grDevices::dev.off()
-
-	}
-
-	pages <- length(pages_blocks)
-
-	message(glue::glue("Generated {pages} annotated image(s)."))
+	message(glue::glue("Generated {length(pages_blocks)} image(s) with block bounding boxes."))
 
 }
 
@@ -546,7 +463,6 @@ draw_blocks <- function(type,
 #'                 output = "page.json",
 #'                 doc = "page.pdf")
 #' }
-
 
 draw_paragraphs <- function(type,
 														output,
@@ -613,14 +529,7 @@ draw_paragraphs <- function(type,
 
 		# decode base64 and save to temp images
 		page_imgs_base64 <- purrr::map_chr(pages, ~.x$image$content)
-		imgs <- character()
-		for (i in seq_along(page_imgs_base64)) {
-			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
-			outconn <- file(path, "wb")
-			base64enc::base64decode(page_imgs_base64[i], outconn)
-			close(outconn)
-			imgs <- c(imgs, path)
-		}
+		imgs <- purrr::map2_chr(page_imgs_base64, seq_along(page_imgs_base64), decode_and_save)
 
 	} else if (type == "async") {
 
@@ -635,14 +544,7 @@ draw_paragraphs <- function(type,
 
 		# decode base64 and save to temp images
 		page_imgs_base64 <- parsed$pages$image$content
-		imgs <- character()
-		for (i in seq_along(page_imgs_base64)) {
-			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
-			outconn <- file(path, "wb")
-			base64enc::base64decode(page_imgs_base64[i], outconn)
-			close(outconn)
-			imgs <- c(imgs, path)
-		}
+		imgs <- purrr::map2_chr(page_imgs_base64, seq_along(page_imgs_base64), decode_and_save)
 
 	} else if (type == "sync-tab") {
 
@@ -695,79 +597,11 @@ draw_paragraphs <- function(type,
 		}
 
 	}
+	
+	# Plot bounding boxes
+	purrr::map2(pagewise_block_sets, seq_along(pagewise_block_sets), ~ process_image(.x, .y, imgs, type, output, prefix, dir, filename, dest, linecol, linewd, fontcol, fontsize, boxtype = "paragraphs"))
 
-	# loop over the pagewise sets
-	for (i in seq_along(pagewise_block_sets)) {
-
-		img <- magick::image_read(imgs[i])
-
-		# get image dimensions
-		info <- magick::image_info(img)
-
-		# prepare for plotting on image
-		canvas <- magick::image_draw(img)
-
-		# set counter for box number
-		counter <- 1
-
-		#loop over boxes on the page
-		for (box in pagewise_block_sets[[i]]) {
-
-			# handle NAs in boxes on top or left edge
-			if (is.na(box$y[1])) box$y[1] <- 0
-			if (is.na(box$y[2])) box$y[2] <- 0
-			if (is.na(box$x[1])) box$x[1] <- 0
-			if (is.na(box$x[4])) box$x[4] <- 0
-
-			# transform from relative to absolute coordinates
-			box$x1 <- box$x * info$width
-
-			box$y1 <- box$y * info$height
-
-			# draw polygon
-			graphics::polygon(x = box$x1,
-												y = box$y1,
-												border = linecol,
-												lwd = linewd
-			)
-
-			graphics::text(x = box$x1[1],
-										 y = box$y1[1],
-										 label = counter,
-										 col = fontcol,
-										 cex = fontsize,
-										 family = "Liberation Sans"
-			)
-
-			counter <- counter + 1
-
-		}
-
-		# write annotated image to file
-
-		if (type %in% c("async", "async-tab")) {
-			default_prefix <- substr(basename(output), 1, nchar(basename(output)) - 5)
-		} else {
-			default_prefix <- "document"
-		}
-
-		if (is.null(prefix)) {
-			filename <- glue::glue("{default_prefix}_page{i}_paragraphs.png")
-		} else {
-			filename <- glue::glue("{prefix}_page{i}_paragraphs.png")
-		}
-
-		dest <- file.path(dir, filename)
-
-		magick::image_write(canvas, format = "png", dest)
-
-		grDevices::dev.off()
-
-	}
-
-	pages <- length(pages_paragraphs)
-
-	message(glue::glue("Generated {pages} annotated image(s)."))
+	message(glue::glue("Generated {length(pages_paragraphs)} image(s) with paragraph bounding boxes."))
 
 }
 
@@ -880,14 +714,7 @@ draw_lines <- function(type,
 
 		# decode base64 and save to temp images
 		page_imgs_base64 <- purrr::map_chr(pages, ~.x$image$content)
-		imgs <- character()
-		for (i in seq_along(page_imgs_base64)) {
-			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
-			outconn <- file(path, "wb")
-			base64enc::base64decode(page_imgs_base64[i], outconn)
-			close(outconn)
-			imgs <- c(imgs, path)
-		}
+		imgs <- purrr::map2_chr(page_imgs_base64, seq_along(page_imgs_base64), decode_and_save)
 
 	} else if (type == "async") {
 
@@ -902,14 +729,7 @@ draw_lines <- function(type,
 
 		# decode base64 and save to temp images
 		page_imgs_base64 <- parsed$pages$image$content
-		imgs <- character()
-		for (i in seq_along(page_imgs_base64)) {
-			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
-			outconn <- file(path, "wb")
-			base64enc::base64decode(page_imgs_base64[i], outconn)
-			close(outconn)
-			imgs <- c(imgs, path)
-		}
+		imgs <- purrr::map2_chr(page_imgs_base64, seq_along(page_imgs_base64), decode_and_save)
 
 	} else if (type == "sync-tab") {
 
@@ -963,78 +783,10 @@ draw_lines <- function(type,
 
 	}
 
-	# loop over the pagewise sets
-	for (i in seq_along(pagewise_block_sets)) {
+  # Plot bounding boxes
+	purrr::map2(pagewise_block_sets, seq_along(pagewise_block_sets), ~ process_image(.x, .y, imgs, type, output, prefix, dir, filename, dest, linecol, linewd, fontcol, fontsize, boxtype = "lines"))
 
-		img <- magick::image_read(imgs[i])
-
-		# get image dimensions
-		info <- magick::image_info(img)
-
-		# prepare for plotting on image
-		canvas <- magick::image_draw(img)
-
-		# set counter for box number
-		counter <- 1
-
-		#loop over boxes on the page
-		for (box in pagewise_block_sets[[i]]) {
-
-			# handle NAs in boxes on top or left edge
-			if (is.na(box$y[1])) box$y[1] <- 0
-			if (is.na(box$y[2])) box$y[2] <- 0
-			if (is.na(box$x[1])) box$x[1] <- 0
-			if (is.na(box$x[4])) box$x[4] <- 0
-
-			# transform from relative to absolute coordinates
-			box$x1 <- box$x * info$width
-
-			box$y1 <- box$y * info$height
-
-			# draw polygon
-			graphics::polygon(x = box$x1,
-												y = box$y1,
-												border = linecol,
-												lwd = linewd
-			)
-
-			graphics::text(x = box$x1[1],
-										 y = box$y1[1],
-										 label = counter,
-										 col = fontcol,
-										 cex = fontsize,
-										 family = "Liberation Sans"
-			)
-
-			counter <- counter + 1
-
-		}
-
-		# write annotated image to file
-
-		if (type %in% c("async", "async-tab")) {
-			default_prefix <- substr(basename(output), 1, nchar(basename(output)) - 5)
-		} else {
-			default_prefix <- "document"
-		}
-
-		if (is.null(prefix)) {
-			filename <- glue::glue("{default_prefix}_page{i}_lines.png")
-		} else {
-			filename <- glue::glue("{prefix}_page{i}_lines.png")
-		}
-
-		dest <- file.path(dir, filename)
-
-		magick::image_write(canvas, format = "png", dest)
-
-		grDevices::dev.off()
-
-	}
-
-	pages <- length(pages_lines)
-
-	message(glue::glue("Generated {pages} annotated image(s)."))
+	message(glue::glue("Generated {length(pages_lines)} image(s) with line bounding boxes."))
 
 }
 
@@ -1147,15 +899,8 @@ draw_tokens <- function(type,
 
 		# decode base64 and save to temp images
 		page_imgs_base64 <- purrr::map_chr(pages, ~.x$image$content)
-		imgs <- character()
-		for (i in seq_along(page_imgs_base64)) {
-			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
-			outconn <- file(path, "wb")
-			base64enc::base64decode(page_imgs_base64[i], outconn)
-			close(outconn)
-			imgs <- c(imgs, path)
-		}
-
+		imgs <- purrr::map2_chr(page_imgs_base64, seq_along(page_imgs_base64), decode_and_save)
+		
 	} else if (type == "async") {
 
 		if (!(is_json(output))) {
@@ -1169,14 +914,7 @@ draw_tokens <- function(type,
 
 		# decode base64 and save to temp images
 		page_imgs_base64 <- parsed$pages$image$content
-		imgs <- character()
-		for (i in seq_along(page_imgs_base64)) {
-			path <- file.path(tempdir(), glue::glue("page{i}.jpg"))
-			outconn <- file(path, "wb")
-			base64enc::base64decode(page_imgs_base64[i], outconn)
-			close(outconn)
-			imgs <- c(imgs, path)
-		}
+		imgs <- purrr::map2_chr(page_imgs_base64, seq_along(page_imgs_base64), decode_and_save)
 
 	} else if (type == "sync-tab") {
 
@@ -1230,77 +968,104 @@ draw_tokens <- function(type,
 
 	}
 
-	# loop over the pagewise sets
-	for (i in seq_along(pagewise_block_sets)) {
+  # Plot bounding boxes
+	purrr::map2(pagewise_block_sets, seq_along(pagewise_block_sets), ~ process_image(.x, .y, imgs, type, output, prefix, dir, filename, dest, linecol, linewd, fontcol, fontsize, boxtype = "tokens"))
 
-		img <- magick::image_read(imgs[i])
+	message(glue::glue("Generated {length(pages_tokens)} image(s) with token bounding boxes."))
 
-		# get image dimensions
-		info <- magick::image_info(img)
+}
 
-		# prepare for plotting on image
-		canvas <- magick::image_draw(img)
+#' Decode and save base64 image
+#'
+#' @description Helper function for decoding base64 images and saving them to temporary files
+#'
+#' @param base64_string a string with a base64-encoded image.
+#' @param index an integer representing the index of the element in the vector of base64-encoded images 
+#' 
+#' @noRd
 
-		# set counter for box number
-		counter <- 1
+decode_and_save <- function(base64_string, index) {
+  path <- file.path(tempdir(), glue::glue("page{index}.jpg"))
+  outconn <- file(path, "wb")
+  base64enc::base64decode(base64_string, outconn)
+  close(outconn)
+  return(path)
+}
 
-		#loop over boxes on the page
-		for (box in pagewise_block_sets[[i]]) {
+#' Plot bounding box
+#'
+#' @description Helper function to plot bounding box on image
+#'
+#' @param box a dataframe of bounding box coordinates.
+#' @param index an integer representing the index of the element in the vector of bounding box dataframes 
+#' @param info interitance from parent function
+#' @param linecol interitance from parent function
+#' @param linewd interitance from parent function
+#' @param fontcol interitance from parent function
+#' @param fontsize interitance from parent function
+#' 
+#' @noRd
 
-			# handle NAs in boxes on top or left edge
-			if (is.na(box$y[1])) box$y[1] <- 0
-			if (is.na(box$y[2])) box$y[2] <- 0
-			if (is.na(box$x[1])) box$x[1] <- 0
-			if (is.na(box$x[4])) box$x[4] <- 0
+plot_box <- function(box, index, info, linecol, linewd, fontcol, fontsize) {
+  if (is.na(box$y[1])) box$y[1] <- 0
+  if (is.na(box$y[2])) box$y[2] <- 0
+  if (is.na(box$x[1])) box$x[1] <- 0
+  if (is.na(box$x[4])) box$x[4] <- 0
+  box$x1 <- box$x * info$width
+  box$y1 <- box$y * info$height
+  graphics::polygon(
+    x = box$x1,
+    y = box$y1,
+    border = linecol,
+    lwd = linewd
+  )
+  graphics::text(
+    x = box$x1[1],
+    y = box$y1[1],
+    label = index,
+    col = fontcol,
+    cex = fontsize,
+    family = "Liberation Sans"
+  )
+}
 
-			# transform from relative to absolute coordinates
-			box$x1 <- box$x * info$width
+#' Process image
+#'
+#' @description Helper function to save image of page with drawn bounding boxes
+#'
+#' @param pagewise_block_set a list of dataframes of bounding box coordinates.
+#' @param index an integer representing the index of the element in the list of dataframes of bounding box coordinates
+#' @param imgs vector of paths to the unannotated images
+#' @param type interitance from parent function
+#' @param output interitance from parent function
+#' @param prefix interitance from parent function
+#' @param dir interitance from parent function
+#' @param filename interitance from parent function
+#' @param dest interitance from parent function
+#' @param linecol interitance from parent function
+#' @param linewd interitance from parent function
+#' @param fontcol interitance from parent function
+#' @param fontsize interitance from parent function
+#' @param boxtype string with the type of bounding box to be drawn
+#' 
+#' @noRd
 
-			box$y1 <- box$y * info$height
-
-			# draw polygon
-			graphics::polygon(x = box$x1,
-							  y = box$y1,
-							  border = linecol,
-							  lwd = linewd
-			)
-
-			graphics::text(x = box$x1[1],
-						   y = box$y1[1],
-						   label = counter,
-						   col = fontcol,
-						   cex = fontsize,
-						   family = "Liberation Sans"
-			)
-
-			counter <- counter + 1
-
-		}
-
-		# write annotated image to file
-
-		if (type %in% c("async", "async-tab")) {
-			default_prefix <- substr(basename(output), 1, nchar(basename(output)) - 5)
-		} else {
-			default_prefix <- "document"
-		}
-
-		if (is.null(prefix)) {
-			filename <- glue::glue("{default_prefix}_page{i}_tokens.png")
-		} else {
-			filename <- glue::glue("{prefix}_page{i}_tokens.png")
-		}
-
-		dest <- file.path(dir, filename)
-
-		magick::image_write(canvas, format = "png", dest)
-
-		grDevices::dev.off()
-
-	}
-
-	pages <- length(pages_tokens)
-
-	message(glue::glue("Generated {pages} annotated image(s)."))
-
+process_image <- function(pagewise_block_set, index, imgs, type, output, prefix, dir, filename, dest, linecol, linewd, fontcol, fontsize, boxtype) {
+  img <- magick::image_read(imgs[index])
+  info <- magick::image_info(img)
+  canvas <- magick::image_draw(img)
+  purrr::map2(pagewise_block_set, seq_along(pagewise_block_set), ~ plot_box(.x, .y, info, linecol, linewd, fontcol, fontsize))
+  if (type %in% c("async", "async-tab")) {
+    default_prefix <- substr(basename(output), 1, nchar(basename(output)) - 5)
+  } else {
+    default_prefix <- "document"
+  }
+  if (is.null(prefix)) {
+    filename <- glue::glue("{default_prefix}_page{index}_{boxtype}.png")
+  } else {
+    filename <- glue::glue("{prefix}_page{index}_{boxtype}.png")
+  }
+  dest <- file.path(dir, filename)
+  magick::image_write(canvas, format = "png", dest)
+  grDevices::dev.off()
 }
