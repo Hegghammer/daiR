@@ -88,7 +88,7 @@ Now get a key file - you will need it to authenticate from within RStudio:
 #### Linux and Mac
 ```
 gcloud iam service-accounts keys create key.json \
---iam-account=$(SA_ID)@$(PROJ_ID).iam.gserviceaccount.com
+--iam-account=$SA_ID@$PROJ_ID.iam.gserviceaccount.com
 ```
 
 #### Windows
@@ -105,8 +105,8 @@ First give Google Cloud owner rights to this service account:
 #### Linux & Mac
 ```
 gcloud projects add-iam-policy-binding $PROJ_ID \
---member="serviceAccount:$(SA_ID)@$(PROJ_ID).iam.gserviceaccount.com" \
---role="roles/owner"`
+--member="serviceAccount:$SA_ID@$PROJ_ID.iam.gserviceaccount.com" \
+--role="roles/owner"
 ```
 
 #### Windows 
