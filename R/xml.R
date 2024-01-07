@@ -87,7 +87,6 @@ make_hocr <- function(type,
         pages <- parsed_sync[["document"]][["pages"]]
 
         for (i in seq_along(pages)) {
-
             message(glue::glue("Processing page {i} of {n_pages} .."))
             id <- paste0("page_", i)
             x2_page <- parsed_sync[["document"]][["pages"]][[i]][["dimension"]][["width"]]
@@ -98,36 +97,19 @@ make_hocr <- function(type,
             blocks <- parsed_sync[["document"]][["pages"]][[i]][["blocks"]]
             block_coords <- get_vertices(blocks)
             block_coords <- purrr::map(block_coords, transpose_block)
-
-            for (q in seq_along(block_coords)) {
-                block_coords[[q]][block_coords[[q]] < 0] = 0 # avoid negatives
-                block_coords[[q]][["xs"]] <- round(block_coords[[q]][["xs"]] * x2_page)
-                block_coords[[q]][["ys"]] <- round(block_coords[[q]][["ys"]] * y2_page)
-            }
-
+            block_coords <- purrr::map(block_coords, process_coord)
             block_segments <- purrr::map(blocks, ~.x[["layout"]][["textAnchor"]][["textSegments"]][[1]])
             if (is.null(block_segments[[1]][["startIndex"]])) block_segments[[1]][["startIndex"]] <- 0
 
             for (j in seq_along(block_coords)) {
-
                 id <- paste0("block_", i, "_", j)
-                x1 <- block_coords[[j]][["xs"]][[1]]
-                y1 <- block_coords[[j]][["ys"]][[1]]
-                x2 <- block_coords[[j]][["xs"]][[3]]
-                y2 <- block_coords[[j]][["ys"]][[3]]
-                bbox <- paste0("bbox ", x1, " ", y1, " ", x2, " ", y2)
+                bbox <- mk_bbox(block_coords, j)
                 xml2::xml_add_child(div1, "div", class = 'ocr_carea', id = id, title = bbox)
                 div2 <- xml2::xml_children(div1)[[j]]
-
                 paras <- parsed_sync[["document"]][["pages"]][[i]][["paragraphs"]]
                 all_para_coords <- purrr::map(paras, ~.x[["layout"]][["boundingPoly"]][["normalizedVertices"]])
                 all_para_coords <- purrr::map(all_para_coords , transpose_block)
-
-                for (q in seq_along(all_para_coords)) {
-                    all_para_coords[[q]][all_para_coords[[q]] < 0] = 0
-                    all_para_coords[[q]][["xs"]] <- round(all_para_coords[[q]][["xs"]] * x2_page)
-                    all_para_coords[[q]][["ys"]] <- round(all_para_coords[[q]][["ys"]] * y2_page)
-                }
+                all_para_coords <- purrr::map(all_para_coords , process_coord)
                 all_para_segments <- purrr::map(paras, ~.x[["layout"]][["textAnchor"]][["textSegments"]][[1]])
                 if (is.null(all_para_segments[[1]][["startIndex"]])) all_para_segments[[1]][["startIndex"]] <- 0
                 block_start_ind <- as.integer(block_segments[[j]][["startIndex"]])
@@ -144,25 +126,14 @@ make_hocr <- function(type,
                 }
 
                 for (k in seq_along(para_coords)) {
-
                     id <- paste0("par_", i, "_", k)
-                    x1 <- para_coords[[k]][["xs"]][[1]]
-                    y1 <- para_coords[[k]][["ys"]][[1]]
-                    x2 <- para_coords[[k]][["xs"]][[3]]
-                    y2 <- para_coords[[k]][["ys"]][[3]]
-                    bbox <- paste0("bbox ", x1, " ", y1, " ", x2, " ", y2)
+                    bbox <- mk_bbox(para_coords, k)
                     xml2::xml_add_child(div2, "p", class = 'ocr_par', id = id, title = bbox)
                     p <- xml2::xml_children(div2)[[k]]
-
                     lines <- parsed_sync[["document"]][["pages"]][[i]][["lines"]]
                     all_line_coords <- purrr::map(lines, ~.x[["layout"]][["boundingPoly"]][["normalizedVertices"]])
-                    all_line_coords <- purrr::map(all_line_coords , transpose_block)
-
-                    for (q in seq_along(all_line_coords)) {
-                        all_line_coords[[q]][all_line_coords[[q]] < 0] = 0
-                        all_line_coords[[q]][["xs"]] <- round(all_line_coords[[q]][["xs"]] * x2_page)
-                        all_line_coords[[q]][["ys"]] <- round(all_line_coords[[q]][["ys"]] * y2_page)
-                    }
+                    all_line_coords <- purrr::map(all_line_coords, transpose_block)
+                    all_line_coords <- purrr::map(all_line_coords, process_coord)
                     all_line_segments <- purrr::map(lines, ~.x[["layout"]][["textAnchor"]][["textSegments"]][[1]])
                     if (is.null(all_line_segments[[1]][["startIndex"]])) all_line_segments[[1]][["startIndex"]] <- 0
                     para_start_ind <- as.integer(para_segments[[k]][["startIndex"]])
@@ -179,29 +150,17 @@ make_hocr <- function(type,
                     }
 
                     for (l in seq_along(line_coords)) {
-
                         id <- paste0("line_", i, "_", l)
-                        x1 <- line_coords[[l]][["xs"]][[1]]
-                        y1 <- line_coords[[l]][["ys"]][[1]]
-                        x2 <- line_coords[[l]][["xs"]][[3]]
-                        y2 <- line_coords[[l]][["ys"]][[3]]
-                        bbox <- paste0("bbox ", x1, " ", y1, " ", x2, " ", y2)
+                        bbox <- mk_bbox(line_coords, l)
                         xml2::xml_add_child(p, "span", class = 'ocr_line', id = id, title = bbox)
                         span1 <- xml2::xml_children(p)[[l]]
-
                         tokens <- parsed_sync[["document"]][["pages"]][[i]][["tokens"]]
                         all_token_coords <- purrr::map(tokens, ~.x[["layout"]][["boundingPoly"]][["normalizedVertices"]])
-                        all_token_coords <- purrr::map(all_token_coords , transpose_block)
-
-                        for (q in seq_along(all_token_coords)) {
-                            all_token_coords[[q]][all_token_coords[[q]] < 0] = 0
-                            all_token_coords[[q]][["xs"]] <- round(all_token_coords[[q]][["xs"]] * x2_page)
-                            all_token_coords[[q]][["ys"]] <- round(all_token_coords[[q]][["ys"]] * y2_page)
-                        }
+                        all_token_coords <- purrr::map(all_token_coords, transpose_block)
+                        all_token_coords <- purrr::map(all_token_coords, process_coord)
                         all_token_segments <- purrr::map(tokens, ~.x[["layout"]][["textAnchor"]][["textSegments"]][[1]])
                         if (is.null(all_token_segments[[1]][["startIndex"]])) all_token_segments[[1]][["startIndex"]] <- 0
-
-                        all_token_confs <- purrr::map_chr(tokens, ~.x[["layout"]][["confidence"]])
+                        all_token_confs <- unlist(purrr::map(tokens, ~.x[["layout"]][["confidence"]]))
                         all_token_confs <- round(all_token_confs * 100, 2)
                         line_start_ind <- as.integer(line_segments[[l]][["startIndex"]])
                         line_end_ind <- as.integer(line_segments[[l]][["endIndex"]])
@@ -219,14 +178,9 @@ make_hocr <- function(type,
                         }
 
                         for (m in seq_along(token_coords)) {
-
                             id <- paste0("word_", i, "_", m)
-                            x1 <- token_coords[[m]][["xs"]][[1]]
-                            y1 <- token_coords[[m]][["ys"]][[1]]
-                            x2 <- token_coords[[m]][["xs"]][[3]]
-                            y2 <- token_coords[[m]][["ys"]][[3]]
-                            conf <- token_confs[[m]]
-                            bbox <- paste0("bbox ", x1, " ", y1, " ", x2, " ", y2, "; x_wconf ", conf)
+                            bbox <- mk_bbox(token_coords, m)
+                            bbox <- paste0(bbox, "; x_wconf ", token_confs[[m]])
                             xml2::xml_add_child(span1, "span", class = 'ocrx_word', id = id, title = bbox)
                             span2 <- xml2::xml_children(span1)[[m]]
                             start_ind <- end_ind <- token_segments[[m]][["startIndex"]]
@@ -266,7 +220,6 @@ make_hocr <- function(type,
         page_coords <- parsed[["pages"]][["layout"]][["boundingPoly"]][["vertices"]]
 
         for (i in seq_along(page_coords)) {
-
             message(glue::glue("Processing page {i} of {n_pages} .."))
             id <- paste0("page_", i)
             x2_page <- page_coords[[i]][["x"]][[3]]
@@ -275,32 +228,17 @@ make_hocr <- function(type,
             xml2::xml_add_child(body, "div", class = 'ocr_page', id = id, title = bbox)
             div1 <- xml2::xml_children(body)[[i]]
             block_coords <- parsed[["pages"]][["blocks"]][[i]][["layout"]][["boundingPoly"]][["normalizedVertices"]]
-            for (q in seq_along(block_coords)) {
-                block_coords[[q]][block_coords[[q]] < 0] = 0 # avoid negatives
-                block_coords[[q]][["x"]] <- round(block_coords[[q]][["x"]] * x2_page)
-                block_coords[[q]][["y"]] <- round(block_coords[[q]][["y"]] * y2_page)
-            }
+            block_coords <- purrr::map(block_coords, process_coord)    
             block_segments <- parsed[["pages"]][["blocks"]][[i]][["layout"]][["textAnchor"]][["textSegments"]]
             if (is.null(block_segments[[1]][["startIndex"]])) block_segments[[1]][["startIndex"]] <- 0
 
             for (j in seq_along(block_coords)) {
-
                 id <- paste0("block_", i, "_", j)
-                x1 <- block_coords[[j]][["x"]][[1]]
-                y1 <- block_coords[[j]][["y"]][[1]]
-                x2 <- block_coords[[j]][["x"]][[3]]
-                y2 <- block_coords[[j]][["y"]][[3]]
-                bbox <- paste0("bbox ", x1, " ", y1, " ", x2, " ", y2)
+                bbox <- mk_bbox(block_coords, j)
                 xml2::xml_add_child(div1, "div", class = 'ocr_carea', id = id, title = bbox)
                 div2 <- xml2::xml_children(div1)[[j]]
-
                 all_para_coords <- parsed[["pages"]][["paragraphs"]][[i]][["layout"]][["boundingPoly"]][["normalizedVertices"]]
-                for (q in seq_along(all_para_coords)) {
-                    all_para_coords[[q]][all_para_coords[[q]] < 0] = 0
-                    all_para_coords[[q]][["x"]] <- round(all_para_coords[[q]][["x"]] * x2_page)
-                    all_para_coords[[q]][["y"]] <- round(all_para_coords[[q]][["y"]] * y2_page)
-                }
-
+                all_para_coords <- purrr::map(all_para_coords , process_coord)
                 all_para_segments <- parsed[["pages"]][["paragraphs"]][[i]][["layout"]][["textAnchor"]][["textSegments"]]
                 if (is.null(all_para_segments[[1]][["startIndex"]])) all_para_segments[[1]][["startIndex"]] <- 0
                 block_start_ind <- as.integer(block_segments[[j]][["startIndex"]])
@@ -317,22 +255,12 @@ make_hocr <- function(type,
                 }
 
                 for (k in seq_along(para_coords)) {
-
                     id <- paste0("par_", i, "_", k)
-                    x1 <- para_coords[[k]][["x"]][[1]]
-                    y1 <- para_coords[[k]][["y"]][[1]]
-                    x2 <- para_coords[[k]][["x"]][[3]]
-                    y2 <- para_coords[[k]][["y"]][[3]]
-                    bbox <- paste0("bbox ", x1, " ", y1, " ", x2, " ", y2)
+                    bbox <- mk_bbox(para_coords, k)
                     xml2::xml_add_child(div2, "p", class = 'ocr_par', id = id, title = bbox)
                     p <- xml2::xml_children(div2)[[k]]
-
                     all_line_coords <- parsed[["pages"]][["lines"]][[i]][["layout"]][["boundingPoly"]][["normalizedVertices"]]
-                    for (q in seq_along(all_line_coords)) {
-                        all_line_coords[[q]][all_line_coords[[q]] < 0] = 0
-                        all_line_coords[[q]][["x"]] <- round(all_line_coords[[q]][["x"]] * x2_page)
-                        all_line_coords[[q]][["y"]] <- round(all_line_coords[[q]][["y"]] * y2_page)
-                    }
+                    all_line_coords <- purrr::map(all_line_coords, process_coord)
                     all_line_segments <- parsed[["pages"]][["lines"]][[i]][["layout"]][["textAnchor"]][["textSegments"]]
                     if (is.null(all_line_segments[[1]][["startIndex"]])) all_line_segments[[1]][["startIndex"]] <- 0
                     para_start_ind <- as.integer(para_segments[[k]][["startIndex"]])
@@ -349,27 +277,16 @@ make_hocr <- function(type,
                     }
 
                     for (l in seq_along(line_coords)) {
-
                         id <- paste0("line_", i, "_", l)
-                        x1 <- line_coords[[l]][["x"]][[1]]
-                        y1 <- line_coords[[l]][["y"]][[1]]
-                        x2 <- line_coords[[l]][["x"]][[3]]
-                        y2 <- line_coords[[l]][["y"]][[3]]
-                        bbox <- paste0("bbox ", x1, " ", y1, " ", x2, " ", y2)
+                        bbox <- mk_bbox(line_coords, l)
                         xml2::xml_add_child(p, "span", class = 'ocr_line', id = id, title = bbox)
                         span1 <- xml2::xml_children(p)[[l]]
-
                         all_token_coords <- parsed[["pages"]][["tokens"]][[i]][["layout"]][["boundingPoly"]][["normalizedVertices"]]
-                        for (q in seq_along(all_token_coords)) {
-                            all_token_coords[[q]][all_token_coords[[q]] < 0] = 0
-                            all_token_coords[[q]][["x"]] <- round(all_token_coords[[q]][["x"]] * x2_page)
-                            all_token_coords[[q]][["y"]] <- round(all_token_coords[[q]][["y"]] * y2_page)
-                        }
+                        all_token_coords <- purrr::map(all_token_coords, process_coord)
                         all_token_segments <- parsed[["pages"]][["tokens"]][[i]][["layout"]][["textAnchor"]][["textSegments"]]
                         if (is.null(all_token_segments[[1]][["startIndex"]])) all_token_segments[[1]][["startIndex"]] <- 0
                         all_token_confs <- parsed[["pages"]][["tokens"]][[i]][["layout"]][["confidence"]]
                         all_token_confs <- round(all_token_confs * 100, 2)
-
                         line_start_ind <- as.integer(line_segments[[l]][["startIndex"]])
                         line_end_ind <- as.integer(line_segments[[l]][["endIndex"]])
                         token_coords <- list()
@@ -386,14 +303,9 @@ make_hocr <- function(type,
                         }
 
                         for (m in seq_along(token_coords)) {
-
                             id <- paste0("word_", i, "_", m)
-                            x1 <- token_coords[[m]][["x"]][[1]]
-                            y1 <- token_coords[[m]][["y"]][[1]]
-                            x2 <- token_coords[[m]][["x"]][[3]]
-                            y2 <- token_coords[[m]][["y"]][[3]]
-                            conf <- token_confs[[m]]
-                            bbox <- paste0("bbox ", x1, " ", y1, " ", x2, " ", y2, "; x_wconf ", conf)
+                            bbox <- mk_bbox(token_coords, m)
+                            bbox <- paste0(bbox, "; x_wconf ", token_confs[[m]])
                             xml2::xml_add_child(span1, "span", class = 'ocrx_word', id = id, title = bbox)
                             span2 <- xml2::xml_children(span1)[[m]]
                             start_ind <- end_ind <- token_segments[[m]][["startIndex"]]
@@ -416,4 +328,39 @@ make_hocr <- function(type,
     dest <- file.path(dir, outfile_name)
     xml2::write_xml(doc, dest)
     cli::cli_alert_success(glue::glue("hOCR file named '{outfile_name}' generated in {dir}."))
+}
+
+#' Process coordinates
+#'
+#' @description Helper function for \code{make_hocr()}.
+#'
+#' @param coord list of coordinates
+#' @return list of coordinates
+#' 
+#' @noRd
+
+process_coord <- function(coord) {
+    coord[coord < 0] = 0 # avoid negatives
+    coord[["xs"]] <- round(coord[["xs"]] * x2_page)
+    coord[["ys"]] <- round(coord[["ys"]] * y2_page)
+    return(coord)
+}
+
+#' Make bbox string
+#'
+#' @description Helper function for \code{make_hocr()}.
+#'
+#' @param coord a list of coordinates
+#' @param index an integer 
+#' 
+#' @return a string
+#' @noRd
+
+mk_bbox <- function(coord, index) {
+  x1 <- coord[[index]][["xs"]][[1]]
+  y1 <- coord[[index]][["ys"]][[1]]
+  x2 <- coord[[index]][["xs"]][[3]]
+  y2 <- coord[[index]][["ys"]][[3]]
+  bbox <- paste0("bbox ", x1, " ", y1, " ", x2, " ", y2)
+  return(bbox)
 }
