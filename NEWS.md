@@ -1,3 +1,7 @@
+# daiR 1.0.0
+- Added several processor-related functions following an update of the Google Document AI REST API. These include `list_processor_types()`, `create_processor()`, `enable_processor()`, `disable_processor()`, and `delete_processor()`.
+- Added prettier messages using the `cli` package.
+
 # daiR 0.9.9
 - Added the function `make_hocr` to convert DAI output to hOCR files, thereby faciliting the creation of searchable PDFs. 
 

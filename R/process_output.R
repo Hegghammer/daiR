@@ -846,7 +846,7 @@ redraw_blocks <- function(json,
 
   pages <- length(pages_blocks)
 
-  message(glue::glue("Generated {pages} annotated image(s)."))
+  cli::cli_alert_success(glue::glue("Generated {pages} annotated image(s)."))
 
 }
 

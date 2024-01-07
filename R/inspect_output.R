@@ -232,7 +232,7 @@ merge_shards <- function(source_dir,
     }
   }
 
-  message("Shards merged.")
+  cli::cli_alert_success("Shards merged.")
 
 }
 
@@ -416,7 +416,7 @@ draw_blocks <- function(type,
   # Plot bounding boxes
 	purrr::map2(pagewise_block_sets, seq_along(pagewise_block_sets), ~ process_image(.x, .y, imgs, type, output, prefix, dir, filename, dest, linecol, linewd, fontcol, fontsize, boxtype = "blocks"))
 
-	message(glue::glue("Generated {length(pages_blocks)} image(s) with block bounding boxes."))
+	cli::cli_alert_success(glue::glue("Generated {length(pages_blocks)} image(s) with block bounding boxes."))
 
 }
 
@@ -601,7 +601,7 @@ draw_paragraphs <- function(type,
 	# Plot bounding boxes
 	purrr::map2(pagewise_block_sets, seq_along(pagewise_block_sets), ~ process_image(.x, .y, imgs, type, output, prefix, dir, filename, dest, linecol, linewd, fontcol, fontsize, boxtype = "paragraphs"))
 
-	message(glue::glue("Generated {length(pages_paragraphs)} image(s) with paragraph bounding boxes."))
+	cli::cli_alert_success(glue::glue("Generated {length(pages_paragraphs)} image(s) with paragraph bounding boxes."))
 
 }
 
@@ -786,7 +786,7 @@ draw_lines <- function(type,
   # Plot bounding boxes
 	purrr::map2(pagewise_block_sets, seq_along(pagewise_block_sets), ~ process_image(.x, .y, imgs, type, output, prefix, dir, filename, dest, linecol, linewd, fontcol, fontsize, boxtype = "lines"))
 
-	message(glue::glue("Generated {length(pages_lines)} image(s) with line bounding boxes."))
+	cli::cli_alert_success(glue::glue("Generated {length(pages_lines)} image(s) with line bounding boxes."))
 
 }
 
@@ -971,7 +971,7 @@ draw_tokens <- function(type,
   # Plot bounding boxes
 	purrr::map2(pagewise_block_sets, seq_along(pagewise_block_sets), ~ process_image(.x, .y, imgs, type, output, prefix, dir, filename, dest, linecol, linewd, fontcol, fontsize, boxtype = "tokens"))
 
-	message(glue::glue("Generated {length(pages_tokens)} image(s) with token bounding boxes."))
+	cli::cli_alert_success(glue::glue("Generated {length(pages_tokens)} image(s) with token bounding boxes."))
 
 }
 

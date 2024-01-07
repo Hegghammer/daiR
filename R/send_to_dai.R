@@ -125,11 +125,11 @@ dai_sync <- function(file,
                          )
 
   if (response$status_code == 200) {
-    message(glue::glue("File submitted at {response$date}. HTTP status: 200 - OK."))
+    cli::cli_alert_success(glue::glue("File submitted at {response$date}. HTTP status: 200 - OK."))
     } else {
-      parsed <- httr::content(response)
-      message(glue::glue('File submitted at {response$date}. HTTP status: {response$status_code} - unsuccessful.\nError: "{parsed$error$message}"'))
-    }
+    parsed <- httr::content(response)
+    cli::cli_alert_danger(glue::glue('File submitted at {response$date}. HTTP status: {response$status_code} - unsuccessful.\nError: "{parsed$error$message}"'))
+  }
 
   return(response)
 
@@ -300,7 +300,6 @@ dai_async <- function(files,
               "skipHumanReview" = skip_rev
               )
 
-
   bod <- jsonlite::toJSON(req, auto_unbox = TRUE)
 
   ## build URL and submit API request
@@ -325,11 +324,11 @@ dai_async <- function(files,
                          )
 
   if (response$status_code == 200) {
-    message(glue::glue("{length(files)} files submitted at {response$date}. HTTP status: 200 - OK."))
-    } else {
-      parsed <- httr::content(response)
-      message(glue::glue('{length(files)} files submitted at {response$date}. HTTP status: {response$status_code} - unsuccessful.\nError: "{parsed$error$message}"'))
-    }
+    cli::cli_alert_info(glue::glue("{length(files)} file(s) submitted at {response$date}. Check job status with daiR::dai_status()."))
+  } else {
+    parsed <- httr::content(response)
+    cli::cli_alert_danger(glue::glue('{length(files)} files submitted at {response$date}. HTTP status: {response$status_code} - unsuccessful.\nError: "{parsed$error$message}"'))
+  }
 
   return(response)
 
@@ -434,10 +433,10 @@ dai_sync_tab <- function(file,
                          )
 
   if (response$status_code == 200) {
-    message(glue::glue("File submitted at {response$date}. HTTP status: 200 - OK."))
+    cli::cli_alert_success(glue::glue("File submitted at {response$date}. HTTP status: 200 - OK."))
     } else {
-      message(glue::glue("File submitted at {response$date}. HTTP status: {response$status_code} - unsuccessful."))
-    }
+    cli::cli_alert_danger(glue::glue("File submitted at {response$date}. HTTP status: {response$status_code} - unsuccessful."))
+  }
 
   return(response)
 
@@ -628,19 +627,15 @@ dai_async_tab <- function(files,
                        )
 
     if (resp$status_code == 200) {
-      message(glue::glue("File {counter} of {length(files)} submitted at {resp$date}. HTTP status: 200 - OK."))
-      } else {
-        message(glue::glue("File {counter} of {length(files)} submitted at {resp$date}. HTTP status: {resp$status_code} - unsuccessful."))
-      }
+      cli::cli_alert_info(glue::glue("File {counter} of {length(files)} submitted at {resp$date}. Check job status with daiR::dai_status()."))
+    } else {
+      cli::cli_alert_danger(glue::glue("File {counter} of {length(files)} submitted at {resp$date}. HTTP status: {resp$status_code} - unsuccessful."))
+    }
 
     resp <- list(resp)
-
     response <- append(response, resp)
-
     counter <- counter + 1
-
     Sys.sleep(10)
-
     }
 
   return(response)
@@ -713,15 +708,19 @@ dai_status <- function(response,
 
   resp_par <- httr::content(resp)
 
-  status <- resp_par$metadata$state
+  if (is.null(resp_par$metadata$commonMetadata$state)) {
+    status <- resp_par$metadata$state
+  } else {
+    status <- resp_par$metadata$commonMetadata$state
+  }
 
   job_no <- stringr::str_extract(name, "(?<=/)\\d+$")
 
   if (inherits(response[[1]], "response")) {
-    message(glue::glue('Status for job {job_no} submitted {response[[last_elem]]$date}: "{status}."'))
+    cli::cli_alert_info(glue::glue('Status for job {job_no} submitted {response[[last_elem]]$date}: "{status}."'))
     } else {
-      message(glue::glue('Status for job {job_no} submitted {response$date}: "{status}."'))
-      }
+    cli::cli_alert_info(glue::glue('Status for job {job_no} submitted {response$date}: "{status}."'))
+  }
 
   if (isTRUE(verbose)) {
     return(resp)
@@ -784,7 +783,7 @@ dai_notify <- function(response,
 
   finished <- FALSE
 
-  message("Checking job. I'll beep when it's done.")
+  cli::cli_alert_info("Checking job. I'll beep when it's done.")
 
   while (isFALSE(finished)) {
     msg <- utils::capture.output(dai_status(response, loc, token), type = "message")
@@ -792,7 +791,7 @@ dai_notify <- function(response,
     Sys.sleep(1)
     }
 
-  message("Job complete.")
+  cli::cli_alert_success("Job complete.")
 
   beepr::beep(sound)
 

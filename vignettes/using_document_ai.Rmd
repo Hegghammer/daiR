@@ -47,28 +47,37 @@ A [previous vignette](https://dair.info/articles/setting_up_google_storage.html)
 To use Document AI, we need to complete a few more steps. 
 
 ### Step 1: Activate Document AI
+
 First, we must activate the API. Go to the [Google Cloud Console](https://console.cloud.google.com/) and open the navigation menu on the left hand side. Click on "APIs and services". Then click on "Enable APIs and Services", type "document ai" in the search field, click on "cloud document ai API", and then "Enable". 
 
 ### Step 2: Create a processor
-Open the navigation menu on the left again. Scroll down, almost to the bottom, till you see "Document AI" (under the group heading "Artificial intelligence"). Click on "Document AI".
 
-Now click the blue button labelled "Create processor". On the next page, choose the "Document OCR" processor type. A pane should open on your right where you can choose a name for the processor. Call it what you like; the name is mainly for your own reference. Select a location (where you want your files to be processed), then click create.
+In order to process documents, you need to set up an OCR processor. This is done in R using the function `daiR::create_processor`.[^also_gcs] We start by loading the `daiR` package.
 
-You should now see a page listing the processor's Name, ID, Status and other attributes. The main thing you want here is the **ID**. Select it and copy it to the clipboard.  
-
-### Step 3: Store the processor id as an environment variable
-
-Open your `.Renviron` file by calling `usethis::edit_r_environ()`. Add `DAI_PROCESSOR_ID="<your processor id>"` on a separate line. Save `.Renviron` and restart RStudio.   
-
-That's it. If these things are in place, you can start processing right after loading the package.
-
-**A note on access tokens**: Unlike some other GCS wrappers, daiR does not authenticate on startup and store access tokens in the environment. Instead it generates tokens on a per-call basis. If you prefer to generate one token per session, you can use `dai_token()` to store your token in an object and pass that object directly into the API call functions using the latter's `token =` parameter. This also means you can use auth functions from pretty much any other GCS wrapper to generate your token.
+[^also_gcs]: It is also possible to create processors manually in the Google Cloud Console.
 
 ```{r, eval = FALSE}
 library(daiR)
 ```
 
-Now let's try this thing out.
+You now need to think of a globally unique display name for the processor, to be supplied with the `create_processor()` function. Processor names are shared across the GCS ecosystem, so simple ones like "processor" or "my-processor" are probably already taken. Instead try something along the lines of "thomas-proc-2024".
+
+If successful, the `create_processor()` function will return a processor id, a 16-character sequence of random numbers and letters. Take good note of it.
+
+```{r, eval = FALSE}
+## NOT RUN
+create_processor("<my-unique-processor-name>")
+```
+
+It is possible to create more than one processor, but most users only need one at any given time. To view your processors, run `daiR::get_processors()`. Should you wish to delete one, use `daiR::delete_processor()`. There are several [different types of processors](https://dair.info/articles/faqs.html#how-many-different-processors-are-there) available, but most users will want the generic one (called `OCR_PROCESSOR`), and this is what `daiR::create_processor()` defaults to.
+
+### Step 3: Store the processor id as an environment variable
+
+Every Document AI processing request needs to contain a processor id, so I strongly recommend storing the id you just generated in an environment variable called `DAI_PROCESSOR_ID`. All of `daiR`'s processing functions are set up to look for this variable. 
+
+Open your `.Renviron` file by calling `usethis::edit_r_environ()`. Add `DAI_PROCESSOR_ID="<your processor id>"` on a separate line. Save `.Renviron` and restart RStudio.   
+
+That's it. If these things are in place, you can start processing.
 
 ## Synchronous processing
 
@@ -77,6 +86,7 @@ The quickest and easiest way to OCR with DAI is through synchronous processing. 
 We can try with a sample pdf from the CIA's Freedom of Information Act Electronic Reading Room: 
 
 ```{r, eval = FALSE}
+library(daiR)
 setwd(tempdir())
 download.file("https://www.cia.gov/readingroom/docs/AGH%2C%20LASLO_0011.pdf", 
               destfile = "CIA.pdf", 

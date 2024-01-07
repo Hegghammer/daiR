@@ -415,5 +415,5 @@ make_hocr <- function(type,
     }
     dest <- file.path(dir, outfile_name)
     xml2::write_xml(doc, dest)
-    message(glue::glue("hOCR file named '{outfile_name}' generated in {dir}."))
+    cli::cli_alert_success(glue::glue("hOCR file named '{outfile_name}' generated in {dir}."))
 }

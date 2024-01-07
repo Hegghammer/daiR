@@ -114,12 +114,10 @@ gcloud projects add-iam-policy-binding $PROJ_ID \
 gcloud projects add-iam-policy-binding %PROJ_ID% --member="serviceAccount:%SA_ID%@%PROJ_ID%.iam.gserviceaccount.com" --role="roles/owner"
 ```
 
-Then enable the Document AI API:
+Finally, enable the Document AI API:
 
 `gcloud services enable documentai.googleapis.com`
 
-### 8. Create processor
+###
 
-Finally we create a processor. This is best done in the Google Cloud Console at [this link](https://console.cloud.google.com/ai/document-ai/processors). When you arrive there, make sure that the correct project is selected (see the top blue bar). You may need to search - by clicking the project field and then entering your new project id in the "search projects and folders" field, then clicking your project. Now type "processors" in the main search field and click "Processors - Document AI".
-
-Click the blue button labelled “Create processor”. On the next page, choose the “Document OCR” processor type. A pane should open on your right where you can choose a name for the processor. Call it what you like; the name is mainly for your own reference. Select a location (where you want your files to be processed), then click create. You should now see a page listing the processor’s Name, ID, Status and other attributes. The main thing you want here is the ID. Select it and copy it to the clipboard. Open your `.Renviron` file by calling `usethis::edit_r_environ()`. Add `DAI_PROCESSOR_ID="<your processor id>"` on a separate line. Save `.Renviron` and restart RStudio.
+You can now pick up from Step 2 in [this vignette](https://dair.info/articles/using_document_ai.html).

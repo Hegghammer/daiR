@@ -5,16 +5,16 @@
 \title{Get information about processor}
 \usage{
 get_processor_info(
+  proc_id,
   proj_id = get_project_id(),
-  proc_id = Sys.getenv("DAI_PROCESSOR_ID"),
   loc = "eu",
   token = dai_token()
 )
 }
 \arguments{
-\item{proj_id}{a GCS project id.}
-
 \item{proc_id}{a Document AI processor id.}
+
+\item{proj_id}{a GCS project id.}
 
 \item{loc}{a two-letter region code; "eu" or "us".}
 
@@ -26,6 +26,12 @@ a list.
 }
 \description{
 Get information about processor
+}
+\details{
+Retrieves information about a processor. For more
+information about processors, see the Google Document AI
+documentation at
+\url{https://cloud.google.com/document-ai/docs/}.
 }
 \examples{
 \dontrun{

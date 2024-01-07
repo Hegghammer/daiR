@@ -2,7 +2,7 @@
 % Please edit documentation in R/processors.R
 \name{get_processors}
 \alias{get_processors}
-\title{List all processors available in a project}
+\title{List created processors}
 \usage{
 get_processors(proj_id = get_project_id(), loc = "eu", token = dai_token())
 }
@@ -18,11 +18,13 @@ another auth function.}
 a dataframe.
 }
 \description{
-List all processors available in a project
+List created processors
 }
 \details{
-For more information about processors, see the Google Document
-AI documentation at \url{https://cloud.google.com/document-ai/docs/}.
+Retrieves information about the processors that have been created
+in the current project and are ready for use. For more information about
+processors, see the Google Document AI documentation at
+\url{https://cloud.google.com/document-ai/docs/}.
 }
 \examples{
 \dontrun{

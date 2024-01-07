@@ -56,7 +56,7 @@ dai_token <- function(path = Sys.getenv("GCS_AUTH_FILE"),
   }
 
   if (!inherits(token, "Token2.0")) {
-    message("Invalid GCS credentials. No token produced.")
+    cli::cli_alert_danger("Invalid GCS credentials. No token produced.")
   } else {
     return(token)
   }
@@ -78,7 +78,6 @@ dai_user <- function() {
 
   response <- httr::GET("https://www.googleapis.com/oauth2/v1/userinfo",
                     httr::config(token = dai_token()))
-
   return(response)
 
   }
@@ -103,9 +102,7 @@ get_project_id <- function(path = Sys.getenv("GCS_AUTH_FILE")) {
     }
 
   json <- jsonlite::fromJSON(path)
-
   project_id <- json$project_id
-
   return(project_id)
 
   }
