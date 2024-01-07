@@ -97,7 +97,7 @@ make_hocr <- function(type,
             blocks <- parsed_sync[["document"]][["pages"]][[i]][["blocks"]]
             block_coords <- get_vertices(blocks)
             block_coords <- purrr::map(block_coords, transpose_block)
-            block_coords <- purrr::map(block_coords, process_coord)
+            block_coords <- purrr::map(block_coords, ~ process_coord(.x, x2_page, y2_page))
             block_segments <- purrr::map(blocks, ~.x[["layout"]][["textAnchor"]][["textSegments"]][[1]])
             if (is.null(block_segments[[1]][["startIndex"]])) block_segments[[1]][["startIndex"]] <- 0
 
@@ -108,8 +108,8 @@ make_hocr <- function(type,
                 div2 <- xml2::xml_children(div1)[[j]]
                 paras <- parsed_sync[["document"]][["pages"]][[i]][["paragraphs"]]
                 all_para_coords <- purrr::map(paras, ~.x[["layout"]][["boundingPoly"]][["normalizedVertices"]])
-                all_para_coords <- purrr::map(all_para_coords , transpose_block)
-                all_para_coords <- purrr::map(all_para_coords , process_coord)
+                all_para_coords <- purrr::map(all_para_coords, transpose_block)
+                all_para_coords <- purrr::map(all_para_coords, ~ process_coord(.x, x2_page, y2_page))
                 all_para_segments <- purrr::map(paras, ~.x[["layout"]][["textAnchor"]][["textSegments"]][[1]])
                 if (is.null(all_para_segments[[1]][["startIndex"]])) all_para_segments[[1]][["startIndex"]] <- 0
                 block_start_ind <- as.integer(block_segments[[j]][["startIndex"]])
@@ -133,7 +133,7 @@ make_hocr <- function(type,
                     lines <- parsed_sync[["document"]][["pages"]][[i]][["lines"]]
                     all_line_coords <- purrr::map(lines, ~.x[["layout"]][["boundingPoly"]][["normalizedVertices"]])
                     all_line_coords <- purrr::map(all_line_coords, transpose_block)
-                    all_line_coords <- purrr::map(all_line_coords, process_coord)
+                    all_line_coords <- purrr::map(all_line_coords, ~ process_coord(.x, x2_page, y2_page))
                     all_line_segments <- purrr::map(lines, ~.x[["layout"]][["textAnchor"]][["textSegments"]][[1]])
                     if (is.null(all_line_segments[[1]][["startIndex"]])) all_line_segments[[1]][["startIndex"]] <- 0
                     para_start_ind <- as.integer(para_segments[[k]][["startIndex"]])
@@ -157,7 +157,7 @@ make_hocr <- function(type,
                         tokens <- parsed_sync[["document"]][["pages"]][[i]][["tokens"]]
                         all_token_coords <- purrr::map(tokens, ~.x[["layout"]][["boundingPoly"]][["normalizedVertices"]])
                         all_token_coords <- purrr::map(all_token_coords, transpose_block)
-                        all_token_coords <- purrr::map(all_token_coords, process_coord)
+                        all_token_coords <- purrr::map(all_token_coords, ~ process_coord(.x, x2_page, y2_page))
                         all_token_segments <- purrr::map(tokens, ~.x[["layout"]][["textAnchor"]][["textSegments"]][[1]])
                         if (is.null(all_token_segments[[1]][["startIndex"]])) all_token_segments[[1]][["startIndex"]] <- 0
                         all_token_confs <- unlist(purrr::map(tokens, ~.x[["layout"]][["confidence"]]))
@@ -228,7 +228,7 @@ make_hocr <- function(type,
             xml2::xml_add_child(body, "div", class = 'ocr_page', id = id, title = bbox)
             div1 <- xml2::xml_children(body)[[i]]
             block_coords <- parsed[["pages"]][["blocks"]][[i]][["layout"]][["boundingPoly"]][["normalizedVertices"]]
-            block_coords <- purrr::map(block_coords, process_coord)    
+            block_coords <- purrr::map(block_coords, ~ process_coord(.x, x2_page, y2_page))    
             block_segments <- parsed[["pages"]][["blocks"]][[i]][["layout"]][["textAnchor"]][["textSegments"]]
             if (is.null(block_segments[[1]][["startIndex"]])) block_segments[[1]][["startIndex"]] <- 0
 
@@ -238,7 +238,7 @@ make_hocr <- function(type,
                 xml2::xml_add_child(div1, "div", class = 'ocr_carea', id = id, title = bbox)
                 div2 <- xml2::xml_children(div1)[[j]]
                 all_para_coords <- parsed[["pages"]][["paragraphs"]][[i]][["layout"]][["boundingPoly"]][["normalizedVertices"]]
-                all_para_coords <- purrr::map(all_para_coords , process_coord)
+                all_para_coords <- purrr::map(all_para_coords , ~ process_coord(.x, x2_page, y2_page))
                 all_para_segments <- parsed[["pages"]][["paragraphs"]][[i]][["layout"]][["textAnchor"]][["textSegments"]]
                 if (is.null(all_para_segments[[1]][["startIndex"]])) all_para_segments[[1]][["startIndex"]] <- 0
                 block_start_ind <- as.integer(block_segments[[j]][["startIndex"]])
@@ -260,7 +260,7 @@ make_hocr <- function(type,
                     xml2::xml_add_child(div2, "p", class = 'ocr_par', id = id, title = bbox)
                     p <- xml2::xml_children(div2)[[k]]
                     all_line_coords <- parsed[["pages"]][["lines"]][[i]][["layout"]][["boundingPoly"]][["normalizedVertices"]]
-                    all_line_coords <- purrr::map(all_line_coords, process_coord)
+                    all_line_coords <- purrr::map(all_line_coords, ~ process_coord(.x, x2_page, y2_page))
                     all_line_segments <- parsed[["pages"]][["lines"]][[i]][["layout"]][["textAnchor"]][["textSegments"]]
                     if (is.null(all_line_segments[[1]][["startIndex"]])) all_line_segments[[1]][["startIndex"]] <- 0
                     para_start_ind <- as.integer(para_segments[[k]][["startIndex"]])
@@ -282,7 +282,7 @@ make_hocr <- function(type,
                         xml2::xml_add_child(p, "span", class = 'ocr_line', id = id, title = bbox)
                         span1 <- xml2::xml_children(p)[[l]]
                         all_token_coords <- parsed[["pages"]][["tokens"]][[i]][["layout"]][["boundingPoly"]][["normalizedVertices"]]
-                        all_token_coords <- purrr::map(all_token_coords, process_coord)
+                        all_token_coords <- purrr::map(all_token_coords, ~ process_coord(.x, x2_page, y2_page))
                         all_token_segments <- parsed[["pages"]][["tokens"]][[i]][["layout"]][["textAnchor"]][["textSegments"]]
                         if (is.null(all_token_segments[[1]][["startIndex"]])) all_token_segments[[1]][["startIndex"]] <- 0
                         all_token_confs <- parsed[["pages"]][["tokens"]][[i]][["layout"]][["confidence"]]
@@ -335,11 +335,13 @@ make_hocr <- function(type,
 #' @description Helper function for \code{make_hocr()}.
 #'
 #' @param coord list of coordinates
+#' @param x2_page integer
+#' @param y2_page integer
 #' @return list of coordinates
 #' 
 #' @noRd
 
-process_coord <- function(coord) {
+process_coord <- function(coord, x2_page, y2_page) {
     coord[coord < 0] = 0 # avoid negatives
     coord[["xs"]] <- round(coord[["xs"]] * x2_page)
     coord[["ys"]] <- round(coord[["ys"]] * y2_page)
@@ -350,10 +352,10 @@ process_coord <- function(coord) {
 #'
 #' @description Helper function for \code{make_hocr()}.
 #'
-#' @param coord a list of coordinates
-#' @param index an integer 
+#' @param coord list of coordinates
+#' @param index integer 
 #' 
-#' @return a string
+#' @return string
 #' @noRd
 
 mk_bbox <- function(coord, index) {
