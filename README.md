@@ -93,4 +93,5 @@ Please note that the daiR project is released with a [Contributor Code of Conduc
 [![CRAN status](https://www.r-pkg.org/badges/version/daiR)](https://CRAN.R-project.org/package=daiR)
 [![R-CMD-check](https://github.com/Hegghammer/daiR/actions/workflows/package-check.yml/badge.svg)](https://github.com/Hegghammer/daiR/actions/workflows/package-check.yml)
 [![Codecov test coverage](https://codecov.io/gh/Hegghammer/daiR/branch/master/graph/badge.svg)](https://app.codecov.io/gh/Hegghammer/daiR?branch=master)
+[![](http://cranlogs.r-pkg.org/badges/grand-total/daiR?color=blue)](https://cran.r-project.org/package=daiR)
 <!-- badges: end -->
