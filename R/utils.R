@@ -142,7 +142,7 @@ pdf_to_binbase <- function(file) {
 #' @export
 #' @examples
 #' \dontrun{
-#' img_encoded <- pdf_to_binbase("image.png")
+#' img_encoded <- img_to_binbase("image.png")
 #' }
 
 img_to_binbase <- function(file) {
@@ -160,7 +160,7 @@ img_to_binbase <- function(file) {
   magick::image_write(img_gray, 
                       filepath, 
                       format = "tiff", 
-                      #compression = "JPEG"
+                      compression = "JPEG"
                       )
 
   enc <- base64enc::base64encode(filepath)
