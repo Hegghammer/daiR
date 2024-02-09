@@ -16,8 +16,6 @@ reference:
     contents:
       - '`dai_sync`'
       - '`dai_async`'
-      - '`dai_sync_tab`'
-      - '`dai_async_tab`'
       - '`dai_status`'
       - '`dai_notify`'
   - title: Get tables

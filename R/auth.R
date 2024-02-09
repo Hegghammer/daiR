@@ -78,7 +78,7 @@ dai_user <- function() {
 
   response <- httr::GET("https://www.googleapis.com/oauth2/v1/userinfo",
                     httr::config(token = dai_token()))
-  return(response)
+  httr::content(response)
 
   }
 
@@ -101,8 +101,6 @@ get_project_id <- function(path = Sys.getenv("GCS_AUTH_FILE")) {
     stop("Error: invalid path parameter.")
     }
 
-  json <- jsonlite::fromJSON(path)
-  project_id <- json$project_id
-  return(project_id)
+  jsonlite::fromJSON(path)$project_id
 
   }

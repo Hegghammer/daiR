@@ -7,8 +7,9 @@
 #'
 #' @param type one of "sync" or "async" depending on
 #' the function used to process the original document.
-#' @param output either a HTTP response object (from `dai_sync()`) or
-#' the path to a JSON file (from `dai_async`).
+#' @param output either a HTTP response object from 
+#' \code{dai_sync()} or the path to a JSON file from 
+#' \code{dai_async()}.
 #' @return a token data frame
 #'
 #' @details The location variables are: token, start index, end index,
@@ -31,7 +32,7 @@ build_token_df <- function(
                            ) {
 
     # checks
-    if (!(length(type) == 1) || !(type %in% c("sync", "async", "sync-tab", "async-tab"))) {
+    if (!(length(type) == 1) || !(type %in% c("sync", "async"))) {
         stop("Invalid type parameter.")
     }
 
@@ -103,6 +104,7 @@ build_token_df <- function(
         conf <- unlist(purrr::map(pages_tokens_async, ~.x$layout$confidence))
 
     }
+    
     # insert implicit start index
     start_ind <- c(1, start_ind)
 
@@ -193,8 +195,9 @@ build_token_df <- function(
 #'
 #' @param type one of "sync" or "async" depending on
 #' the function used to process the original document.
-#' @param output either a HTTP response object (from `dai_sync()`) or
-#' the path to a JSON file (from `dai_async`).
+#' @param output either a HTTP response object from 
+#' \code{dai_sync()} or the path to a JSON file from 
+#' \code{dai_async()}.
 #' @return a block data frame
 #'
 #' @details The dataframe variables are: page number, block number,
@@ -215,7 +218,7 @@ build_token_df <- function(
     ) {
 
         # checks
-        if (!(length(type) == 1) || !(type %in% c("sync", "async", "sync-tab", "async-tab"))) {
+        if (!(length(type) == 1) || !(type %in% c("sync", "async"))) {
             stop("Invalid type parameter.")
         }
 
