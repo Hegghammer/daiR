@@ -692,44 +692,43 @@ reassign_tokens2 <- function(token_df,
   if (!(length(page) == 1 && is.numeric(page) && round(page) == page && page > 0)) {
     stop("Invalid page parameter.")
   }
-  
+
   if (page > max(token_df$page, na.rm = TRUE)) {
     stop("No such page number in this dataframe.")
   }
-  
+
   # get only selected page
   page_df <- token_df[token_df$page == page, ]
-  
+
   page_df$block[page_df$top >= block$top &
                   page_df$bottom <= block$bottom &
                   page_df$left >= block$left &
                   page_df$right <= block$right] <- as.numeric(block$block)
-  
+
   # if only page
   if (page == 1 && max(token_df$page) == 1) {
     new_token_df <- page_df
-    
+
     # if first of several
   } else if (page == 1 && max(token_df$page) > 1) {
     succeeding <- token_df[token_df$page > page, ]
     new_token_df <- rbind(page_df, succeeding)
-    
+
     # if last of several
   } else if (page > 1 && page == max(token_df$page)) {
     preceding <- token_df[token_df$page < page, ]
     new_token_df <- rbind(preceding, page_df)
-    
+
     # if in middle
   } else {
     preceding <- token_df[token_df$page < page, ]
     succeeding <- token_df[token_df$page > page, ]
     new_token_df <- rbind(preceding, page_df, succeeding)
   }
-  
+ 
   row.names(new_token_df) <- NULL
-  
+
   return(new_token_df)
-  
 }
 
 #' Extract block coordinates from labelme files
@@ -757,33 +756,33 @@ reassign_tokens2 <- function(token_df,
 from_labelme <- function(json,
                          page = 1
 ) {
-  
+
   # checks
   if (!(is_json(json))) {
     stop("Input file not .json.")
   }
-  
+
   if (!(length(page) == 1 && is.numeric(page) && round(page) == page && page > 0)) {
     stop("Invalid page parameter.")
   }
   
   # extract the coordinates
   info <- jsonlite::fromJSON(json)
-  
+
   height <- info[[6]]
-  
+
   width <- info[[7]]
-  
+
   left <- info[[3]][[2]][[1]][1, 1] / width
-  
+
   right <- info[[3]][[2]][[1]][2, 1] / width
-  
+
   top <- info[[3]][[2]][[1]][1, 2] / height
-  
+
   bottom <- info[[3]][[2]][[1]][2, 2] / height
-  
+
   block <- info[[3]][[1]]
-  
+
   blockdata <- data.frame(page = page,
                           block = as.numeric(block),
                           conf = NA,
@@ -792,11 +791,10 @@ from_labelme <- function(json,
                           top = top,
                           bottom = bottom
   )
-  
-  return(blockdata)
-  
-}
 
+  return(blockdata)
+
+}
 
 #' Inspect revised block bounding boxes
 #'

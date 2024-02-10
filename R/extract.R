@@ -178,7 +178,7 @@ get_tables <- function(object,
       stop("Invalid file input.")
     }
     
-    if (!(is_json(file))) {
+    if (!(is_json(object))) {
       stop("Input file not .json. Is the file in your working directory?")
     }
     
@@ -235,19 +235,53 @@ get_entities <- function(object,
   if (type == "sync") {
     
     if (!(inherits(object, "response"))) {
-      stop("Output parameter not pointing to valid response object.")
+      stop("Object parameter not pointing to valid response object.")
     }
+        
+    parsed <- httr::content(object, as = "parsed")
+    
+    if (!("pages" %in% names(parsed) || "pages" %in% names(parsed$document))) {
+      stop("The supplied object is not from a successful HTTP request.")
+    }
+    
+    if (!("text" %in% names(parsed) || "text" %in% names(parsed$document))) {
+      stop("DAI found no text. Was the page blank?")
+    }
+    
     parsed <- httr::content(object)
-    entity_pages <- parsed$document$entities
-    purrr::map(entity_pages, build_sync_entity_df)
+    
+    if (!("entities" %in% names(parsed$document))) {
+      message("Document AI identified no entities in the document.")
+      return(NULL)
+    } else {
+      entity_pages <- parsed$document$entities
+      purrr::map(entity_pages, build_sync_entity_df)
+    }
     
   } else if (type == "async") {
+    
     if (!(is_json(object))) {
-      stop("Output parameter not pointing to valid JSON file.")
+      stop("Object parameter not pointing to valid JSON file.")
     }
+    
     parsed <- jsonlite::fromJSON(object)
-    entity_pages <- parsed$entities$properties
-    purrr::map(entity_pages, build_async_entity_df)
+    
+    if (!("pages" %in% names(parsed))) {
+      stop("JSON not in right format. Is it from DAI?")
+    }
+    
+    if (!("text" %in% names(parsed))) {
+      stop("DAI found no text. Was the document blank?")
+    }
+    
+    if (!("entities" %in% names(parsed))) {
+      message("Document AI identified no entities in the document.")
+      return(NULL)
+    } else {
+      parsed <- jsonlite::fromJSON(object)
+      entity_pages <- parsed$entities$properties
+      purrr::map(entity_pages, build_async_entity_df)
+    }
   } 
 } 
 

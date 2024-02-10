@@ -16,6 +16,8 @@ json <- jsonlite::toJSON(fill)
 madeup_json_file <- tempfile(fileext = ".json")
 write(json, madeup_json_file)
 
+## MERGE SHARDS ----------------------------------------
+
 ## BUILD_TOKEN_DF --------------------------------------------------------------
 
 test_that("build_token_df() warns of input errors", {
@@ -415,3 +417,5 @@ test_that("from_labelme() produces a properly formatted df", {
 })
 
 unlink(madeup_json_file, force = TRUE)
+
+## REDRAW_BLOCKS ----------------------------------------

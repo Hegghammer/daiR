@@ -10,7 +10,11 @@ list_strings <- list("foo", "bar")
 df <- mtcars
 matrix <- as.matrix(mtcars)
 
-# GET_PROCESSORS --------------------------------------------------------------------------------
+## LIST_PROCESSOR_TYPES ----------------------------------------
+
+## CREATE_PROCESSOR
+
+## GET_PROCESSORS ---------------------------------------------------------
 
 test_that("get_processors calls out input errors", {
   skip_on_cran()
@@ -44,7 +48,7 @@ test_that("get_processors gets processors", {
   expect_equal(class(response), "data.frame")
 })
 
-# GET_PROCESSOR_INFO--------------------------------------------------------------------------------
+## GET_PROCESSOR_INFO----------------------------------------------------
 
 test_that("get_processor_info calls out input errors", {
   skip_on_cran()
@@ -87,7 +91,7 @@ test_that("get_processor_info gets processor info", {
   expect_equal(class(response), "list")
 })
 
-# GET_PROCESSOR_VERSIONS--------------------------------------------------------------------------------
+## GET_PROCESSOR_VERSIONS ----------------------------------------
 
 test_that("get_processor_versions calls out input errors", {
   skip_on_cran()
@@ -129,3 +133,9 @@ test_that("get_processor_versions gets processor versions", {
   response <- suppressWarnings(get_processor_versions(proc_id = get_processors()$id[1]))
   expect_equal(class(response), "data.frame")
 })
+
+## ENABLE_PROCESSOR ----------------------------------------
+
+## DISABLE_PROCESSOR ----------------------------------------
+
+## DELETE_PROCESSOR ----------------------------------------

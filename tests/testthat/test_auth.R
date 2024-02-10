@@ -65,8 +65,9 @@ test_that("dai_user works", {
   skip_on_cran()
   skip_on_ci()
   skip_if_offline()
-  response <- dai_user()
-  expect_equal(response[[2]], 200)
+  info <- dai_user()
+  expect_true(is.list(info))
+  expect_true("id" %in% names(info))
 })
 
 ## GET_PROJECT_ID --------------------------------------------------------------
