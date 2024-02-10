@@ -24,7 +24,7 @@ single text file corresponding to the parent document."><meta property="og:image
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
       </span>
     </div>
 
@@ -92,7 +92,7 @@ single text file corresponding to the parent document."><meta property="og:image
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Merge shards</h1>
-    <small class="dont-index">Source: <a href="https://github.com/Hegghammer/daiR/blob/HEAD/R/inspect_output.R" class="external-link"><code>R/inspect_output.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/Hegghammer/daiR/blob/HEAD/R/manipulate.R" class="external-link"><code>R/manipulate.R</code></a></small>
     <div class="hidden name"><code>merge_shards.Rd</code></div>
     </div>
 
@@ -127,16 +127,15 @@ single text file corresponding to the parent document.</p>
 not on .json files directly. It also presupposes that the .txt filenames
 have the same name stems as the .json files from which they were extracted.
 For the v1 API, this means files ending with "-0.txt", "-1.txt", "-2.txt",
-and so forth. For the v1beta2 API, it means files ending with
-"-page-1-to-100.txt", "-page-101-to-200.txt", etc. The safest approach is
-to generate .txt files using <code><a href="text_from_dai_file.html">text_from_dai_file()</a></code> with the <code>save_to_file</code>
-parameter set to TRUE.</p>
+and so forth. The safest approach is to generate .txt files using
+<code><a href="get_text.html">get_text()</a></code> with the <code>save_to_file</code> parameter set to TRUE.</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span><span class="fu">merge_shards</span><span class="op">(</span>source_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span>, dest_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">merge_shards</span><span class="op">(</span>source_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span>, dest_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>

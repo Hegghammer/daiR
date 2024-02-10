@@ -47,7 +47,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
       </span>
     </div>
 
@@ -202,39 +202,45 @@ in the search field, click on “cloud document ai API”, and then
 <div class="section level4">
 <h4 id="step-2-create-a-processor">Step 2: Create a processor<a class="anchor" aria-label="anchor" href="#step-2-create-a-processor"></a>
 </h4>
-<p>Open the navigation menu on the left again. Scroll down, almost to
-the bottom, till you see “Document AI” (under the group heading
-“Artificial intelligence”). Click on “Document AI”.</p>
-<p>Now click the blue button labelled “Create processor”. On the next
-page, choose the “Document OCR” processor type. A pane should open on
-your right where you can choose a name for the processor. Call it what
-you like; the name is mainly for your own reference. Select a location
-(where you want your files to be processed), then click create.</p>
-<p>You should now see a page listing the processor’s Name, ID, Status
-and other attributes. The main thing you want here is the
-<strong>ID</strong>. Select it and copy it to the clipboard.</p>
+<p>In order to process documents, you need to set up an OCR processor.
+This is done in R using the function
+<code><a href="../reference/create_processor.html">daiR::create_processor</a></code>.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> We start by loading the <code>daiR</code>
+package.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Hegghammer/daiR" class="external-link">daiR</a></span><span class="op">)</span></span></code></pre></div>
+<p>You now need to think of a globally unique display name for the
+processor, to be supplied with the <code><a href="../reference/create_processor.html">create_processor()</a></code>
+function. Processor names are shared across the GCS ecosystem, so simple
+ones like “processor” or “my-processor” are probably already taken.
+Instead try something along the lines of “thomas-proc-2024”.</p>
+<p>If successful, the <code><a href="../reference/create_processor.html">create_processor()</a></code> function will
+return a processor id, a 16-character sequence of random numbers and
+letters. Take good note of it.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## NOT RUN</span></span>
+<span><span class="fu"><a href="../reference/create_processor.html">create_processor</a></span><span class="op">(</span><span class="st">"&lt;my-unique-processor-name&gt;"</span><span class="op">)</span></span></code></pre></div>
+<p>It is possible to create more than one processor, but most users only
+need one at any given time. To view your processors, run
+<code><a href="../reference/get_processors.html">daiR::get_processors()</a></code>. Should you wish to delete one, use
+<code><a href="../reference/delete_processor.html">daiR::delete_processor()</a></code>. There are several <a href="https://dair.info/articles/faqs.html#how-many-different-processors-are-there" class="external-link">different
+types of processors</a> available, but most users will want the generic
+one (called <code>OCR_PROCESSOR</code>), and this is what
+<code><a href="../reference/create_processor.html">daiR::create_processor()</a></code> defaults to.</p>
 </div>
 <div class="section level4">
 <h4 id="step-3-store-the-processor-id-as-an-environment-variable">Step 3: Store the processor id as an environment variable<a class="anchor" aria-label="anchor" href="#step-3-store-the-processor-id-as-an-environment-variable"></a>
 </h4>
+<p>Every Document AI processing request needs to contain a processor id,
+so I strongly recommend storing the id you just generated in an
+environment variable called <code>DAI_PROCESSOR_ID</code>. All of
+<code>daiR</code>’s processing functions are set up to look for this
+variable.</p>
 <p>Open your <code>.Renviron</code> file by calling
 <code><a href="https://usethis.r-lib.org/reference/edit.html" class="external-link">usethis::edit_r_environ()</a></code>. Add
 <code>DAI_PROCESSOR_ID="&lt;your processor id&gt;"</code> on a separate
 line. Save <code>.Renviron</code> and restart RStudio.</p>
-<p>That’s it. If these things are in place, you can start processing
-right after loading the package.</p>
-<p><strong>A note on access tokens</strong>: Unlike some other GCS
-wrappers, daiR does not authenticate on startup and store access tokens
-in the environment. Instead it generates tokens on a per-call basis. If
-you prefer to generate one token per session, you can use
-<code><a href="../reference/dai_token.html">dai_token()</a></code> to store your token in an object and pass that
-object directly into the API call functions using the latter’s
-<code>token =</code> parameter. This also means you can use auth
-functions from pretty much any other GCS wrapper to generate your
-token.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Hegghammer/daiR" class="external-link">daiR</a></span><span class="op">)</span></span></code></pre></div>
-<p>Now let’s try this thing out.</p>
+<p>That’s it. If these things are in place, you can start
+processing.</p>
 </div>
 </div>
 <div class="section level3">
@@ -246,18 +252,19 @@ the processor and get the result into your R environment within
 seconds.</p>
 <p>We can try with a sample pdf from the CIA’s Freedom of Information
 Act Electronic Reading Room:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">setwd</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Hegghammer/daiR" class="external-link">daiR</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">setwd</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span><span class="st">"https://www.cia.gov/readingroom/docs/AGH%2C%20LASLO_0011.pdf"</span>, </span>
 <span>              destfile <span class="op">=</span> <span class="st">"CIA.pdf"</span>, </span>
 <span>              mode <span class="op">=</span> <span class="st">"wb"</span><span class="op">)</span></span></code></pre></div>
 <p>We send it to Document AI with <code><a href="../reference/dai_sync.html">dai_sync()</a></code> and store the
 HTTP response in an object, for example <code>response</code>.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">response1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_sync.html">dai_sync</a></span><span class="op">(</span><span class="st">"CIA.pdf"</span><span class="op">)</span></span></code></pre></div>
 <p>Then we extract the text with
 <code><a href="../reference/text_from_dai_response.html">text_from_dai_response()</a></code>:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/text_from_dai_response.html">text_from_dai_response</a></span><span class="op">(</span><span class="va">response1</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">text</span><span class="op">)</span></span></code></pre></div>
 <p>Synchronous processing is very convenient, but has two limitations.
@@ -270,7 +277,7 @@ usually easier to process them asynchronously.</p>
 vector of filepaths, and this can make sense for medium sized batches. I
 recommend adding a small pause so as not to run into rate limit issues.
 A sample script might look like this:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## NOT RUN</span></span>
 <span><span class="co"># Create vector of document filepaths</span></span>
 <span><span class="va">myfiles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"file1.png"</span>, <span class="st">"file2.png"</span>, <span class="st">"file3.png"</span><span class="op">)</span></span>
@@ -308,17 +315,17 @@ vectorized, so you can send multiple files with a single call. For this
 vignette, however, we’ll just use a single document; the same as in the
 previous example.</p>
 <p>The first step is to upload the source file(s) to a Google Storage
-bucket where DAI can find it.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+bucket where DAI can find it.<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a></p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://code.markedmondson.me/googleCloudStorageR/" class="external-link">googleCloudStorageR</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html" class="external-link">gcs_upload</a></span><span class="op">(</span><span class="st">"CIA.pdf"</span><span class="op">)</span></span></code></pre></div>
 <p>Let’s check that our file made it safely:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html" class="external-link">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>We’re now ready to send it off to Document AI with
 <code>daiR</code>’s workhorse function, <code><a href="../reference/dai_async.html">dai_async()</a></code>, as
 follows:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">response2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_async.html">dai_async</a></span><span class="op">(</span><span class="st">"CIA.pdf"</span><span class="op">)</span></span></code></pre></div>
 <p>A few words about this function. Its core parameter,
 <code>files</code>, tells DAI what to process. You can submit either
@@ -350,11 +357,11 @@ Just pass the response object from your <code><a href="../reference/dai_async.ht
 the parentheses, and it will tell you whether the job is finished. It
 won’t tell you how much time remains, but in my experience, processing
 takes about 5-20 seconds per page.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/dai_status.html">dai_status</a></span><span class="op">(</span><span class="va">response2</span><span class="op">)</span></span></code></pre></div>
 <p>When <code><a href="../reference/dai_status.html">dai_status()</a></code> says “SUCCEEDED”, the json output
 files are waiting for you in the bucket.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html" class="external-link">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Output file names look cryptic, but there’s a logic to them, namely:
 <code>"&lt;job_number&gt;/&lt;document_number&gt;/&lt;filename&gt;-&lt;shard_number&gt;.json"</code>
@@ -362,15 +369,15 @@ Our file will thus take the form
 <code>"&lt;job_number&gt;/0/CIA-0.json"</code>, with
 <code>&lt;job_number&gt;</code> changing from one processing call to the
 next. Let us store the name in a vector for simplicity:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## NOT RUN</span></span>
 <span><span class="va">our_file</span> <span class="op">&lt;-</span> <span class="st">"&lt;job_number&gt;/0/CIA-0.json"</span></span></code></pre></div>
 <p>Now let’s download it and save it under a simpler name:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html" class="external-link">gcs_get_object</a></span><span class="op">(</span><span class="va">our_file</span>, saveToDisk <span class="op">=</span> <span class="st">"CIA.json"</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>Finally we extract the text using
 <code>text_from_dai_file</code>:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/text_from_dai_file.html">text_from_dai_file</a></span><span class="op">(</span><span class="st">"CIA.json"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">text</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -389,13 +396,13 @@ solution is to make a function that sends files off individually with a
 small wait in between. Say we have a vector called
 <code>big_batch</code> containing thousands of filenames. First we would
 make a function like this:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">process_slowly</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">file</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="../reference/dai_async.html">dai_async</a></span><span class="op">(</span><span class="va">file</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">15</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <p>Then we would iterate it over our file vector:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## NOT RUN</span></span>
 <span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">big_batch</span>, <span class="va">process_slowly</span><span class="op">)</span></span></code></pre></div>
 <p>This will hold up your console for a while, so it may be worth doing
@@ -420,7 +427,7 @@ with the OCR as well.</p>
 </h2>
 <p>If you have long PDFs, DAI will break the output into shards, meaning
 that, for a single PDF file, you may get back multiple JSON files named
-<code>*-1.json</code>, <code>*-2.json</code>, etc.</p>
+<code>*-1.json</code>, <code>*-2.json</code>m, etc.</p>
 <p>To weave the text back together again, you can use the
 <code><a href="../reference/merge_shards.html">merge_shards()</a></code> function. It works on text files, not JSON
 files, so you need to extract the text from the JSONs first. You also
@@ -430,22 +437,23 @@ need to keep the name stem – turning <code>document-1.json</code> into
 be done by setting the <code>save_to_file</code> parameter to
 <code>TRUE</code> in <code><a href="../reference/text_from_dai_file.html">text_from_dai_file()</a></code>.</p>
 <p>Here is a sample workflow:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="do">## NOT RUN</span></span>
-<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>shards <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"longdoc-1.json"</span>, <span class="st">"longdoc-2.json"</span>, <span class="st">"longdoc-3.json"</span>)</span>
-<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">"txt_split"</span>)</span>
-<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">"txt_joined"</span>)</span>
-<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="fu">map</span>(shards, <span class="sc">~</span> <span class="fu">text_from_dai_file</span>(.x, <span class="at">save_to_file =</span> <span class="cn">TRUE</span>, <span class="at">dest_dir =</span> <span class="st">"txt_split"</span>)</span>
-<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="fu">merge_shards</span>(<span class="at">source_dir =</span> <span class="st">"txt_split"</span>, <span class="at">dest_dir =</span> <span class="st">"txt_joined"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="do">## NOT RUN</span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>shards <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"longdoc-1.json"</span>, <span class="st">"longdoc-2.json"</span>, <span class="st">"longdoc-3.json"</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="fu">c</span>(<span class="st">"txt_split"</span>, <span class="st">"txt_joined"</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="fu">map</span>(shards, <span class="sc">~</span> <span class="fu">text_from_dai_file</span>(.x, <span class="at">save_to_file =</span> <span class="cn">TRUE</span>, <span class="at">dest_dir =</span> <span class="st">"txt_split"</span>)</span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a><span class="fu">merge_shards</span>(<span class="at">source_dir =</span> <span class="st">"txt_split"</span>, <span class="at">dest_dir =</span> <span class="st">"txt_joined"</span>)</span></code></pre></div>
 </div>
 <div class="footnotes footnotes-end-of-document">
 <hr>
 <ol>
-<li id="fn1"><p>Note that if you do not have a
+<li id="fn1"><p>It is also possible to create processors manually in the
+Google Cloud Console.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>Note that if you do not have a
 <code>GCS_DEFAULT_BUCKET</code> variable in your .Renviron file, you
 will need to either set a default bucket for the current session with
 <code>gcs_global_bucket("&lt;a bucket name&gt;")</code> or supply a
 <code>bucket = "&lt;a bucket name&gt;"</code> parameter explicitly
-inside <code><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html" class="external-link">gcs_upload()</a></code>.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+inside <code><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html" class="external-link">gcs_upload()</a></code>.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
   </div>

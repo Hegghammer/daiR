@@ -47,7 +47,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
       </span>
     </div>
 
@@ -142,8 +142,8 @@ tidy format. Having been designed primarily for processing business
 documents, Google Document AI has very powerful table extraction
 capabilities. With the help of the <code>daiR</code> package, you can
 get these tables into R dataframes with a single line of code.</p>
-<p>To extract table data, we use the <code><a href="../reference/dai_sync_tab.html">dai_sync_tab()</a></code> and
-<code><a href="../reference/dai_async_tab.html">dai_async_tab()</a></code> commands. They work much like their
+<p>To extract table data, we use the <code><a href="../reference/defunct.html">dai_sync_tab()</a></code> and
+<code><a href="../reference/defunct.html">dai_async_tab()</a></code> commands. They work much like their
 siblings <code><a href="../reference/dai_sync.html">dai_sync()</a></code>/<code><a href="../reference/dai_async.html">dai_async()</a></code> except that
 their responses also include table data. In return, the
 <code>*sync_tab()</code> functions have weaker language support (they
@@ -152,8 +152,8 @@ currently only work for English-language documents).<a href="#fn1" class="footno
 <code><a href="../reference/tables_from_dai_response.html">tables_from_dai_response()</a></code> and
 <code><a href="../reference/tables_from_dai_file.html">tables_from_dai_file()</a></code>. They do the same thing, but take
 different inputs. You use the former for response objects obtained with
-<code><a href="../reference/dai_sync_tab.html">dai_sync_tab()</a></code> and the latter for .json files obtained with
-<code><a href="../reference/dai_async_tab.html">dai_async_tab()</a></code>.</p>
+<code><a href="../reference/defunct.html">dai_sync_tab()</a></code> and the latter for .json files obtained with
+<code><a href="../reference/defunct.html">dai_async_tab()</a></code>.</p>
 <div class="section level2">
 <h2 id="tables-from-response-objects">Tables from response objects<a class="anchor" aria-label="anchor" href="#tables-from-response-objects"></a>
 </h2>
@@ -168,7 +168,7 @@ Tobacco Industry Documents</a>. It contains four tables like this:</p>
 <span>              destfile <span class="op">=</span> <span class="st">"tobacco.pdf"</span>,</span>
 <span>              mode <span class="op">=</span> <span class="st">"wb"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_sync_tab.html">dai_sync_tab</a></span><span class="op">(</span><span class="st">"tobacco.pdf"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/defunct.html">dai_sync_tab</a></span><span class="op">(</span><span class="st">"tobacco.pdf"</span><span class="op">)</span></span></code></pre></div>
 <p>To get the tables into R, we pass the response object
 (<code>resp</code>) to our extraction function:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -191,7 +191,7 @@ looks like in my RStudio before any cleaning:</p>
 <div class="section level2">
 <h2 id="tables-from-json-files">Tables from json files<a class="anchor" aria-label="anchor" href="#tables-from-json-files"></a>
 </h2>
-<p>With json files obtained from <code><a href="../reference/dai_async_tab.html">dai_async_tab()</a></code> the
+<p>With json files obtained from <code><a href="../reference/defunct.html">dai_async_tab()</a></code> the
 process is very similar, except that we pass a filepath instead of a
 response object to the extraction function. If we processed the same
 document asynchronously and obtained a file named

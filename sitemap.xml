@@ -67,10 +67,10 @@
     <loc>/reference/build_token_df.html</loc>
   </url>
   <url>
-    <loc>/reference/dai_async.html</loc>
+    <loc>/reference/create_processor.html</loc>
   </url>
   <url>
-    <loc>/reference/dai_async_tab.html</loc>
+    <loc>/reference/dai_async.html</loc>
   </url>
   <url>
     <loc>/reference/dai_auth.html</loc>
@@ -85,19 +85,31 @@
     <loc>/reference/dai_sync.html</loc>
   </url>
   <url>
-    <loc>/reference/dai_sync_tab.html</loc>
-  </url>
-  <url>
     <loc>/reference/dai_token.html</loc>
   </url>
   <url>
     <loc>/reference/dai_user.html</loc>
   </url>
   <url>
+    <loc>/reference/defunct.html</loc>
+  </url>
+  <url>
+    <loc>/reference/delete_processor.html</loc>
+  </url>
+  <url>
+    <loc>/reference/deprecated.html</loc>
+  </url>
+  <url>
+    <loc>/reference/disable_processor.html</loc>
+  </url>
+  <url>
     <loc>/reference/dot-onAttach.html</loc>
   </url>
   <url>
     <loc>/reference/draw_blocks.html</loc>
+  </url>
+  <url>
+    <loc>/reference/draw_entities.html</loc>
   </url>
   <url>
     <loc>/reference/draw_lines.html</loc>
@@ -109,7 +121,13 @@
     <loc>/reference/draw_tokens.html</loc>
   </url>
   <url>
+    <loc>/reference/enable_processor.html</loc>
+  </url>
+  <url>
     <loc>/reference/from_labelme.html</loc>
+  </url>
+  <url>
+    <loc>/reference/get_entities.html</loc>
   </url>
   <url>
     <loc>/reference/get_processor_info.html</loc>
@@ -122,6 +140,12 @@
   </url>
   <url>
     <loc>/reference/get_project_id.html</loc>
+  </url>
+  <url>
+    <loc>/reference/get_tables.html</loc>
+  </url>
+  <url>
+    <loc>/reference/get_text.html</loc>
   </url>
   <url>
     <loc>/reference/image_to_pdf.html</loc>
@@ -140,6 +164,9 @@
   </url>
   <url>
     <loc>/reference/is_pdf.html</loc>
+  </url>
+  <url>
+    <loc>/reference/list_processor_types.html</loc>
   </url>
   <url>
     <loc>/reference/make_hocr.html</loc>

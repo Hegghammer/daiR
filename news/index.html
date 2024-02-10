@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
       </span>
     </div>
 
@@ -95,8 +95,19 @@
     </div>
 
     <div class="section level2">
+<h2 class="page-header" data-toc-text="1.0.0" id="dair-100">daiR 1.0.0<a class="anchor" aria-label="anchor" href="#dair-100"></a></h2>
+<ul><li>Major revision.</li>
+<li>Added several processor-related functions following an update of the Google Document AI REST API. These include <code><a href="../reference/list_processor_types.html">list_processor_types()</a></code>, <code><a href="../reference/create_processor.html">create_processor()</a></code>, <code><a href="../reference/enable_processor.html">enable_processor()</a></code>, <code><a href="../reference/disable_processor.html">disable_processor()</a></code>, and <code><a href="../reference/delete_processor.html">delete_processor()</a></code>.</li>
+<li>Added <code><a href="../reference/get_text.html">get_text()</a></code> and <code><a href="../reference/get_tables.html">get_tables()</a></code>, which replace <code><a href="../reference/text_from_dai_response.html">text_from_dai_response()</a></code>, <code><a href="../reference/text_from_dai_file.html">text_from_dai_file()</a></code>, <code><a href="../reference/tables_from_dai_response.html">tables_from_dai_response()</a></code> and <code><a href="../reference/tables_from_dai_file.html">tables_from_dai_file()</a></code>.</li>
+<li>Added <code><a href="../reference/get_entities.html">get_entities()</a></code> and <code><a href="../reference/draw_entities.html">draw_entities()</a></code>.</li>
+<li>Removed <code>dai_tab_sync()</code> and <code>dai_tab_async()</code> following Google’s discontinuation of the v1beta2 endpoint on 31 January 2024.</li>
+<li>Modified the parameters of the <code>draw*()</code> functions for better consistency with other functions.</li>
+<li>Renamed the <code>.R</code> files and regrouped the functions.</li>
+<li>Added prettier messages using the <code>cli</code> package.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="page-header" data-toc-text="0.9.9" id="dair-099">daiR 0.9.9<small>2023-09-07</small><a class="anchor" aria-label="anchor" href="#dair-099"></a></h2>
-<ul><li>Added the function <code>make_hocr</code> to convert DAI output to hOCR files, thereby faciliting the creation of searchable PDFs.</li>
+<ul><li>Added the function <code>make_hocr</code> to convert DAI output to hOCR files, thereby facilitating the creation of searchable PDFs.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.9.8" id="dair-098">daiR 0.9.8<a class="anchor" aria-label="anchor" href="#dair-098"></a></h2>
@@ -105,7 +116,7 @@
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.9.7" id="dair-097">daiR 0.9.7<a class="anchor" aria-label="anchor" href="#dair-097"></a></h2>
-<ul><li>Changed the “<code>draw_*</code>” functions so they work with response objects (from <code><a href="../reference/dai_sync.html">dai_sync()</a></code> and <code><a href="../reference/dai_sync_tab.html">dai_sync_tab()</a></code>) as well as with json files from <code><a href="../reference/dai_async_tab.html">dai_async_tab()</a></code>.</li>
+<ul><li>Changed the “<code>draw_*</code>” functions so they work with response objects (from <code><a href="../reference/dai_sync.html">dai_sync()</a></code> and <code><a href="../reference/defunct.html">dai_sync_tab()</a></code>) as well as with json files from <code><a href="../reference/defunct.html">dai_async_tab()</a></code>.</li>
 <li>Changed the “<code>draw_*</code>” functions to allow customizing color and thickness of lines around bounding boxes.</li>
 <li>Modified <code><a href="../reference/tables_from_dai_response.html">tables_from_dai_response()</a></code> so that it handles response objects from <code><a href="../reference/dai_sync.html">dai_sync()</a></code> with form parser processors.</li>
 </ul></div>
@@ -147,7 +158,7 @@
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.6.0" id="dair-060">daiR 0.6.0<a class="anchor" aria-label="anchor" href="#dair-060"></a></h2>
-<ul><li>New processing functions adapted to the new stable release of Document AI API (v1). The <code><a href="../reference/dai_sync.html">dai_sync()</a></code>/<code><a href="../reference/dai_async.html">dai_async()</a></code> functions now access the new v1 endpoint, which has foreign language support. However, the v1 endpoint currently does not support table extraction, so the old processing functions (which access the v1beta2 endpoint) are kept under the new names <code><a href="../reference/dai_sync_tab.html">dai_sync_tab()</a></code> and <code><a href="../reference/dai_async_tab.html">dai_async_tab()</a></code>. I expect this to be a temporary solution until DAI’s capabilities are consolidated in a single endpoint, at which stage the <code>*_tab()</code> functions will be phased out.</li>
+<ul><li>New processing functions adapted to the new stable release of Document AI API (v1). The <code><a href="../reference/dai_sync.html">dai_sync()</a></code>/<code><a href="../reference/dai_async.html">dai_async()</a></code> functions now access the new v1 endpoint, which has foreign language support. However, the v1 endpoint currently does not support table extraction, so the old processing functions (which access the v1beta2 endpoint) are kept under the new names <code><a href="../reference/defunct.html">dai_sync_tab()</a></code> and <code><a href="../reference/defunct.html">dai_async_tab()</a></code>. I expect this to be a temporary solution until DAI’s capabilities are consolidated in a single endpoint, at which stage the <code>*_tab()</code> functions will be phased out.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.4.0" id="dair-040">daiR 0.4.0<a class="anchor" aria-label="anchor" href="#dair-040"></a></h2>

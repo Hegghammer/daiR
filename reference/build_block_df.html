@@ -26,7 +26,7 @@ are location variables such as page coordinates and page numbers."><meta propert
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
       </span>
     </div>
 
@@ -94,7 +94,7 @@ are location variables such as page coordinates and page numbers."><meta propert
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Build block dataframe</h1>
-    <small class="dont-index">Source: <a href="https://github.com/Hegghammer/daiR/blob/HEAD/R/process_output.R" class="external-link"><code>R/process_output.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/Hegghammer/daiR/blob/HEAD/R/manipulate.R" class="external-link"><code>R/manipulate.R</code></a></small>
     <div class="hidden name"><code>build_block_df.Rd</code></div>
     </div>
 
@@ -106,19 +106,20 @@ are location variables such as page coordinates and page numbers.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">build_block_df</span><span class="op">(</span><span class="va">type</span>, <span class="va">output</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">build_block_df</span><span class="op">(</span><span class="va">object</span>, type <span class="op">=</span> <span class="st">"sync"</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>type</dt>
+    <dl><dt>object</dt>
+<dd><p>either a HTTP response object from
+<code><a href="dai_sync.html">dai_sync()</a></code> or the path to a JSON file from
+<code><a href="dai_async.html">dai_async()</a></code>.</p></dd>
+
+
+<dt>type</dt>
 <dd><p>one of "sync" or "async" depending on
 the function used to process the original document.</p></dd>
-
-
-<dt>output</dt>
-<dd><p>either a HTTP response object (from <code><a href="dai_sync.html">dai_sync()</a></code>) or
-the path to a JSON file (from <code>dai_async</code>).</p></dd>
 
 </dl></div>
     <div id="value">
@@ -137,9 +138,10 @@ and bottom boundary.</p>
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span><span class="va">block_df</span> <span class="op">&lt;-</span> <span class="fu">build_block_df</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"async"</span>, output <span class="op">=</span> <span class="st">"pdf_output.json"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="dai_sync.html">dai_sync</a></span><span class="op">(</span><span class="st">"file.pdf"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">block_df</span> <span class="op">&lt;-</span> <span class="fu">build_block_df</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"sync"</span>, output <span class="op">=</span> <span class="va">resp</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">block_df</span> <span class="op">&lt;-</span> <span class="fu">build_block_df</span><span class="op">(</span><span class="va">resp</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">block_df</span> <span class="op">&lt;-</span> <span class="fu">build_block_df</span><span class="op">(</span><span class="st">"pdf_output.json"</span>, type <span class="op">=</span> <span class="st">"async"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>

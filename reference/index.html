@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
       </span>
     </div>
 
@@ -126,14 +126,6 @@
         </td>
         <td><p>OCR documents asynchronously</p></td>
       </tr><tr><td>
-          <p><code><a href="dai_sync_tab.html">dai_sync_tab()</a></code> </p>
-        </td>
-        <td><p>OCR synchronously and get table data</p></td>
-      </tr><tr><td>
-          <p><code><a href="dai_async_tab.html">dai_async_tab()</a></code> </p>
-        </td>
-        <td><p>OCR asynchronously and get table data</p></td>
-      </tr><tr><td>
           <p><code><a href="dai_status.html">dai_status()</a></code> </p>
         </td>
         <td><p>Check job status</p></td>
@@ -142,54 +134,54 @@
         </td>
         <td><p>Notify on job completion</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
-          <h2 id="get-tables">Get tables <a href="#get-tables" class="anchor" aria-hidden="true"></a></h2>
+          <h2 id="extract-data">Extract data <a href="#extract-data" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p>
         </th>
       </tr></tbody><tbody><tr><td>
-          <p><code><a href="tables_from_dai_file.html">tables_from_dai_file()</a></code> </p>
+          <p><code><a href="get_text.html">get_text()</a></code> </p>
         </td>
-        <td><p>Get tables from output file</p></td>
+        <td><p>Get text</p></td>
       </tr><tr><td>
-          <p><code><a href="tables_from_dai_response.html">tables_from_dai_response()</a></code> </p>
+          <p><code><a href="get_tables.html">get_tables()</a></code> </p>
         </td>
-        <td><p>Get tables from response object</p></td>
+        <td><p>Get tables</p></td>
+      </tr><tr><td>
+          <p><code><a href="get_entities.html">get_entities()</a></code> </p>
+        </td>
+        <td><p>Get entities</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
-          <h2 id="inspect-output">Inspect output <a href="#inspect-output" class="anchor" aria-hidden="true"></a></h2>
+          <h2 id="draw-bounding-boxes">Draw bounding boxes <a href="#draw-bounding-boxes" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p>
         </th>
       </tr></tbody><tbody><tr><td>
-          <p><code><a href="text_from_dai_response.html">text_from_dai_response()</a></code> </p>
+          <p><code><a href="draw_blocks.html">draw_blocks()</a></code> </p>
         </td>
-        <td><p>Get text from HTTP response object</p></td>
+        <td><p>Draw block bounding boxes</p></td>
       </tr><tr><td>
-          <p><code><a href="text_from_dai_file.html">text_from_dai_file()</a></code> </p>
+          <p><code><a href="draw_paragraphs.html">draw_paragraphs()</a></code> </p>
         </td>
-        <td><p>Get text from output file</p></td>
+        <td><p>Draw paragraph bounding boxes</p></td>
       </tr><tr><td>
+          <p><code><a href="draw_lines.html">draw_lines()</a></code> </p>
+        </td>
+        <td><p>Draw line bounding boxes</p></td>
+      </tr><tr><td>
+          <p><code><a href="draw_tokens.html">draw_tokens()</a></code> </p>
+        </td>
+        <td><p>Draw token bounding boxes</p></td>
+      </tr><tr><td>
+          <p><code><a href="draw_entities.html">draw_entities()</a></code> </p>
+        </td>
+        <td><p>Draw entity bounding boxes</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="manipulate-output">Manipulate output <a href="#manipulate-output" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr></tbody><tbody><tr><td>
           <p><code><a href="merge_shards.html">merge_shards()</a></code> </p>
         </td>
         <td><p>Merge shards</p></td>
       </tr><tr><td>
-          <p><code><a href="draw_blocks.html">draw_blocks()</a></code> </p>
-        </td>
-        <td><p>Draw block bounding boxes on source document</p></td>
-      </tr><tr><td>
-          <p><code><a href="draw_paragraphs.html">draw_paragraphs()</a></code> </p>
-        </td>
-        <td><p>Draw paragraph bounding boxes on source document</p></td>
-      </tr><tr><td>
-          <p><code><a href="draw_lines.html">draw_lines()</a></code> </p>
-        </td>
-        <td><p>Inspect line bounding boxes</p></td>
-      </tr><tr><td>
-          <p><code><a href="draw_tokens.html">draw_tokens()</a></code> </p>
-        </td>
-        <td><p>Inspect token bounding boxes</p></td>
-      </tr></tbody><tbody><tr><th colspan="2">
-          <h2 id="process-output">Process output <a href="#process-output" class="anchor" aria-hidden="true"></a></h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr></tbody><tbody><tr><td>
           <p><code><a href="build_token_df.html">build_token_df()</a></code> </p>
         </td>
         <td><p>Build token dataframe</p></td>
@@ -222,17 +214,37 @@
           <p class="section-desc"></p>
         </th>
       </tr></tbody><tbody><tr><td>
+          <p><code><a href="list_processor_types.html">list_processor_types()</a></code> </p>
+        </td>
+        <td><p>List available processor types</p></td>
+      </tr><tr><td>
+          <p><code><a href="create_processor.html">create_processor()</a></code> </p>
+        </td>
+        <td><p>Create processor</p></td>
+      </tr><tr><td>
+          <p><code><a href="get_processors.html">get_processors()</a></code> </p>
+        </td>
+        <td><p>List created processors</p></td>
+      </tr><tr><td>
           <p><code><a href="get_processor_info.html">get_processor_info()</a></code> </p>
         </td>
         <td><p>Get information about processor</p></td>
       </tr><tr><td>
           <p><code><a href="get_processor_versions.html">get_processor_versions()</a></code> </p>
         </td>
-        <td><p>List available processor versions</p></td>
+        <td><p>List available versions of processor</p></td>
       </tr><tr><td>
-          <p><code><a href="get_processors.html">get_processors()</a></code> </p>
+          <p><code><a href="enable_processor.html">enable_processor()</a></code> </p>
         </td>
-        <td><p>List all processors available in a project</p></td>
+        <td><p>Enable processor</p></td>
+      </tr><tr><td>
+          <p><code><a href="disable_processor.html">disable_processor()</a></code> </p>
+        </td>
+        <td><p>Disable processor</p></td>
+      </tr><tr><td>
+          <p><code><a href="delete_processor.html">delete_processor()</a></code> </p>
+        </td>
+        <td><p>Delete processor</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="create-xml">Create XML <a href="#create-xml" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p>
@@ -250,10 +262,6 @@
         </td>
         <td><p>Convert images to PDF</p></td>
       </tr><tr><td>
-          <p><code><a href="is_colour.html">is_colour()</a></code> </p>
-        </td>
-        <td><p>Check that a string is a valid colour representation</p></td>
-      </tr><tr><td>
           <p><code><a href="is_pdf.html">is_pdf()</a></code> </p>
         </td>
         <td><p>Check that a file is PDF</p></td>
@@ -261,6 +269,10 @@
           <p><code><a href="is_json.html">is_json()</a></code> </p>
         </td>
         <td><p>Check that a file is JSON</p></td>
+      </tr><tr><td>
+          <p><code><a href="is_colour.html">is_colour()</a></code> </p>
+        </td>
+        <td><p>Check that a string is a valid colour representation</p></td>
       </tr><tr><td>
           <p><code><a href="pdf_to_binbase.html">pdf_to_binbase()</a></code> </p>
         </td>
@@ -273,6 +285,34 @@
           <p><code><a href="dot-onAttach.html">.onAttach()</a></code> </p>
         </td>
         <td><p>Run when daiR is attached</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="deprecated">Deprecated <a href="#deprecated" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="tables_from_dai_response.html">tables_from_dai_response()</a></code> </p>
+        </td>
+        <td><p>Get tables from response object</p></td>
+      </tr><tr><td>
+          <p><code><a href="tables_from_dai_file.html">tables_from_dai_file()</a></code> </p>
+        </td>
+        <td><p>Get tables from output file</p></td>
+      </tr><tr><td>
+          <p><code><a href="text_from_dai_response.html">text_from_dai_response()</a></code> </p>
+        </td>
+        <td><p>Get text from HTTP response object</p></td>
+      </tr><tr><td>
+          <p><code><a href="text_from_dai_file.html">text_from_dai_file()</a></code> </p>
+        </td>
+        <td><p>Get text from output file</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="defunct">Defunct <a href="#defunct" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="defunct.html">dai_sync_tab()</a></code> <code><a href="defunct.html">dai_async_tab()</a></code> </p>
+        </td>
+        <td><p>Defunct functions</p></td>
       </tr></tbody></table></div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

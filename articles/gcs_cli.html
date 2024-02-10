@@ -47,7 +47,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">daiR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
       </span>
     </div>
 
@@ -250,7 +250,7 @@ RStudio:</p>
 <h4 id="linux-and-mac-3">Linux and Mac<a class="anchor" aria-label="anchor" href="#linux-and-mac-3"></a>
 </h4>
 <pre><code>gcloud iam service-accounts keys create key.json \
---iam-account=$(SA_ID)@$(PROJ_ID).iam.gserviceaccount.com</code></pre>
+--iam-account=$SA_ID@$PROJ_ID.iam.gserviceaccount.com</code></pre>
 </div>
 <div class="section level4">
 <h4 id="windows-3">Windows<a class="anchor" aria-label="anchor" href="#windows-3"></a>
@@ -272,39 +272,21 @@ location and set the path as an environment variable
 <h4 id="linux-mac">Linux &amp; Mac<a class="anchor" aria-label="anchor" href="#linux-mac"></a>
 </h4>
 <pre><code>gcloud projects add-iam-policy-binding $PROJ_ID \
---member="serviceAccount:$(SA_ID)@$(PROJ_ID).iam.gserviceaccount.com" \
---role="roles/owner"`</code></pre>
+--member="serviceAccount:$SA_ID@$PROJ_ID.iam.gserviceaccount.com" \
+--role="roles/owner"</code></pre>
 </div>
 <div class="section level4">
 <h4 id="windows-4">Windows<a class="anchor" aria-label="anchor" href="#windows-4"></a>
 </h4>
 <pre><code>gcloud projects add-iam-policy-binding %PROJ_ID% --member="serviceAccount:%SA_ID%@%PROJ_ID%.iam.gserviceaccount.com" --role="roles/owner"</code></pre>
-<p>Then enable the Document AI API:</p>
+<p>Finally, enable the Document AI API:</p>
 <p><code>gcloud services enable documentai.googleapis.com</code></p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="create-processor">8. Create processor<a class="anchor" aria-label="anchor" href="#create-processor"></a>
-</h3>
-<p>Finally we create a processor. This is best done in the Google Cloud
-Console at <a href="https://console.cloud.google.com/ai/document-ai/processors" class="external-link">this
-link</a>. When you arrive there, make sure that the correct project is
-selected (see the top blue bar). You may need to search - by clicking
-the project field and then entering your new project id in the “search
-projects and folders” field, then clicking your project. Now type
-“processors” in the main search field and click “Processors - Document
-AI”.</p>
-<p>Click the blue button labelled “Create processor”. On the next page,
-choose the “Document OCR” processor type. A pane should open on your
-right where you can choose a name for the processor. Call it what you
-like; the name is mainly for your own reference. Select a location
-(where you want your files to be processed), then click create. You
-should now see a page listing the processor’s Name, ID, Status and other
-attributes. The main thing you want here is the ID. Select it and copy
-it to the clipboard. Open your <code>.Renviron</code> file by calling
-<code><a href="https://usethis.r-lib.org/reference/edit.html" class="external-link">usethis::edit_r_environ()</a></code>. Add
-<code>DAI_PROCESSOR_ID="&lt;your processor id&gt;"</code> on a separate
-line. Save <code>.Renviron</code> and restart RStudio.</p>
+<h3 id="section"></h3>
+<p>You can now pick up from Step 2 in <a href="https://dair.info/articles/using_document_ai.html" class="external-link">this
+vignette</a>.</p>
 </div>
   </div>
 
