@@ -41,7 +41,7 @@ image_to_pdf <- function(files, pdf_name) {
                       format = "pdf",
                       pdf_name
                       )
-  }
+}
 
 #' Check that a file is PDF
 #'
@@ -101,7 +101,7 @@ is_colour <- function(x) {
 
   return(!(inherits(result, "try-error")))
 
- }
+}
 
 #' PDF to base64 tiff
 #'
@@ -132,7 +132,7 @@ pdf_to_binbase <- function(file) {
 
   return(enc)
 
-  }
+}
 
 #' Image to base64 tiff
 #'
@@ -167,4 +167,4 @@ img_to_binbase <- function(file) {
 
   return(enc)
 
-  }
+}

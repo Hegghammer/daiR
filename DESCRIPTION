@@ -1,6 +1,6 @@
 Package: daiR
 Title: Interface with Google Cloud Document AI API
-Version: 0.9.9
+Version: 1.0.0
 Authors@R: 
     person("Thomas", "Hegghammer", , "hegghammer@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-6253-1518"))
@@ -30,6 +30,7 @@ Imports:
     grDevices,
     httr,
     jsonlite,
+    lifecycle,
     magick,
     pdftools,
     purrr,

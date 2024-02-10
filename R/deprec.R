@@ -1,3 +1,15 @@
+#' Deprecated functions
+#'
+#' @description
+#' `r lifecycle::badge("deprecated")`
+#'
+#' If there's a known replacement, calling the function
+#' will tell you about it.
+#'
+#' @keywords internal
+#' @name deprecated
+NULL
+
 #' Get text from HTTP response object
 #'
 #' @description
