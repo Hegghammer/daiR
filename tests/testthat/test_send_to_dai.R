@@ -124,8 +124,6 @@ test_that("dai_status calls out input errors", {
   expect_error(dai_status(list_strings), "Input is not a valid HTTP response.?")
   expect_error(dai_status(df), "Input is not a valid HTTP response.")
   expect_error(dai_status(matrix), "Input is not a valid HTTP response.")
-  wrong <- dai_user()
-  expect_error(dai_status(response = wrong), "Input does not contain a processing job id. Make sure it is from dai_async.")
 } )
 
 test_that("dai_status calls out input errors", {

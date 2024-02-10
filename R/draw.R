@@ -38,77 +38,77 @@ draw_blocks <- function(object,
                         fontcol = "blue",
                         fontsize = 4
 ) {
-  
+
   # checks
   if (!(length(type) == 1) || !(type %in% c("sync", "async"))) {
     stop("Invalid type parameter.")
   }
-  
+
   if (length(prefix) > 1 || is.numeric(prefix)) {
     stop("Invalid prefix parameter.")
   }
-  
+
   if (length(dir) > 1 || !(is.character(dir))) {
     stop("Invalid dir parameter. Must be a valid folder path.")
   }
-  
+
   if (!(length(linecol) == 1) || !(daiR::is_colour(linecol)) || is.na(linecol)) {
     stop("Invalid linecol parameter. Must be a single valid colour representation.")
   }
-  
+
   if (!(is.numeric(linewd) && length(linewd) == 1)) {
     stop("Invalid linewd parameter. Must be a single number.")
   }
-  
+
   if (!(length(fontcol) == 1) || !(daiR::is_colour(fontcol)) || is.na(fontcol)) {
     stop("Invalid fontcol parameter. Must be a single valid colour representation.")
   }
-  
+
   if (!(is.numeric(fontsize) && length(fontsize) == 1)) {
     stop("Invalid fontsize parameter. Must be a single number.")
   }
-  
+
   dir <- normalizePath(dir, winslash = "/")
-  
+
   if (type == "sync") {
-    
+
     if (!(inherits(object, "response"))) {
       stop("Object parameter not pointing to valid response object.")
     }
-    
+
     # extract a list with pagewise sets of block boundary boxes
     parsed <- httr::content(object)
     pages <- parsed$document$pages
     pages_blocks <- purrr::map(pages, ~.x$blocks)
     pagewise_block_sets <- purrr::map(pages_blocks, get_vertices)
     pagewise_block_sets <- purrr::map(pagewise_block_sets, transpose_page)
-    
+
     # decode base64 and save to temp images
     page_imgs_base64 <- purrr::map_chr(pages, ~.x$image$content)
     imgs <- purrr::map2_chr(page_imgs_base64, seq_along(page_imgs_base64), decode_and_save)
-    
+
   } else if (type == "async") {
-    
+
     if (!(is_json(object))) {
       stop("Object parameter not pointing to valid JSON file.")
     }
-    
+
     # extract a list with pagewise sets of block boundary boxes
     parsed <- jsonlite::fromJSON(object)
     pages_blocks <- parsed$pages$blocks
     pagewise_block_sets <- purrr::map(pages_blocks, ~.x$layout$boundingPoly$normalizedVertices)
-    
+
     # decode base64 and save to temp images
     page_imgs_base64 <- parsed$pages$image$content
     imgs <- purrr::map2_chr(page_imgs_base64, seq_along(page_imgs_base64), decode_and_save)
-    
+
   }
-  
+
   # Plot bounding boxes
   purrr::map2(pagewise_block_sets, seq_along(pagewise_block_sets), ~ process_image(.x, .y, imgs, type, object, prefix, dir, filename, dest, linecol, linewd, fontcol, fontsize, boxtype = "blocks"))
-  
+
   cli::cli_alert_success(glue::glue("Generated {length(pages_blocks)} image(s) with block bounding boxes."))
-  
+
 }
 
 #' Draw paragraph bounding boxes
@@ -151,7 +151,7 @@ draw_paragraphs <- function(object,
                             fontcol = "blue",
                             fontsize = 4
 ) {
-  
+
   # checks
   if (!(length(type) == 1) || !(type %in% c("sync", "async"))) {
     stop("Invalid type parameter.")
@@ -160,68 +160,68 @@ draw_paragraphs <- function(object,
   if (length(prefix) > 1 || is.numeric(prefix)) {
     stop("Invalid prefix parameter.")
   }
-  
+
   if (length(dir) > 1 || !(is.character(dir))) {
     stop("Invalid dir parameter. Must be a valid folder path.")
   }
-  
+
   if (!(length(linecol) == 1) || !(daiR::is_colour(linecol)) || is.na(linecol)) {
     stop("Invalid linecol parameter. Must be a single valid colour representation.")
   }
-  
+
   if (!(is.numeric(linewd) && length(linewd) == 1)) {
     stop("Invalid linewd parameter. Must be a single number.")
   }
-  
+
   if (!(length(fontcol) == 1) || !(daiR::is_colour(fontcol)) || is.na(fontcol)) {
     stop("Invalid fontcol parameter. Must be a single valid colour representation.")
   }
-  
+
   if (!(is.numeric(fontsize) && length(fontsize) == 1)) {
     stop("Invalid fontsize parameter. Must be a single number.")
   }
-  
+
   dir <- normalizePath(dir, winslash = "/")
-  
+
   if (type == "sync") {
-    
+
     if (!(inherits(object, "response"))) {
       stop("Object parameter not pointing to valid response object.")
     }
-    
+
     # extract a list with pagewise sets of block boundary boxes
     parsed <- httr::content(object)
     pages <- parsed$document$pages
     pages_paragraphs <- purrr::map(pages, ~.x$paragraphs)
     pagewise_block_sets <- purrr::map(pages_paragraphs, get_vertices)
     pagewise_block_sets <- purrr::map(pagewise_block_sets, transpose_page)
-    
+
     # decode base64 and save to temp images
     page_imgs_base64 <- purrr::map_chr(pages, ~.x$image$content)
     imgs <- purrr::map2_chr(page_imgs_base64, seq_along(page_imgs_base64), decode_and_save)
-    
+
   } else if (type == "async") {
-    
+
     if (!(is_json(object))) {
       stop("Object parameter not pointing to valid JSON file.")
     }
-    
+
     # extract a list with pagewise sets of block boundary boxes
     parsed <- jsonlite::fromJSON(object)
     pages_paragraphs <- parsed$pages$paragraphs
     pagewise_block_sets <- purrr::map(pages_paragraphs, ~.x$layout$boundingPoly$normalizedVertices)
-    
+
     # decode base64 and save to temp images
     page_imgs_base64 <- parsed$pages$image$content
     imgs <- purrr::map2_chr(page_imgs_base64, seq_along(page_imgs_base64), decode_and_save)
-    
-  } 
-  
+
+  }
+
   # Plot bounding boxes
   purrr::map2(pagewise_block_sets, seq_along(pagewise_block_sets), ~ process_image(.x, .y, imgs, type, object, prefix, dir, filename, dest, linecol, linewd, fontcol, fontsize, boxtype = "paragraphs"))
-  
+
   cli::cli_alert_success(glue::glue("Generated {length(pages_paragraphs)} image(s) with paragraph bounding boxes."))
-  
+
 }
 
 #' Draw line bounding boxes
@@ -264,77 +264,77 @@ draw_lines <- function(object,
                        fontcol = "blue",
                        fontsize = 4
 ) {
-  
+
   # checks
   if (!(length(type) == 1) || !(type %in% c("sync", "async"))) {
     stop("Invalid type parameter.")
   }
-  
+
   if (length(prefix) > 1 || is.numeric(prefix)) {
     stop("Invalid prefix parameter.")
   }
-  
+
   if (length(dir) > 1 || !(is.character(dir))) {
     stop("Invalid dir parameter. Must be a valid folder path.")
   }
-  
+
   if (!(length(linecol) == 1) || !(daiR::is_colour(linecol)) || is.na(linecol)) {
     stop("Invalid linecol parameter. Must be a single valid colour representation.")
   }
-  
+
   if (!(is.numeric(linewd) && length(linewd) == 1)) {
     stop("Invalid linewd parameter. Must be a single number.")
   }
-  
+
   if (!(length(fontcol) == 1) || !(daiR::is_colour(fontcol)) || is.na(fontcol)) {
     stop("Invalid fontcol parameter. Must be a single valid colour representation.")
   }
-  
+
   if (!(is.numeric(fontsize) && length(fontsize) == 1)) {
     stop("Invalid fontsize parameter. Must be a single number.")
   }
-  
+
   dir <- normalizePath(dir, winslash = "/")
-  
+
   if (type == "sync") {
-    
+
     if (!(inherits(object, "response"))) {
       stop("Object parameter not pointing to valid response object.")
     }
-    
+
     # extract a list with pagewise sets of block boundary boxes
     parsed <- httr::content(object)
     pages <- parsed$document$pages
     pages_lines <- purrr::map(pages, ~.x$lines)
     pagewise_block_sets <- purrr::map(pages_lines, get_vertices)
     pagewise_block_sets <- purrr::map(pagewise_block_sets, transpose_page)
-    
+
     # decode base64 and save to temp images
     page_imgs_base64 <- purrr::map_chr(pages, ~.x$image$content)
     imgs <- purrr::map2_chr(page_imgs_base64, seq_along(page_imgs_base64), decode_and_save)
-    
+
   } else if (type == "async") {
-    
+
     if (!(is_json(object))) {
       stop("Object parameter not pointing to valid JSON file.")
     }
-    
+
     # extract a list with pagewise sets of block boundary boxes
     parsed <- jsonlite::fromJSON(object)
     pages_lines <- parsed$pages$lines
     pagewise_block_sets <- purrr::map(pages_lines, ~.x$layout$boundingPoly$normalizedVertices)
-    
+
     # decode base64 and save to temp images
     page_imgs_base64 <- parsed$pages$image$content
     imgs <- purrr::map2_chr(page_imgs_base64, seq_along(page_imgs_base64), decode_and_save)
-    
-  } 
-  
+
+  }
+
   # Plot bounding boxes
   purrr::map2(pagewise_block_sets, seq_along(pagewise_block_sets), ~ process_image(.x, .y, imgs, type, object, prefix, dir, filename, dest, linecol, linewd, fontcol, fontsize, boxtype = "lines"))
-  
+
   cli::cli_alert_success(glue::glue("Generated {length(pages_lines)} image(s) with line bounding boxes."))
-  
+
 }
 
 #' Draw token bounding boxes
@@ -366,7 +366,6 @@ draw_lines <- function(object,
 #' draw_tokens(resp)
 #'
 #' draw_tokens("page.json", type = "async")
-#' }
 
 draw_tokens <- function(object,
                         type = "sync",
@@ -377,7 +376,7 @@ draw_tokens <- function(object,
                         fontcol = "blue",
                         fontsize = 4
 ) {
-  
+
   # checks
   if (!(length(type) == 1) || !(type %in% c("sync", "async"))) {
     stop("Invalid type parameter.")
@@ -386,68 +385,68 @@ draw_tokens <- function(object,
   if (length(prefix) > 1 || is.numeric(prefix)) {
     stop("Invalid prefix parameter.")
   }
-  
+
   if (length(dir) > 1 || !(is.character(dir))) {
     stop("Invalid dir parameter. Must be a valid folder path.")
   }
-  
+ 
   if (!(length(linecol) == 1) || !(daiR::is_colour(linecol)) || is.na(linecol)) {
     stop("Invalid linecol parameter. Must be a single valid colour representation.")
   }
-  
+
   if (!(is.numeric(linewd) && length(linewd) == 1)) {
     stop("Invalid linewd parameter. Must be a single number.")
   }
-  
+
   if (!(length(fontcol) == 1) || !(daiR::is_colour(fontcol)) || is.na(fontcol)) {
     stop("Invalid fontcol parameter. Must be a single valid colour representation.")
   }
-  
+
   if (!(is.numeric(fontsize) && length(fontsize) == 1)) {
     stop("Invalid fontsize parameter. Must be a single number.")
   }
-  
+
   dir <- normalizePath(dir, winslash = "/")
-  
+
   if (type == "sync") {
-    
+
     if (!(inherits(object, "response"))) {
       stop("Object parameter not pointing to valid response object.")
     }
-    
+
     # extract a list with pagewise sets of block boundary boxes
     parsed <- httr::content(object)
     pages <- parsed$document$pages
     pages_tokens <- purrr::map(pages, ~.x$tokens)
     pagewise_block_sets <- purrr::map(pages_tokens, get_vertices)
     pagewise_block_sets <- purrr::map(pagewise_block_sets, transpose_page)
-    
+
     # decode base64 and save to temp images
     page_imgs_base64 <- purrr::map_chr(pages, ~.x$image$content)
     imgs <- purrr::map2_chr(page_imgs_base64, seq_along(page_imgs_base64), decode_and_save)
-    
+
   } else if (type == "async") {
-    
+
     if (!(is_json(object))) {
       stop("Object parameter not pointing to valid JSON file.")
     }
-    
+
     # extract a list with pagewise sets of block boundary boxes
     parsed <- jsonlite::fromJSON(object)
     pages_tokens <- parsed$pages$tokens
     pagewise_block_sets <- purrr::map(pages_tokens, ~.x$layout$boundingPoly$normalizedVertices)
-    
+
     # decode base64 and save to temp images
     page_imgs_base64 <- parsed$pages$image$content
     imgs <- purrr::map2_chr(page_imgs_base64, seq_along(page_imgs_base64), decode_and_save)
-    
+
   }
-  
+
   # Plot bounding boxes
   purrr::map2(pagewise_block_sets, seq_along(pagewise_block_sets), ~ process_image(.x, .y, imgs, type, object, prefix, dir, filename, dest, linecol, linewd, fontcol, fontsize, boxtype = "tokens"))
-  
+
   cli::cli_alert_success(glue::glue("Generated {length(pages_tokens)} image(s) with token bounding boxes."))
-  
+
 }
 
 #' Draw entity bounding boxes
@@ -491,7 +490,7 @@ draw_entities <- function(object,
                           fontcol = "blue",
                           fontsize = 4
 ) {
-  
+
   # checks
   if (!(length(type) == 1) || !(type %in% c("sync", "async"))) {
     stop("Invalid type parameter.")
@@ -500,69 +499,69 @@ draw_entities <- function(object,
   if (length(prefix) > 1 || is.numeric(prefix)) {
     stop("Invalid prefix parameter.")
   }
-  
+
   if (length(dir) > 1 || !(is.character(dir))) {
     stop("Invalid dir parameter. Must be a valid folder path.")
   }
-  
+
   if (!(length(linecol) == 1) || !(daiR::is_colour(linecol)) || is.na(linecol)) {
     stop("Invalid linecol parameter. Must be a single valid colour representation.")
   }
-  
+
   if (!(is.numeric(linewd) && length(linewd) == 1)) {
     stop("Invalid linewd parameter. Must be a single number.")
   }
-  
+
   if (!(length(fontcol) == 1) || !(daiR::is_colour(fontcol)) || is.na(fontcol)) {
     stop("Invalid fontcol parameter. Must be a single valid colour representation.")
   }
-  
+
   if (!(is.numeric(fontsize) && length(fontsize) == 1)) {
     stop("Invalid fontsize parameter. Must be a single number.")
   }
-  
+
   dir <- normalizePath(dir, winslash = "/")
-  
+
   if (type == "sync") {
-    
+
     if (!(inherits(object, "response"))) {
       stop("Object parameter not pointing to valid response object.")
     }
-    
+
     # extract a list with pagewise sets of entity boundary boxes
     parsed <- httr::content(object)
     entities <- parsed$document$entities # each item is a page
     pages_entities <- purrr::map(entities, ~.x$properties)
     pagewise_entities_sets <- purrr::map(pages_entities, get_vertices_entities)
     pagewise_entities_sets <- purrr::map(pagewise_entities_sets, transpose_page)
-    
+
     # decode base64 and save to temp images
     pages <- parsed$document$pages
     page_imgs_base64 <- purrr::map_chr(pages, ~.x$image$content)
     imgs <- purrr::map2_chr(page_imgs_base64, seq_along(page_imgs_base64), decode_and_save)
-    
+
   } else if (type == "async") {
-    
+
     if (!(is_json(object))) {
       stop("Object parameter not pointing to valid JSON file.")
     }
-    
+
     # extract a list with pagewise sets of entity boundary boxes
     parsed <- jsonlite::fromJSON(object)
     pages_entities <- parsed$entities$properties
     pagewise_entities_sets <- purrr::map(pages_entities, ~.x$pageAnchor$pageRefs)
     pagewise_entities_sets <- purrr::map(pagewise_entities_sets, transpose_page_entities)
-    
+
     # decode base64 and save to temp images
     page_imgs_base64 <- parsed$pages$image$content
     imgs <- purrr::map2_chr(page_imgs_base64, seq_along(page_imgs_base64), decode_and_save)
-  } 
-  
+  }
+
   # Plot bounding boxes
   purrr::map2(pagewise_entities_sets, seq_along(pagewise_entities_sets), ~ process_image(.x, .y, imgs, type, object, prefix, dir, filename, dest, linecol, linewd, fontcol, fontsize, boxtype = "entities"))
-  
+
   cli::cli_alert_success(glue::glue("Generated {length(pages_entities)} image(s) with entity bounding boxes."))
-  
+
 }
 
 #' Decode and save base64 image
@@ -571,7 +570,7 @@ draw_entities <- function(object,
 #'
 #' @param base64_string a string with a base64-encoded image.
 #' @param index an integer representing the index of the element in the vector of base64-encoded images 
-#' 
+#'
 #' @noRd
 
 decode_and_save <- function(base64_string, index) {
@@ -593,7 +592,7 @@ decode_and_save <- function(base64_string, index) {
 #' @param linewd interitance from parent function
 #' @param fontcol interitance from parent function
 #' @param fontsize interitance from parent function
-#' 
+#'
 #' @noRd
 
 plot_box <- function(box, index, info, linecol, linewd, fontcol, fontsize) {

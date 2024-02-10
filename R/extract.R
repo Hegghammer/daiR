@@ -27,75 +27,75 @@ get_text <- function(object,
                      dest_dir = getwd(),
                      outfile_stem = NULL
 ) {
-  
+
   if (!(length(type) == 1) || !(type %in% c("sync", "async"))) {
     stop("Invalid type parameter.")
   }
-  
+
   if (!(save_to_file %in% c(TRUE, FALSE))) {
     stop("Invalid save_to_file argument. Must be either TRUE or FALSE.")
   }
-  
+
   if (!(length(dest_dir) == 1) || !(is.character(dest_dir))) {
     stop("Invalid dest_dir argument. Must be a valid folder path.")
   }
-  
+
   if (!(length(outfile_stem) <= 1)) {
     stop("Invalid outfile_stem argument. Must be NULL or a string.")
   }
-  
+
   if ((length(outfile_stem) == 1) && !(is.character(outfile_stem))) {
     stop("Invalid outfile_stem argument. Must be NULL or a string.")
   }
-  
+
   dest_dir <- normalizePath(dest_dir, winslash = "/")
-  
+
   if (type == "sync") {
-    
+
     if (!(inherits(object, "response"))) {
       stop("Input is not a valid HTTP response.")
     }
-    
+
     parsed <- httr::content(object, as = "parsed")
-    
+
     if (!("pages" %in% names(parsed$document) || "pages" %in% names(parsed))) {
       stop("Input not recognized. Is it from dai_async?")
     }
-    
+
     if (!("text" %in% names(parsed$document) || "text" %in% names(parsed))) {
       stop("DAI found no text. Was the page blank?")
     }
-    
+
     # get text
     if ("text" %in% names(parsed$document)) {
       text <- parsed$document$text
     } else {
       text <- parsed$text
     }
-    
+
   } else if (type == "async") {
-    
+
     if (!(is.character(object) && length(object) == 1)) {
       stop("Invalid object input.")
     }
-    
+
     if (!(is_json(object))) {
       stop("Input file not .json. Is the file in your working directory?")
     }
-    
+
     parsed <- jsonlite::fromJSON(object)
-    
+
     if (!("pages" %in% names(parsed))) {
       stop("JSON not in right format. Is it from DAI?")
     }
-    
+
     if (!("text" %in% names(parsed))) {
       stop("DAI found no text. Was the document blank?")
     }
-    
+
     text <- parsed$text
   }
-  
+
   # save to file if requested
   if (isTRUE(save_to_file) && !(is.null(outfile_stem))) {
     write(text, file.path(dest_dir, paste0(outfile_stem, ".txt")))
@@ -107,7 +107,7 @@ get_text <- function(object,
     }
     write(text, file.path(dest_dir, paste0(stem, ".txt")))
   }
-  
+
   text
 }
 
@@ -125,83 +125,83 @@ get_text <- function(object,
 #'
 #' @examples
 #' \dontrun{
-#'   
+#'
 #' tables <- get_tables(dai_sync("file.pdf"))
-#' 
+#'
 #' tables <- get_tables("file.json", type = "async")
 #' }
 
 get_tables <- function(object,
                        type = "sync"
 ) {
-  
+
   if (!(length(type) == 1) || !(type %in% c("sync", "async"))) {
     stop("Invalid type parameter.")
   }
-  
+
   if (type == "sync") {
-    
+
     if (!(inherits(object, "response"))) {
       stop("The supplied object is not a valid HTTP response. ", 
            "Did you supply a json filepath without type = 'async'?")
     }
-    
+
     parsed <- httr::content(object, as = "parsed")
-    
+
     if (!("pages" %in% names(parsed) || "pages" %in% names(parsed$document))) {
       stop("The supplied object is not from a successful HTTP request.")
     }
-    
+
     if (!("text" %in% names(parsed) || "text" %in% names(parsed$document))) {
       stop("DAI found no text. Was the page blank?")
     }
-    
+
     # Compile a list of table entries
     if ("pages" %in% names(parsed$document)) {
       table_list_raw <- purrr::map(parsed$document$pages, ~ .x$tables)
     } else {
       table_list_raw <- purrr::map(parsed$pages, ~ .x$tables)
     }
-    
+
     if (all(sapply(table_list_raw, is.null))) {
       stop("DAI found no tables in the document.")
     }
-    
+
     table_list <- purrr::flatten(table_list_raw)
     text <- get_text(object)
     purrr::map(table_list, ~ resp_build_table(.x, text))
-    
+
   } else if (type == "async") {
-    
+
     # checks
     if (!(is.character(object) && length(object) == 1)) {
       stop("Invalid file input.")
     }
-    
+
     if (!(is_json(object))) {
       stop("Input file not .json. Is the file in your working directory?")
     }
-    
+
     parsed <- jsonlite::fromJSON(object)
-    
+
     if (!("pages" %in% names(parsed))) {
       stop("JSON not in right format. Is it from DAI?")
     }
-    
+
     if (!("text" %in% names(parsed))) {
       stop("DAI found no text. Was the document blank?")
     }
-    
+
     if (!("tables" %in% names(parsed$pages))) {
       stop("DAI found no tables in the document.")
     }
-    
+
     table_list_raw <- parsed$pages$tables
     table_list_by_page <- purrr::map(table_list_raw, file_get_table_objects)
     table_list <- purrr::flatten(table_list_by_page)
     text <- get_text(object, type = "async")
     purrr::map(table_list, ~ file_build_table(.x, text))
-  }  
+  }
 }
 
 #' Get entities
@@ -227,29 +227,29 @@ get_tables <- function(object,
 get_entities <- function(object,
                          type = "sync"
                         ) {
-  
+
   if (!(length(type) == 1) || !(type %in% c("sync", "async"))) {
     stop("Invalid type parameter.")
   }
-  
+
   if (type == "sync") {
-    
+
     if (!(inherits(object, "response"))) {
       stop("Object parameter not pointing to valid response object.")
     }
-        
+
     parsed <- httr::content(object, as = "parsed")
-    
+
     if (!("pages" %in% names(parsed) || "pages" %in% names(parsed$document))) {
       stop("The supplied object is not from a successful HTTP request.")
     }
-    
+
     if (!("text" %in% names(parsed) || "text" %in% names(parsed$document))) {
       stop("DAI found no text. Was the page blank?")
     }
-    
+
     parsed <- httr::content(object)
-    
+
     if (!("entities" %in% names(parsed$document))) {
       message("Document AI identified no entities in the document.")
       return(NULL)
@@ -257,23 +257,23 @@ get_entities <- function(object,
       entity_pages <- parsed$document$entities
       purrr::map(entity_pages, build_sync_entity_df)
     }
-    
+
   } else if (type == "async") {
-    
+
     if (!(is_json(object))) {
       stop("Object parameter not pointing to valid JSON file.")
     }
-    
+
     parsed <- jsonlite::fromJSON(object)
-    
+
     if (!("pages" %in% names(parsed))) {
       stop("JSON not in right format. Is it from DAI?")
     }
-    
+
     if (!("text" %in% names(parsed))) {
       stop("DAI found no text. Was the document blank?")
     }
-    
+
     if (!("entities" %in% names(parsed))) {
       message("Document AI identified no entities in the document.")
       return(NULL)
@@ -282,15 +282,15 @@ get_entities <- function(object,
       entity_pages <- parsed$entities$properties
       purrr::map(entity_pages, build_async_entity_df)
     }
-  } 
-} 
+  }
+}
 
 #' Get cell text from response
 #'
 #' @description Helper function to get the text of an individual cell
 #' @param cell a list from a parsed Document AI response object 
 #' @param text a string
-#' 
+#'
 #' @noRd
 
 resp_get_cell_text <- function(cell, text) {
@@ -319,7 +319,7 @@ resp_get_cell_text <- function(cell, text) {
 #' @description Helper function to compile cell entries into a row vector
 #' @param elem a list from a parsed Document AI response object 
 #' @param text a string
-#' 
+#'
 #' @noRd
 
 resp_get_row_vector <- function(elem, text) {
@@ -332,7 +332,7 @@ resp_get_row_vector <- function(elem, text) {
 #' @description Helper function to build a table from row vectors
 #' @param table a list from a parsed Document AI response object 
 #' @param text a string
-#' 
+#'
 #' @noRd
 
 resp_build_table <- function(table, text) {
@@ -353,7 +353,7 @@ resp_build_table <- function(table, text) {
 #' table-related elements from a parsed JSON file
 #' @param page a list from a parsed JSON file from Document AI
 #' @param text a string
-#' 
+#'
 #' @noRd
 
 file_get_table_objects <- function(page) {
@@ -377,7 +377,7 @@ file_get_table_objects <- function(page) {
 #' @description Helper function to get the text of an individual cell
 #' @param cell a list from a parsed JSON file from Document AI
 #' @param text a string
-#' 
+#'
 #' @noRd
 
 file_get_cell_text <- function(cell, text) {
@@ -404,8 +404,8 @@ file_get_cell_text <- function(cell, text) {
 #' @description Helper function to compile cell entries into a row vector
 #' @param elem a list from a parsed JSON file from Document AI
 #' @param text a string
-#' 
-#' @noRd  
+#'
+#' @noRd
 
 file_get_row_vector <- function(elem, text) {
   cells <- elem$layout$textAnchor$textSegments
@@ -416,9 +416,9 @@ file_get_row_vector <- function(elem, text) {
 #'
 #' @description Helper function to build a table from row vectors
 #' @param table_object a list from a parsed JSON file from Document AI
-#' @param text a string 
-#' 
-#' @noRd  
+#' @param text a string
+#'
+#' @noRd
 
 file_build_table <- function(table_object, text) {
   headers_list <- table_object$headerRows$cells
@@ -451,11 +451,11 @@ file_build_table <- function(table_object, text) {
 #'
 #' @description Helper function to build dataframe of entities
 #' @param lst a list from a parsed HTTP object from Document AI
-#' 
-#' @noRd  
+#'
+#' @noRd
 
 build_sync_entity_df <- function(lst) {
-  
+
   props <- lst$properties
   ids <- as.numeric(unlist(purrr::map(props, ~ .x$id)))
   mentionTexts <- purrr::map_chr(props, ~ .x$mentionText)
@@ -467,7 +467,7 @@ build_sync_entity_df <- function(lst) {
   rights <- as.numeric(unlist(purrr::map(props, ~ .x$pageAnchor$pageRefs[[2]][[1]][[1]][[2]]$x)))
   tops <- as.numeric(unlist(purrr::map(props, ~ .x$pageAnchor$pageRefs[[2]][[1]][[1]][[1]]$y)))
   bottoms <- as.numeric(unlist(purrr::map(props, ~ .x$pageAnchor$pageRefs[[2]][[1]][[1]][[4]]$y)))
-  
+
   data.frame(id = ids, 
              mentionText = mentionTexts,
              type = types,
@@ -485,11 +485,11 @@ build_sync_entity_df <- function(lst) {
 #'
 #' @description Helper function to build dataframe of entities
 #' @param lst a list from a parsed JSON file from Document AI
-#' 
-#' @noRd  
+#'
+#' @noRd
 
 build_async_entity_df <- function(x) {
-  
+
   anchors <- x$pageAnchor$pageRefs
   lefts <- as.numeric(unlist(purrr::map(anchors, ~ .x$boundingPoly$normalizedVertices[[2]]$x[1])))
   rights <- as.numeric(unlist(purrr::map(anchors, ~ .x$boundingPoly$normalizedVertices[[2]]$x[2])))
@@ -506,4 +506,4 @@ build_async_entity_df <- function(x) {
              top = tops,
              bottom = bottoms
   )
-}  
+}

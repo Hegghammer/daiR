@@ -286,7 +286,7 @@ tables_from_dai_response <- function(object) {
 tables_from_dai_file <- function(file) {
 
   lifecycle::deprecate_warn("1.0.0", "daiR::tables_from_dai_file()", "daiR::get_tables()", always = TRUE)
-  
+
   # checks
   if (!(is.character(file) && length(file) == 1)) {
     stop("Invalid file input.")
