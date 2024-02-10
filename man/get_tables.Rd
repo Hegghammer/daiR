@@ -23,7 +23,7 @@ form parser processor.
 }
 \examples{
 \dontrun{
-  
+
 tables <- get_tables(dai_sync("file.pdf"))
 
 tables <- get_tables("file.json", type = "async")

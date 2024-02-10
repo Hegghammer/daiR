@@ -23,13 +23,12 @@ The function works on .txt files generated from .json output files,
 not on .json files directly. It also presupposes that the .txt filenames
 have the same name stems as the .json files from which they were extracted.
 For the v1 API, this means files ending with "-0.txt", "-1.txt", "-2.txt",
-and so forth. For the v1beta2 API, it means files ending with
-"-page-1-to-100.txt", "-page-101-to-200.txt", etc. The safest approach is
-to generate .txt files using \code{text_from_dai_file()} with the \code{save_to_file}
-parameter set to TRUE.
+and so forth. The safest approach is to generate .txt files using
+\code{get_text()} with the \code{save_to_file} parameter set to TRUE.
 }
 \examples{
 \dontrun{
-merge_shards(source_dir = getwd(), dest_dir = tempdir())
+
+merge_shards(source_dir = getwd(), dest_dir = getwd())
 }
 }

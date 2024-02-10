@@ -366,6 +366,7 @@ draw_lines <- function(object,
 #' draw_tokens(resp)
 #'
 #' draw_tokens("page.json", type = "async")
+#'}
 
 draw_tokens <- function(object,
                         type = "sync",

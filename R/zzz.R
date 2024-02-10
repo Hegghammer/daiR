@@ -4,6 +4,7 @@
 #' @param libname name of library
 #' @param pkgname name of package
 #' @return no return value, called for side effects
+#' @export
 
 .onAttach <- function(libname, pkgname) {
 

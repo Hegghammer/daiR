@@ -4,15 +4,15 @@
 \alias{build_block_df}
 \title{Build block dataframe}
 \usage{
-build_block_df(type, output)
+build_block_df(object, type = "sync")
 }
 \arguments{
-\item{type}{one of "sync" or "async" depending on
-the function used to process the original document.}
-
-\item{output}{either a HTTP response object from
+\item{object}{either a HTTP response object from
 \code{dai_sync()} or the path to a JSON file from
 \code{dai_async()}.}
+
+\item{type}{one of "sync" or "async" depending on
+the function used to process the original document.}
 }
 \value{
 a block data frame
@@ -30,8 +30,9 @@ and bottom boundary.
 }
 \examples{
 \dontrun{
-block_df <- build_block_df(type = "async", output = "pdf_output.json")
 resp <- dai_sync("file.pdf")
-block_df <- build_block_df(type = "sync", output = resp)
+block_df <- build_block_df(resp)
+
+block_df <- build_block_df("pdf_output.json", type = "async")
 }
 }

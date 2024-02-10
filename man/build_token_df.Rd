@@ -4,15 +4,15 @@
 \alias{build_token_df}
 \title{Build token dataframe}
 \usage{
-build_token_df(type, output)
+build_token_df(object, type = "sync")
 }
 \arguments{
-\item{type}{one of "sync" or "async" depending on
-the function used to process the original document.}
-
-\item{output}{either a HTTP response object from
+\item{object}{either a HTTP response object from
 \code{dai_sync()} or the path to a JSON file from
 \code{dai_async()}.}
+
+\item{type}{one of "sync" or "async" depending on
+the function used to process the original document.}
 }
 \value{
 a token data frame
@@ -31,8 +31,9 @@ character position in the string containing the full text.
 }
 \examples{
 \dontrun{
-token_df <- build_token_df(type = "async", output = "pdf_output.json")
 resp <- dai_sync("file.pdf")
-token_df <- build_token_df(type = "sync", output = resp)
+token_df <- build_token_df(resp)
+
+token_df <- build_token_df("pdf_output.json", type = "async"
 }
 }

@@ -34,9 +34,9 @@ test_that("get_text() warns of input errors", {
 })
 
 test_that("get_text() warns of response not containing text", {
-  # skip_on_cran()
-  # skip_on_ci()
-  # skip_if_offline()
+  skip_on_cran()
+  skip_on_ci()
+  skip_if_offline()
   wrong <- dai_async("random.pdf")
   expect_error(get_text(wrong), "Input not recognized. Is it from dai_async?")
   blank <- dai_sync(testthat::test_path("examples", "blank.tiff"))
@@ -83,9 +83,9 @@ test_that("get_tables() warns of input errors", {
 })
 
 test_that("get_tables() warns of response not containing text", {
-  # skip_on_cran()
-  # skip_on_ci()
-  # skip_if_offline()
+  skip_on_cran()
+  skip_on_ci()
+  skip_if_offline()
   wrong <- dai_async("random.pdf")
   expect_error(get_tables(wrong), "The supplied object is not from a successful HTTP request.")
   blank <- dai_sync(testthat::test_path("examples", "blank.tiff"))
@@ -104,8 +104,7 @@ test_that("get_tables() gets tables from example response", {
   skip_on_ci()
   skip_if_offline()
   procs <- get_processors()
-  form_procs <- procs |> dplyr::filter(type == "FORM_PARSER_PROCESSOR")
-  form_proc_id <- form_procs$id[1] 
+  form_proc_id <- procs$id[procs$type == "FORM_PARSER_PROCESSOR"][1]
   file <- testthat::test_path("examples", "table.pdf")
   response <- dai_sync(file, proc_id = form_proc_id)
   tbls <- get_tables(response)
@@ -136,9 +135,9 @@ test_that("get_entities() warns of input errors", {
 })
 
 test_that("get_entities() warns of response not containing text", {
-  # skip_on_cran()
-  # skip_on_ci()
-  # skip_if_offline()
+  skip_on_cran()
+  skip_on_ci()
+  skip_if_offline()
   wrong <- dai_async("random.pdf")
   expect_error(get_entities(wrong), "The supplied object is not from a successful HTTP request.")
   blank <- dai_sync(testthat::test_path("examples", "blank.tiff"))
@@ -156,8 +155,7 @@ test_that("get_entities() gets entities from example response", {
   skip_on_ci()
   skip_if_offline()
   procs <- get_processors()
-  form_procs <- procs |> dplyr::filter(type == "FORM_PARSER_PROCESSOR")
-  form_proc_id <- form_procs$id[1] 
+  form_proc_id <- procs$id[procs$type == "FORM_PARSER_PROCESSOR"][1]
   file <- testthat::test_path("examples", "table.pdf")
   response <- dai_sync(file, proc_id = form_proc_id)
   expect_message(get_entities(response), "Document AI identified no entities in the document.")

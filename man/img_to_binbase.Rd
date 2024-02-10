@@ -17,6 +17,6 @@ Converts an image file to a base64-encoded binary .tiff file.
 }
 \examples{
 \dontrun{
-img_encoded <- pdf_to_binbase("image.png")
+img_encoded <- img_to_binbase("image.png")
 }
 }

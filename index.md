@@ -6,7 +6,7 @@
 [![Codecov test coverage](https://codecov.io/gh/Hegghammer/daiR/branch/master/graph/badge.svg)](https://codecov.io/gh/Hegghammer/daiR?branch=master)
 <!-- badges: end -->
 
-**daiR** is an R package for [Google Document AI](https://cloud.google.com/document-ai), a powerful server-based OCR processor with support for over 60 languages. The package provides an inferface for the Document AI API and comes with additional tools for output file parsing and text reconstruction.
+**daiR** is an R package for [Google Document AI](https://cloud.google.com/document-ai), a powerful server-based OCR processor with support for over 60 languages. The package provides an interface for the Document AI API and comes with additional tools for output file parsing and text reconstruction.
 
 <img src="man/figures/frontpage_image.png" width="400" class="center">
 
@@ -17,33 +17,22 @@ Quick OCR short documents:
 ```R
 ## NOT RUN
 library(daiR)
-response <- dai_sync("file.pdf")
-text <- text_from_dai_response(response)
-cat(text)
-```
-
-Batch process asynchronously via Google Storage:
-
-```R
-## NOT RUN
-library(googleCloudStorageR)
-library(purrr)
-my_files <- c("file1.pdf", "file2.pdf", "file3.pdf")
-map(my_files, gcs_upload)
-dai_async(my_files)
-contents <- gcs_list_objects()
-output_files <- grep("json$", contents$name, value = TRUE)
-map(output_files, ~ gcs_get_object(.x, saveToDisk = file.path(tempdir(), .x)))
-sample_text <- text_from_dai_file(file.path(tempdir(), output_files[1]))
-cat(sample_text)
+get_text(dai_sync("file.pdf"))
 ```
 
 Turn images of tables into R dataframes:
 
 ```R
 ## NOT RUN:
-response <- dai_sync_tab("tables.pdf")
-dfs <- tables_from_dai_response(response) 
+# Assumes a default processor of type "FORM_PARSER_PROCESSOR"
+get_tables(dai_sync("file.pdf"))
+```
+
+Draw bounding boxes on the source image:
+
+```R
+## NOT RUN:
+draw_blocks(dai_sync("file.pdf"))
 ```
 
 ## Requirements

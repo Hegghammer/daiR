@@ -9,7 +9,7 @@
 - Added prettier messages using the `cli` package.
 
 # daiR 0.9.9
-- Added the function `make_hocr` to convert DAI output to hOCR files, thereby faciliting the creation of searchable PDFs. 
+- Added the function `make_hocr` to convert DAI output to hOCR files, thereby facilitating the creation of searchable PDFs. 
 
 # daiR 0.9.8
 - Changed the `build_token_df()` and `build_block_df()` functions so they can take as input response objects from `dai_sync()` in addition to json files from `dai_async()`. 
