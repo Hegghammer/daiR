@@ -15,8 +15,9 @@ create_processor(
 \arguments{
 \item{name}{a string; the proposed display name of the processor.}
 
-\item{type}{a string; one of "OCR_PROCESSOR", "FORM_PARSER_PROCESSOR",
-"INVOICE_PROCESSOR",or "US_DRIVER_LICENSE_PROCESSOR".}
+\item{type}{a string; one of "OCR_PROCESSOR",
+"FORM_PARSER_PROCESSOR", "INVOICE_PROCESSOR", or
+"US_DRIVER_LICENSE_PROCESSOR".}
 
 \item{proj_id}{a GCS project id.}
 

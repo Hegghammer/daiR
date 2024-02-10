@@ -16,28 +16,26 @@ reference:
     contents:
       - '`dai_sync`'
       - '`dai_async`'
-      - '`dai_sync_tab`'
-      - '`dai_async_tab`'
       - '`dai_status`'
       - '`dai_notify`'
-  - title: Get tables
+  - title: Extract data
     desc: ~
     contents:
-      - '`tables_from_dai_file`'
-      - '`tables_from_dai_response`'
-  - title: Inspect output
+      - '`get_text`'
+      - '`get_tables`'
+      - '`get_entities`'
+  - title: Draw bounding boxes
     desc: ~
     contents:
-      - '`text_from_dai_response`'
-      - '`text_from_dai_file`'
-      - '`merge_shards`'
       - '`draw_blocks`'
       - '`draw_paragraphs`'
       - '`draw_lines`'
       - '`draw_tokens`'
-  - title: Process output
+      - '`draw_entities`'
+  - title: Manipulate output
     desc: ~
     contents:
+      - '`merge_shards`'
       - '`build_token_df`'
       - '`build_block_df`'
       - '`split_block`'
@@ -48,9 +46,14 @@ reference:
   - title: Processor management
     desc: ~
     contents:
+      - '`list_processor_types`'
+      - '`create_processor`'
+      - '`get_processors`'
       - '`get_processor_info`'
       - '`get_processor_versions`'
-      - '`get_processors`'
+      - '`enable_processor`'
+      - '`disable_processor`'
+      - '`delete_processor`'
   - title: Create XML
     desc: ~
     contents: 
@@ -59,12 +62,24 @@ reference:
     desc: ~
     contents:
       - '`image_to_pdf`'
-      - '`is_colour`'
       - '`is_pdf`'
       - '`is_json`'
+      - '`is_colour`'
       - '`pdf_to_binbase`'
       - '`img_to_binbase`'
       - '`.onAttach`'
+  - title: Deprecated
+    desc: ~
+    contents:
+      - '`tables_from_dai_response`'
+      - '`tables_from_dai_file`'
+      - '`text_from_dai_response`'
+      - '`text_from_dai_file`'
+  - title: Defunct
+    desc: ~
+    contents:
+      - '`dai_sync_tab`'
+      - '`dai_async_tab`'
 navbar:
   type: inverse
   left:

@@ -21,9 +21,10 @@ a dataframe.
 List created processors
 }
 \details{
-Retrieves information about the processors that have been created
-in the current project and are ready for use. For more information about
-processors, see the Google Document AI documentation at
+Retrieves information about the processors that
+have been created in the current project and are ready for use.
+For more information about processors, see the Google Document
+AI documentation at
 \url{https://cloud.google.com/document-ai/docs/}.
 }
 \examples{

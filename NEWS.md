@@ -1,5 +1,11 @@
 # daiR 1.0.0
+- Major revision.
 - Added several processor-related functions following an update of the Google Document AI REST API. These include `list_processor_types()`, `create_processor()`, `enable_processor()`, `disable_processor()`, and `delete_processor()`.
+- Added `get_text()` and `get_tables()`, which replace `text_from_dai_response()`, `text_from_dai_file()`, `tables_from_dai_response()` and `tables_from_dai_file()`.
+- Added `get_entities()` and `draw_entities()`.
+- Removed `dai_tab_sync()` and `dai_tab_async()` following Google's discontinuation of the v1beta2 endpoint on 31 January 2024.
+- Modified the parameters of the `draw*()` functions for better consistency with other functions.
+- Renamed the `.R` files and regrouped the functions.
 - Added prettier messages using the `cli` package.
 
 # daiR 0.9.9
