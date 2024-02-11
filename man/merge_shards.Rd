@@ -28,7 +28,8 @@ and so forth. The safest approach is to generate .txt files using
 }
 \examples{
 \dontrun{
+merge_shards()
 
-merge_shards(source_dir = getwd(), dest_dir = getwd())
+merge_shards(tempdir(), getwd())
 }
 }

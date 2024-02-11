@@ -34,6 +34,6 @@ character position in the string containing the full text.
 resp <- dai_sync("file.pdf")
 token_df <- build_token_df(resp)
 
-token_df <- build_token_df("pdf_output.json", type = "async"
+token_df <- build_token_df("pdf_output.json", type = "async")
 }
 }

@@ -18,8 +18,9 @@
 #'
 #' @examples
 #' \dontrun{
+#' merge_shards()
 #'
-#' merge_shards(source_dir = getwd(), dest_dir = getwd())
+#' merge_shards(tempdir(), getwd())
 #' }
 
 merge_shards <- function(source_dir = getwd(),
@@ -112,8 +113,8 @@ merge_shards <- function(source_dir = getwd(),
 #' \dontrun{
 #' resp <- dai_sync("file.pdf")
 #' token_df <- build_token_df(resp)
-#' 
-#' token_df <- build_token_df("pdf_output.json", type = "async"
+#'
+#' token_df <- build_token_df("pdf_output.json", type = "async")
 #' }
 
 build_token_df <- function(object,
