@@ -9,9 +9,20 @@ knitr::opts_chunk$set(
 )
 ```
 
+*Last updated 10 February 2024*
+\
+
+### What exactly is Google Document AI?
+
+[Google Document AI](https://cloud.google.com/document-ai) (DAI) is a server-based OCR engine that extracts text from pdf files. Released in November 2020, it's off-the-shelf accuracy is generally higher than static libraries such as [`tesseract`](https://github.com/tesseract-ocr/tesseract). Short of corpus-specific, self-trained processors, DAI offers some of the best OCR capabilities currently available to the general public. At the time of writing, DAI is more expensive than Amazon's [Textract](https://aws.amazon.com/textract/), but promises to support many more languages.
+
+DAI is accessed through an API, but this API currently has no official R [client library](https://cloud.google.com/document-ai/docs/libraries). This is where the `daiR` package comes in; it provides a light wrapper for DAI's [REST API](https://cloud.google.com/document-ai/docs/reference/rest), making it possible to submit documents to DAI from within R. In addition, `daiR` comes with pre- and postprocessing tools intended to make the whole text extraction process easier. 
+
+Google Document AI is closely connected with [Google Storage](https://cloud.google.com/storage), as the latter serves as a drop-off and pick-up point for files you want processed in DAI.
+
 ### How much does Google Document AI cost to use?
 
-Google charges USD 1.50 per 1,000 pages for use of the default processor, "Document OCR". Specialized processors (such as form parsers for business use) cost more; see Google's [documentation](https://cloud.google.com/document-ai/pricing) for details. 
+Google currently charges USD 1.50 per 1,000 pages for use of the default processor, "Document OCR". Specialized processors (such as form parsers for business use) cost more; see Google's [documentation](https://cloud.google.com/document-ai/pricing) for details. 
 
 ### How does Document AI perform compared with free solutions such as Tesseract?
 

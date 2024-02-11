@@ -1,0 +1,204 @@
+---
+title: "Basic usage"
+author: "Thomas Hegghammer"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Basic usage}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+options(rmarkdown.html_vignette.check_title = FALSE)
+library(knitr)
+opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+*Last updated 10 February 2024*
+\
+\
+
+`daiR` has many different functionalities, but the core one is to provide access to the Google Document AI API so you can OCR your documents. That procedure is fairly straightforward: you make a processing call with either `dai_sync()` or `dai_async()` -- depending on whether you want synchronous or asynchronous processing -- and then you retrieve the plaintext with `get_text()`.
+
+## Synchronous processing
+
+The quickest and easiest way to OCR with Document AI (DAI) is through synchronous processing. You simply pass an image file or a pdf (of up to 5 pages) to the processor and get the result into your R environment within seconds.
+
+We can try with a sample pdf from the CIA's Freedom of Information Act Electronic Reading Room: 
+
+```{r, eval = FALSE}
+library(daiR)
+setwd(tempdir())
+url <- "https://www.cia.gov/readingroom/docs/AGH%2C%20LASLO_0011.pdf"
+download.file(url, "CIA.pdf")
+```
+
+We send it to Document AI with `dai_sync()` and store the HTTP response in an object.
+
+```{r, eval = FALSE}
+resp <- dai_sync("CIA.pdf")
+```
+
+We then pass the response object to `get_text()`, which extracts the text identified by Document AI.
+
+```{r, eval = FALSE}
+get_text(resp)
+```
+
+What if we have many documents? `dai_sync()` is not vectorized, but you can iterate with it over vectors of filepaths. For the sake of illustration, let's download a second PDF.
+
+```{r, eval=FALSE}
+url <- "https://www.cia.gov/readingroom/docs/1956-11-26.pdf"
+download.file(url, "CIA2.pdf")
+```
+
+We now want to apply the functions `dai_sync()` and `get_text()` iteratively over the files `CIA.pdf` and `CIA2.pdf`. In such cases you probably want to preserve the extracted text in `.txt` files along the way. You can do this by setting the parameter `save_to_file` in `get_text()` to TRUE. This function also has a parameter `outfile_stem` which allows you to specify the namestem of the `.txt` file. We can get the stem from each file by combining `fs::path_ext_remove()` and `basename()`. 
+
+I further recommend adding a small pause so as not to run into rate limit issues. A print statement is also useful for keeping track of where you are in case of an error or interruption. A sample script might thus look like this:
+
+```{r, eval = FALSE}
+## NOT RUN
+myfiles <- list.files(pattern = "*.pdf")
+
+for (i in seq_along(myfiles)) {
+  print(paste("Processing file", i, "of", length(myfiles)))
+  resp <- dai_sync(myfiles[i])
+  stem <- fs::path_ext_remove(basename(myfiles[i]))
+  get_text(resp, save_to_file = TRUE, outfile_stem = stem)
+  Sys.sleep(2)
+}
+```
+
+If you now run `list.files()`, you will see that the code generated two files named `CIA.txt` and `CIA2.txt` respectively.
+
+Synchronous processing is very convenient, but has two limitations. One is that OCR accuracy may be slightly reduced compared with asynchronous processing, because `dai_sync()` converts the source file to a lightweight, grayscale image before passing it to DAI. The other is scaling; If you have a large pdf or many files, it is usually preferable to process them asynchronously.
+
+## Asynchronous processing
+
+In asynchronous (offline) processing, you don't send DAI the actual document, but rather its location on Google Storage so that DAI can process it "in its own time". While slightly slower than synchronous OCR, it allows for batch processing and makes the process less vulnerable to interruptions (like laptop battery death or inadvertent closing of your console). Unlike `dai_sync`, `dai_async()` is vectorized, so you can send multiple files with a single call. 
+
+The first step is to use the package `googleCloudStorageR` to upload the source file(s) to a Google Storage bucket where DAI can find them. The following assumes that you have already configured Google Storage and set up a default bucket as described in [this vignette](https://dair.info/articles/gcs_storage.html).
+
+Let's upload our two CIA documents. I am assuming the filepaths are still stored in the vector `myfiles` we created earlier.
+
+```{r, eval=FALSE}
+library(googleCloudStorageR)
+library(purrr)
+map(myfiles, gcs_upload)
+```
+
+Let's check that our files made it safely: 
+
+```{r, eval=FALSE}
+contents <- gcs_list_objects()
+```
+
+We can now use `dai_async()` to tell Document AI to process these files. At this stage it is crucial to know that `dai_async()` takes as its main argument the *filenames in the bucket*, NOT the filenames or -paths on your local drive. In this particular example there is no difference, but that is not always the case. A common error scenario is when you use a vector of full local filepaths (e.g. `files <- c("/path/to/file1.pdf", "/path/to/file2.pdf")`) to upload the files, saving them there with their basenames (`file1.pdf` and `file2.pdf`). When you then try to pass the same vector to `dai_sync()`, the processing fails because Document AI cannot find `/path/to/file1.pdf` in the bucket, only `file1.pdf`.
+
+It is therefore good practice to use the output of `gcs_list_objects()` to create the vector that you pass to `dai_async`. From the [vignette](https://dair.info/articles/gcs_storage.html) on Google Storage, we remember that if we store the output of `gcs_list_objects()` in a dataframe named `contents`, the filenames will be in `contents$name`. 
+
+```{r, eval=FALSE}
+resp <- dai_async(contents$name)
+```
+
+If your call returned "status: 200", it was accepted by the API. Note that this does NOT mean that the processing itself was successful, only that the request went through. For example, if there are errors in your filepaths, DAI will create empty JSON files in the folder you provided. If you see JSON files of around 70 bytes each in the destination folder, you know there was something wrong with your filenames. Other things too can cause the processing to fail, for example a corrupt file or a format that DAI cannot handle. 
+
+You can check the status of a job with `dai_status()`. Just pass the response object from your `dai_async()` call into the parentheses, like so:
+
+```{r, eval=FALSE}
+dai_status(resp)
+```
+
+This will tell you whether the job is "RUNNING", "FAILED", or "SUCCEEDED". It won't tell you how much time remains, but in my experience, processing takes about 5-20 seconds per page. To find out when it's done, you can either rerun `dai_status()` till it says "SUCCEEDED", or you can use the function `dai_notify()`, which will check the status for you in the background and beep when the job is finished. 
+
+```{r, eval=FALSE}
+dai_notify(resp)
+```
+
+When the processing is done, there will be JSON output files waiting for you in the bucket. Let's take a look.
+
+```{r, eval=FALSE}
+contents <- gcs_list_objects()
+contents
+```
+
+Output file names look cryptic, but there's a logic to them, namely: `"<job_number>/<document_number>/<filename>-<shard_number>.json"`. Our file will thus take the form `"<job_number>/0/CIA-0.json"`, with `<job_number>` changing from one processing call to the next. 
+
+These JSON files contain the extracted text plus a wealth of other data, such as the location of each word on the page and a binary version of the original image. In order to get to this information we need to download them to our local drive. Because these output files have unpredictable names, it is often easiest to simply search for all files ending in `*.json` using `grep()` or `stringr::str_detect()`.
+
+```{r, eval=FALSE}
+jsons <- grep("*.json$", contents$name, value = TRUE)
+```
+
+We can then download them with `gcs_get_object()`.
+
+```{r, eval=FALSE}
+map(jsons, ~ gcs_get_object(.x, saveToDisk = basename(.x)))
+```
+
+If you now run `list.files()` again, you should see `CIA-0.json` and `CIA2-0.json` in our working directory.
+
+To get the text from a DAI JSON file, we can use `get_text()`, but we have to specify `type = "async"` so that the function knows it is being served a JSON file and not a response object. 
+
+```{r, eval=FALSE}
+get_text("CIA-0.json", type = "async")
+```
+
+To get the text from several JSON files, we just iterate over them, setting `save_to_file` to TRUE. Unlike in the `dai_sync()` earlier, we don't need to specify `outfile_stem`, because `get_text()` has the names of the JSON files and uses their stems to create the `.txt`s. 
+
+```{r, eval=FALSE}
+local_jsons <- list.files(pattern = "*.json")
+map(local_jsons, ~ get_text(.x, type = "async", save_to_file = TRUE))
+```
+
+Running `list.files()` one last time, you should have two new files named `CIA-0.txt` and `CIA2-0.txt`.
+
+# Large batches
+
+Although `dai_async()` takes batches of files, it is constrained by Google's [rate limits](https://cloud.google.com/document-ai/quotas). Currently, a `dai_async()` call can contain maximum 50 files (a multi-page pdf counts as one file), and you can not have more than 5 batch requests and 10 000 pages undergoing processing at any one time.
+
+Therefore, if you're looking to process a large batch, you need to spread the `dai_async()` calls out over time. While you can split up your corpus into sets of 50 files and batch process those, the simplest solution is to make a function that sends files off individually with a small wait in between. Say we have a vector called `big_batch` containing thousands of filenames. First we would make a function like this:
+
+```{r, eval=FALSE}
+process_slowly <- function(file) {
+  dai_async(file)
+  Sys.sleep(10)
+}
+```
+
+Then we would iterate it over our file vector:
+
+```{r, eval=FALSE}
+## NOT RUN
+map(big_batch, process_slowly)
+```
+
+This will hold up your console for a while, so it may be worth doing in the background as an RStudio [job](https://posit.co/blog/rstudio-1-2-jobs/). 
+
+Finding the optimal wait time for `Sys.sleep()` may require some trial and error. As a rule of thumb, it should approximate the time it takes for DAI to process *one* of your files. This, in turn, depends on the size of the files, for a 100-page pdf will take a lot longer to process than a single-page one. In my experience, a 10-second interval is ample time for a batch of single-page PDFs. Multi-page pdfs require proportionally more time. If your files vary in size, calibrate the wait time to the largest file, or you may get 429s (HTTP code for "rate limit exceeded") half way through the iteration.
+
+Although this procedure is relatively slow, it need not add much to the overall processing time. DAI starts processing the first files it receives right away, so when your loop ends, DAI will be mostly done with the OCR as well. 
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE, eval = FALSE}
+# Cleanup
+contents <- gcs_list_objects()
+map(contents$name, gcs_delete_object)
+```
+
+# Merging shards
+
+If you have long PDFs, DAI will break the output into shards, meaning that, for a single PDF file, you may get back multiple JSON files named `*-1.json`, `*-2.json`, etc. 
+
+To weave the text back together again, you can use `daiR`'s `merge_shards()` function. It works on `.txt` files, not JSON files, so you need to extract the text from the JSONs first. You also need to keep the name stem -- turning `document-1.json` into `document-1.txt` and so forth -- so that `merge_shards()` knows which pieces belong together. This is the default behaviour of `get_text()`, so as long as you don't touch the `outfile_stem` parameter, you should be fine.
+
+Here is a sample workflow: 
+
+```{r, eval = FALSE}
+## NOT RUN
+shards <- c("longdoc-1.json", "longdoc-2.json", "longdoc-3.json")
+map(shards, ~ get_text(.x, type = "async", save_to_file = TRUE)
+merge_shards()
+```

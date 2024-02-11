@@ -4,7 +4,7 @@
 \alias{merge_shards}
 \title{Merge shards}
 \usage{
-merge_shards(source_dir, dest_dir)
+merge_shards(source_dir = getwd(), dest_dir = getwd())
 }
 \arguments{
 \item{source_dir}{folder path for input files}

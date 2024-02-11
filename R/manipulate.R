@@ -22,9 +22,9 @@
 #' merge_shards(source_dir = getwd(), dest_dir = getwd())
 #' }
 
-merge_shards <- function(source_dir,
-                         dest_dir
-) {
+merge_shards <- function(source_dir = getwd(),
+                         dest_dir = getwd()
+                        ) {
 
   if (length(source_dir) > 1) {
     stop("Invalid source_dir argument. Must be a valid folder path.")

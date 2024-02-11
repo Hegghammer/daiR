@@ -85,22 +85,24 @@ navbar:
   left:
     - icon: fa-home
       href: index.html
-    - text: "Quickstart"
-      href: articles/basics.html
-    - text: "Vignettes"
+    - text: Quickstart
+      href: articles/quickstart.html
+    - text: Vignettes
       menu:
-      -  text: Setting up a Google Storage bucket
-         href: articles/setting_up_google_storage.html
-      -  text: Using Google Document AI with R
-         href: articles/using_document_ai.html
+      -  text: Configuration
+         href: articles/configuration.html
+      -  text: Working with Google Cloud Storage
+         href: articles/gcs_storage.html
+      -  text: Basic usage
+         href: articles/usage.html
       -  text: Extracting tables
-         href: articles/extracting_tables.html
-      -  text: Correcting text output from Google Document AI
+         href: articles/tables.html
+      -  text: Correcting text output
          href: articles/reconstructing_text.html
-      -  text: Complex file and folder management
-         href: articles/complex_file_and_folder_management.html
+      # -  text: Complex file and folder management
+      #    href: articles/complex_file_and_folder_management.html
       -  text: Creating searchable PDFs
-         href: articles/searchable_pdfs
+         href: articles/searchable_pdfs.html
     - text: FAQs
       href: articles/faqs.html
     - text: "Reference"

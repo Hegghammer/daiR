@@ -1,0 +1,36 @@
+---
+title: "GCS Concept cheatsheet"
+author: "Thomas Hegghammer"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{GCS Concept cheatsheet}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Working with Document AI and Google Cloud Services involves a bewildering range of id and key types, so here is an overview to help navigate them. 
+\
+\
+
+## Concepts
+
+Domain | Name | Example | Description
+:--|:---------|:----|:------------
+GCS | Project | "Special Project" | Human friendly name of your GCS project
+GCS | Project id | `wet-panda-12345` | Unique id of your GCS project
+GCS | Service account name | "Main account" | Human friendly name of service account
+GCS | Service account keyfile | `soft-koala-12345-678968544.json` | File containing authentication credentials
+GCS | Service account email | `main-account@wet-panda-12345.iam.gserviceaccount.com` | Identifier used in gcloud CLI 
+DAI | Processor name | `ocr-general-2024` | Display name for an activated processor
+DAI | Processor id | `3e03a16deqac44a9` | Id for an activated processor
+DAI | Processor type | `FORM_PARSER_PROCESSOR` | Type of processor
+DAI | Processor version | `pretrained-ocr-v2.0-2023-06-02` | OCR model instance
+Storage | Bucket name | `example-bucket-34869` | Bucket name and identifier
+   
+## Environmental variables
+
+The following environmental variables in `.Renviron` will help you autoauthenticate with `googleCloudStorageR` and `daiR`:
+
+- `GCS_AUTH_FILE` set to a path to a service account keyfile
+- `GCS_DEFAULT_BUCKET` set to a bucket name
+- `DAI_PROCESSOR_ID` set to a processor id

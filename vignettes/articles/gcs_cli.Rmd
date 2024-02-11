@@ -120,4 +120,4 @@ Finally, enable the Document AI API:
 
 ###
 
-You can now pick up from Step 2 in [this vignette](https://dair.info/articles/using_document_ai.html).
+You can now pick up from Step 8 in [this vignette](https://dair.info/articles/configuration.html).

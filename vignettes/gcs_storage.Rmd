@@ -1,0 +1,180 @@
+---
+title: "Working with Google Cloud Storage"
+author: "Thomas Hegghammer"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Working with Google Cloud Storage}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+*Last updated 10 February 2024*  
+\
+
+To make the most of Document AI API, it is worth familiarizing yourself with Google Cloud Storage, because this is what allows you to process documents asynchronously (more on this in the [usage vignette](https://dair.info/articles/usage.html)). [Google Cloud Storage](https://cloud.google.com/storage) -- not to be confused with Google Drive -- is a central feature of Google Cloud Services (GCS); it serves as a kind of mailbox where you deposit files for processing with any one of the GCS APIs and retrieve the output from the processing you requested. In the context of OCR processing with `daiR`, a typical asynchronous workflow consists of uploading documents to a Storage bucket, telling Document AI where to find them, and downloading the JSON output files afterwards. To interact with Google Storage we use the `googleCloudStorageR` [package](https://code.markedmondson.me/googleCloudStorageR/).[^manually] 
+
+[^manually]: It is possible to manually upload and download files to Google Storage in the [Google Cloud Console](https://console.cloud.google.com/storage). For uploads this can sometimes be easier than doing it programmatically, but downloads and deletions will be cumbersome.
+
+## Setup
+
+Storage is such a fundamental service in GCS that it is enabled by default. If you followed the [configuration vignette](https://dair.info/articles/configuration.html) where you created a GCS account and stored an environmental variable `GCS_AUTH_FILE` in your `.Renviron` file, you are pretty much ready to go. All you need to do is load `googleCloudStorageR` and you will be auto-authenticated.
+
+```{r, message=FALSE}
+library(googleCloudStorageR)
+```
+
+## Creating and inspecting buckets
+
+Google Storage keeps your files in so-called "buckets", which you can think of as folders. There is no root location in your Google Storage space, so you need at least one bucket to store files. 
+
+To view and create buckets, you need your *project id*, which we encountered in step 3 in the [configuration vignette](https://dair.info/articles/configuration.html). If you did not store it when setting up GCS, you can look it up in the Google Cloud Console or use the `daiR` function `get_project_id()`. 
+
+```{r, eval=FALSE}
+project_id <- daiR::get_project_id()
+```
+
+Now let's see how many buckets we have:
+```{r, eval = FALSE}
+gcs_list_buckets(project_id)
+```
+
+Answer: zero, because we haven't created one yet. This we can do with `gcs_create_bucket()`. Note that it has to be globally unique ("my_bucket" won't work because someone's already taken it). For this example, let's use "example-bucket-34869" (change the number so you get a unique one). Also add a location ("eu" or "us").
+
+```{r, eval = FALSE}
+gcs_create_bucket("example-bucket-34869", project_id, location = "eu")
+```
+
+Now we can see the bucket listed:
+
+```{r, eval=FALSE}
+gcs_list_buckets(project_id)
+```
+
+You can create as many buckets as you want and organize them as you like. But you will need to supply a bucket name with every call to Google Storage (and Document AI), so you may want to store the name of a default bucket in the environment. Here you have two options:
+
+1) Set it for the current session with `gcs_global_bucket("<your bucket name>")`
+
+2) Store it permanently in you .Renviron file by calling `usethis::edit_r_environ()` and adding `GCS_DEFAULT_BUCKET=<your bucket name>` to the list of variables (just as you did with `GCS_AUTH_FILE` and `DAI_PROCESSOR_ID` in the [configuration vignette](https://dair.info/articles/configuration.html)). Note that adding a default bucket to .Renviron will not prevent you from supplying other bucket names in individual calls to Google Storage when necessary. 
+
+To get a bucket's file inventory, we use `gcs_list_objects()`. Leaving the parentheses empty will get information about the default bucket if you have set it.
+
+```{r, eval=FALSE}
+gcs_list_objects()
+```
+
+At this point it's obviously empty, so let's upload something. 
+
+## Uploading files
+
+This we do with `gcs_upload()`. If the file is in your working directory, just write the filename; otherwise provide the full file path. If you want, you can store the file under another name in Google Storage with the `name` parameter; otherwise, just leave the parameter out. For this example we create a simple CSV file and upload it.  
+
+```{r, eval=FALSE}
+setwd(tempdir())
+write.csv(mtcars, "mtcars.csv")
+gcs_upload("mtcars.csv")
+```
+
+Now let's check the contents. 
+
+```{r, eval=FALSE}
+gcs_list_objects()
+```
+
+Note that you can use the parameter `name` to change the name that the file will be stored under in the bucket.
+
+```{r, eval=FALSE}
+gcs_upload("mtcars.csv", name = "testfile.csv")
+```
+
+The Google Storage API handles only one file at a time, so for bulk uploads you need to use iteration. Let's create another CSV file, create a vector with the two files, and map over it.   
+
+```{r, eval=FALSE}
+library(purrr)
+write.csv(iris, "iris.csv")
+my_files <- list.files(pattern = "*.csv")
+map(my_files, gcs_upload)
+```
+
+Note that if your `my_files` vector contains full filepaths, not specifying the `name` parameter in `gcs_upload()` will produce long and awkward filenames in the Storage bucket. To avoid this, use `basename()` in the name parameter, like so:
+
+```{r, eval=FALSE}
+map(my_files, ~ gcs_upload(.x, name = basename(.x)))
+```
+
+Let's check the contents again:
+```{r, eval=FALSE}
+gcs_list_objects()
+```
+
+Note that there's a file size limit of 5Mb, but you can change it with `gcs_upload_set_limit()`. 
+
+```{r, eval=FALSE}
+gcs_upload_set_limit(upload_limit = 20000000L)
+```
+
+## Downloading files
+
+Downloads are performed with `gcs_get_object()`. Note that you need to explicitly provide the name that your file will be saved under using the parameter `saveToDisk`.
+
+```{r, eval=FALSE}
+gcs_get_object("iris.csv", saveToDisk = "iris.csv")
+```
+
+If you want the file somewhere other than your working directory, just provide a path. You can also change the file's basename if you want.
+
+```{r, eval=FALSE}
+gcs_get_object("mtcars.csv", saveToDisk = "/path/to/mtcars_downloaded.csv")
+```
+
+To download multiple files we again need to use iteration. Here it helps to know that the "bucket inventory" function, `gcs_list_objects()`, returns a dataframe with a column called `name`. If you store the output of this function as an object, e.g. `contents`, you can access the filenames with `contents$name`. To download all the files in the bucket to our working directory, we would do something like this:
+
+```{r, eval=FALSE}
+contents <- gcs_list_objects()
+map(contents$name, ~ gcs_get_object(.x, saveToDisk = .x))
+```
+
+If files with the same names exist in the destination drive, the process will fail (to protect your local files). Add `overwrite = TRUE` if you don't mind overwriting them. 
+
+Note that files in a Google Storage bucket can have names that include forward slashes. The JSON files returned by Document AI, for example, can look like this: `17346859889898929078/0/document-0.json`. If you try to save such a file under its full filename, your computer will think the slashes are folder separators, look for matching folder names, and give an error if those folders (in this case `17346859889898929078` and `0`) don't already exist on your drive. To avoid this and get file simply as `document-0.json`, use `basename(.x)` in the `saveToDisk` parameter of `gcs_get_object()`. 
+
+```{r, eval=FALSE}
+map(contents$name, ~ gcs_get_object(.x, saveToDisk = basename(.x))
+```
+
+
+## Deleting
+
+We can delete files in the bucket with `gcs_delete_object()`: 
+```{r, eval=FALSE}
+gcs_delete_object("mtcars.csv")
+```
+
+To delete several, we again need to loop or map. The following code deletes everything in the bucket.
+
+```{r, eval=FALSE}
+contents <- gcs_list_objects()
+map(contents$name, gcs_delete_object)
+```
+
+## Convenience functions
+
+You can always create custom functions for frequently used operations. For example, I like to start a new OCR project with an empty bucket, so I have the following function in my `.Rprofile`.
+
+```{r, eval=FALSE}
+empty_bucket <- function() {
+  contents <- googleCloudStorageR::gcs_list_objects()
+  lapply(contents$name, googleCloudStorageR::gcs_delete_object)
+}
+```
+
+Google Storage has many other functionalities, and I recommend exploring the documentation of `googleCloudStorageR` to find out more. But we have covered the essential ones, and you are now ready to make full use of `daiR`. Take a look at the vignette on [basic usage](https://dair.info/articles/usage.html) to get started.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
+# cleanup
+library(fs)
+file_delete(dir_ls(tempdir(), glob = "*.csv"))
+```
+
+## Cheatsheet
+
+If you are confused about the various ids and variables in the GCS ecosystem, refer to the [concept cheatsheet](https://dair.info/articles/cheatsheet.html).

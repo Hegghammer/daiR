@@ -158,7 +158,8 @@ test_that("get_entities() gets entities from example response", {
   form_proc_id <- procs$id[procs$type == "FORM_PARSER_PROCESSOR"][1]
   file <- testthat::test_path("examples", "table.pdf")
   response <- dai_sync(file, proc_id = form_proc_id)
-  expect_message(get_entities(response), "Document AI identified no entities in the document.")
+  ents <- get_entities(response)
+  expect_true(is.data.frame(ents[[1]]))
 })
 
 test_that("get_entities() gets entities from example file", {

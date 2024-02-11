@@ -1,0 +1,71 @@
+---
+title: "Quickstart"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Quickstart}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+*Last updated 10 February 2024*
+\
+
+### Set up a Google Cloud Services account
+
+Follow the instructions [here](https://dair.info/articles/configuration.html) for the GUI method or [here](https://dair.info/articles/gcs_cli.html) for the command line method. See also the [GCS concept cheatsheet](https://dair.info/articles/cheatsheet.html) for an overview of recommended environmental variables.
+
+### Process synchronously
+
+Pass a single-page pdf or image file to Document AI and get the output immediately:
+
+```{r, eval=FALSE}
+library(daiR)
+## Not run:
+myfile <- "sample.pdf"
+text <- get_text(dai_sync(myfile))
+```
+
+### Process asynchronously 
+
+Requires [configuration of `googleCloudStorageR`](https://dair.info/articles/gcs_storage.html). Send larger batches for offline processing in three steps:
+
+#### 1. Upload files to your Google Cloud Storage bucket
+
+```{r, eval=FALSE}
+## Not run:
+library(googleCloudStorageR)
+library(purrr)
+my_pdfs <- c("sample1.pdf", "sample2.pdf")
+map(my_pdfs, ~ gcs_upload(.x, name = basename(.x)))
+```
+
+#### 2. Tell Document AI to process them:
+
+```{r, eval=FALSE}
+## Not run:
+resp <- dai_async(my_pdfs)
+dai_status(resp) # to check the progress
+```
+
+The output will be delivered to the same bucket as JSON files.
+
+#### 3. Download the JSON output and extract the text:
+
+```{r, eval=FALSE}
+## Not run:
+# Get a dataframe with the bucket contents
+contents <- gcs_list_objects()
+# Get the names of the JSON output files
+jsons <- grep("*.json", contents$name, value = TRUE)
+# Download them 
+map(jsons, ~ gcs_get_object(.x, saveToDisk = basename(.x)))
+# Extract the text from the JSON files and save it as .txt files
+local_jsons <- basename(jsons)
+map(local_jsons, ~ get_text(.x, type = "async", save_to_file = TRUE))
+```
+
+Assuming your pdfs were named `sample1.pdf` and `sample2.pdf`, there will now be two files named `sample1-0.txt` and `sample2-0.txt` in your working directory.
