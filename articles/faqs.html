@@ -60,7 +60,7 @@
   </a>
 </li>
 <li>
-  <a href="../articles/basics.html">Quickstart</a>
+  <a href="../articles/quickstart.html">Quickstart</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -70,22 +70,22 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/setting_up_google_storage.html">Setting up a Google Storage bucket</a>
+      <a href="../articles/configuration.html">Configuration</a>
     </li>
     <li>
-      <a href="../articles/using_document_ai.html">Using Google Document AI with R</a>
+      <a href="../articles/gcs_storage.html">Working with Google Cloud Storage</a>
     </li>
     <li>
-      <a href="../articles/extracting_tables.html">Extracting tables</a>
+      <a href="../articles/usage.html">Basic usage</a>
     </li>
     <li>
-      <a href="../articles/reconstructing_text.html">Correcting text output from Google Document AI</a>
+      <a href="../articles/tables.html">Extracting tables</a>
     </li>
     <li>
-      <a href="../articles/complex_file_and_folder_management.html">Complex file and folder management</a>
+      <a href="../articles/reconstructing_text.html">Correcting text output</a>
     </li>
     <li>
-      <a href="../articles/searchable_pdfs">Creating searchable PDFs</a>
+      <a href="../articles/searchable_pdfs.html">Creating searchable PDFs</a>
     </li>
   </ul>
 </li>
@@ -133,12 +133,35 @@
 
     
     
+<p><em>Last updated 10 February 2024</em><br></p>
+<div class="section level3">
+<h3 id="what-exactly-is-google-document-ai">What exactly is Google Document AI?<a class="anchor" aria-label="anchor" href="#what-exactly-is-google-document-ai"></a>
+</h3>
+<p><a href="https://cloud.google.com/document-ai" class="external-link">Google Document AI</a>
+(DAI) is a server-based OCR engine that extracts text from pdf files.
+Released in November 2020, it’s off-the-shelf accuracy is generally
+higher than static libraries such as <a href="https://github.com/tesseract-ocr/tesseract" class="external-link"><code>tesseract</code></a>.
+Short of corpus-specific, self-trained processors, DAI offers some of
+the best OCR capabilities currently available to the general public. At
+the time of writing, DAI is more expensive than Amazon’s <a href="https://aws.amazon.com/textract/" class="external-link">Textract</a>, but promises to
+support many more languages.</p>
+<p>DAI is accessed through an API, but this API currently has no
+official R <a href="https://cloud.google.com/document-ai/docs/libraries" class="external-link">client
+library</a>. This is where the <code>daiR</code> package comes in; it
+provides a light wrapper for DAI’s <a href="https://cloud.google.com/document-ai/docs/reference/rest" class="external-link">REST
+API</a>, making it possible to submit documents to DAI from within R. In
+addition, <code>daiR</code> comes with pre- and postprocessing tools
+intended to make the whole text extraction process easier.</p>
+<p>Google Document AI is closely connected with <a href="https://cloud.google.com/storage" class="external-link">Google Storage</a>, as the
+latter serves as a drop-off and pick-up point for files you want
+processed in DAI.</p>
+</div>
 <div class="section level3">
 <h3 id="how-much-does-google-document-ai-cost-to-use">How much does Google Document AI cost to use?<a class="anchor" aria-label="anchor" href="#how-much-does-google-document-ai-cost-to-use"></a>
 </h3>
-<p>Google charges USD 1.50 per 1,000 pages for use of the default
-processor, “Document OCR”. Specialized processors (such as form parsers
-for business use) cost more; see Google’s <a href="https://cloud.google.com/document-ai/pricing" class="external-link">documentation</a>
+<p>Google currently charges USD 1.50 per 1,000 pages for use of the
+default processor, “Document OCR”. Specialized processors (such as form
+parsers for business use) cost more; see Google’s <a href="https://cloud.google.com/document-ai/pricing" class="external-link">documentation</a>
 for details.</p>
 </div>
 <div class="section level3">

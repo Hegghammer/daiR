@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Basic processing • daiR</title>
+<title>Quickstart • daiR</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Basic processing">
+<meta property="og:title" content="Quickstart">
 <meta property="og:description" content="daiR">
 <meta property="og:image" content="/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -60,7 +60,7 @@
   </a>
 </li>
 <li>
-  <a href="../articles/basics.html">Quickstart</a>
+  <a href="../articles/quickstart.html">Quickstart</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -70,22 +70,22 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/setting_up_google_storage.html">Setting up a Google Storage bucket</a>
+      <a href="../articles/configuration.html">Configuration</a>
     </li>
     <li>
-      <a href="../articles/using_document_ai.html">Using Google Document AI with R</a>
+      <a href="../articles/gcs_storage.html">Working with Google Cloud Storage</a>
     </li>
     <li>
-      <a href="../articles/extracting_tables.html">Extracting tables</a>
+      <a href="../articles/usage.html">Basic usage</a>
     </li>
     <li>
-      <a href="../articles/reconstructing_text.html">Correcting text output from Google Document AI</a>
+      <a href="../articles/tables.html">Extracting tables</a>
     </li>
     <li>
-      <a href="../articles/complex_file_and_folder_management.html">Complex file and folder management</a>
+      <a href="../articles/reconstructing_text.html">Correcting text output</a>
     </li>
     <li>
-      <a href="../articles/searchable_pdfs">Creating searchable PDFs</a>
+      <a href="../articles/searchable_pdfs.html">Creating searchable PDFs</a>
     </li>
   </ul>
 </li>
@@ -123,16 +123,26 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Basic processing</h1>
+      <h1 data-toc-skip>Quickstart</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/Hegghammer/daiR/blob/HEAD/vignettes/basics.Rmd" class="external-link"><code>vignettes/basics.Rmd</code></a></small>
-      <div class="hidden name"><code>basics.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/Hegghammer/daiR/blob/HEAD/vignettes/quickstart.Rmd" class="external-link"><code>vignettes/quickstart.Rmd</code></a></small>
+      <div class="hidden name"><code>quickstart.Rmd</code></div>
 
     </div>
 
     
     
+<p><em>Last updated 10 February 2024</em><br></p>
+<div class="section level3">
+<h3 id="set-up-a-google-cloud-services-account">Set up a Google Cloud Services account<a class="anchor" aria-label="anchor" href="#set-up-a-google-cloud-services-account"></a>
+</h3>
+<p>Follow the instructions <a href="https://dair.info/articles/configuration.html" class="external-link">here</a> for the
+GUI method or <a href="https://dair.info/articles/gcs_cli.html" class="external-link">here</a>
+for the command line method. See also the <a href="https://dair.info/articles/cheatsheet.html" class="external-link">GCS concept
+cheatsheet</a> for an overview of recommended environmental
+variables.</p>
+</div>
 <div class="section level3">
 <h3 id="process-synchronously">Process synchronously<a class="anchor" aria-label="anchor" href="#process-synchronously"></a>
 </h3>
@@ -147,9 +157,11 @@ output immediately:</p>
 <div class="section level3">
 <h3 id="process-asynchronously">Process asynchronously<a class="anchor" aria-label="anchor" href="#process-asynchronously"></a>
 </h3>
-<p>Send larger batches for offline processing in three steps:</p>
+<p>Requires <a href="https://dair.info/articles/gcs_storage.html" class="external-link">configuration of
+<code>googleCloudStorageR</code></a>. Send larger batches for offline
+processing in three steps:</p>
 <div class="section level4">
-<h4 id="upload-files-to-your-google-storage-bucket">1. Upload files to your Google Storage bucket<a class="anchor" aria-label="anchor" href="#upload-files-to-your-google-storage-bucket"></a>
+<h4 id="upload-files-to-your-google-cloud-storage-bucket">1. Upload files to your Google Cloud Storage bucket<a class="anchor" aria-label="anchor" href="#upload-files-to-your-google-cloud-storage-bucket"></a>
 </h4>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Not run:</span></span>
@@ -163,19 +175,28 @@ output immediately:</p>
 </h4>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Not run:</span></span>
-<span><span class="fu"><a href="../reference/dai_async.html">dai_async</a></span><span class="op">(</span><span class="va">my_pdfs</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dai_async.html">dai_async</a></span><span class="op">(</span><span class="va">my_pdfs</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/dai_status.html">dai_status</a></span><span class="op">(</span><span class="va">resp</span><span class="op">)</span> <span class="co"># to check the progress</span></span></code></pre></div>
+<p>The output will be delivered to the same bucket as JSON files.</p>
 </div>
 <div class="section level4">
-<h4 id="download-the-json-output-and-extract-the-text">3. Download the json output and extract the text:<a class="anchor" aria-label="anchor" href="#download-the-json-output-and-extract-the-text"></a>
+<h4 id="download-the-json-output-and-extract-the-text">3. Download the JSON output and extract the text:<a class="anchor" aria-label="anchor" href="#download-the-json-output-and-extract-the-text"></a>
 </h4>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Not run:</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://purrr.tidyverse.org/" class="external-link">purrr</a></span><span class="op">)</span></span>
-<span><span class="va">bucket_contents</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html" class="external-link">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">jsons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"*.json"</span>, <span class="va">bucket_contents</span><span class="op">$</span><span class="va">name</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co"># Get a dataframe with the bucket contents</span></span>
+<span><span class="va">contents</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_list_objects.html" class="external-link">gcs_list_objects</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># Get the names of the JSON output files</span></span>
+<span><span class="va">jsons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"*.json"</span>, <span class="va">contents</span><span class="op">$</span><span class="va">name</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co"># Download them </span></span>
 <span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">jsons</span>, <span class="op">~</span> <span class="fu"><a href="https://cloudyr.github.io/googleCloudStorageR//reference/gcs_get_object.html" class="external-link">gcs_get_object</a></span><span class="op">(</span><span class="va">.x</span>, saveToDisk <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="va">.x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># Extract the text from the JSON files and save it as .txt files</span></span>
 <span><span class="va">local_jsons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="va">jsons</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">local_jsons</span>, <span class="op">~</span> <span class="fu"><a href="../reference/get_text.html">get_text</a></span><span class="op">(</span><span class="va">.x</span>, type <span class="op">=</span> <span class="st">"async"</span>, save_to_file <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>Assuming your pdfs were named <code>sample1.pdf</code> and
+<code>sample2.pdf</code>, there will now be two files named
+<code>sample1-0.txt</code> and <code>sample2-0.txt</code> in your
+working directory.</p>
 </div>
 </div>
   </div>

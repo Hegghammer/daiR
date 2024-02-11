@@ -1,15 +1,17 @@
-pandoc: 3.1.9
+pandoc: 3.1.8
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
+  cheatsheet: cheatsheet.html
   faqs: faqs.html
   gcs_cli: gcs_cli.html
   searchable_pdfs: searchable_pdfs.html
-  basics: basics.html
   complex_file_and_folder_management: complex_file_and_folder_management.html
-  extracting_tables: extracting_tables.html
+  configuration: configuration.html
+  gcs_storage: gcs_storage.html
+  quickstart: quickstart.html
   reconstructing_text: reconstructing_text.html
-  setting_up_google_storage: setting_up_google_storage.html
-  using_document_ai: using_document_ai.html
-last_built: 2024-02-10T22:34Z
+  tables: tables.html
+  usage: usage.html
+last_built: 2024-02-11T23:36Z
 
