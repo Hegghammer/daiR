@@ -7,9 +7,9 @@ Authors@R:
 Description: R interface for the Google Cloud Services 'Document AI API'
     <https://cloud.google.com/document-ai/> with additional tools for
     output file parsing and text reconstruction. 'Document AI' is a
-    powerful server-based OCR processor that extracts text and tables from
+    powerful server-based OCR service that extracts text and tables from
     images and PDF files with high accuracy. 'daiR' gives R users
-    programmatic access to this processor and additional tools to handle
+    programmatic access to this service and additional tools to handle
     and visualize the output. See the package website <https://dair.info/>
     for more information and examples.
 License: MIT + file LICENSE
