@@ -2,7 +2,7 @@
 
 <img align="right" src="man/figures/logo.png" width="120">
 
-**daiR** is an R package for [Google Document AI](https://cloud.google.com/document-ai), a powerful server-based OCR processor with support for over 60 languages. The package provides an interface for the Document AI API and comes with additional tools for output file parsing and text reconstruction. See the `daiR` [website](https://dair.info/) and this [journal article](https://joss.theoj.org/papers/10.21105/joss.03538#) for more details.
+**daiR** is an R package for [Google Document AI](https://cloud.google.com/document-ai), a powerful server-based OCR service with support for over 60 languages. The package provides an interface for the Document AI API and comes with additional tools for output file parsing and text reconstruction. See the `daiR` [website](https://dair.info/) and this [journal article](https://joss.theoj.org/papers/10.21105/joss.03538#) for more details.
 
 ## Use
 

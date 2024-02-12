@@ -6,7 +6,7 @@
 [![Codecov test coverage](https://codecov.io/gh/Hegghammer/daiR/branch/master/graph/badge.svg)](https://codecov.io/gh/Hegghammer/daiR?branch=master)
 <!-- badges: end -->
 
-**daiR** is an R package for [Google Document AI](https://cloud.google.com/document-ai), a powerful server-based OCR processor with support for over 60 languages. The package provides an interface for the Document AI API and comes with additional tools for output file parsing and text reconstruction.
+**daiR** is an R package for [Google Document AI](https://cloud.google.com/document-ai), a powerful server-based OCR service with support for over 60 languages. The package provides an interface for the Document AI API and comes with additional tools for output file parsing and text reconstruction.
 
 <img src="man/figures/frontpage_image.png" width="400" class="center">
 
