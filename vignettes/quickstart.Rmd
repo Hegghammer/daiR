@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### Set up a Google Cloud Services account
 
-Follow the instructions [here](https://dair.info/articles/configuration.html) for the GUI method or [here](https://dair.info/articles/gcs_cli.html) for the command line method. See also the [GCS concept cheatsheet](https://dair.info/articles/cheatsheet.html) for an overview of recommended environmental variables.
+Follow the instructions [here](https://dair.info/articles/configuration.html) for the GUI method or [here](https://dair.info/articles/gcs_cli.html) for the command line method. See also the [GCS concept cheatsheet](https://dair.info/articles/cheatsheet.html) for an overview of recommended environment variables.
 
 ### Process synchronously
 

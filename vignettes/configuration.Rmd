@@ -33,7 +33,7 @@ This is a rundown for beginners of how to set up a Google Cloud Services account
 
 The biggest hurdle to using any Google API is authentication. It can be daunting, partly because it involves abstract new concepts like "service accounts", "Oauth2.0", and "scopes", and partly because the website you have to work with -- the [Google Cloud Console](https://console.cloud.google.com/) -- is a nightmare to navigate.
 
-There are several different ways to authenticate to GCS from R, and you may have seen that different R packages do it slightly differently (see e.g. [gmailr](https://gmailr.r-lib.org/) and [bigrquery](https://bigrquery.r-dbi.org/)). This vignette takes an opinionated approach and recommends using service accounts and json key files. It involves a little bit more hands-on configuration than some of the setup wizards in other R packages, but my thinking is that if you are computer-literate enough to consider using an API, you are probably also able to navigate the GCS and set environmental variables in R. But know that there are [several](https://cran.r-project.org/package=gargle/vignettes/get-api-credentials.html) [other](https://cran.r-project.org/package=googleAuthR/vignettes/google-authentication-types.html) authentication strategies, and you can use `daiR` with most of them so long as you obtain an authentication token. 
+There are several different ways to authenticate to GCS from R, and you may have seen that different R packages do it slightly differently (see e.g. [gmailr](https://gmailr.r-lib.org/) and [bigrquery](https://bigrquery.r-dbi.org/)). This vignette takes an opinionated approach and recommends using service accounts and json key files. It involves a little bit more hands-on configuration than some of the setup wizards in other R packages, but my thinking is that if you are computer-literate enough to consider using an API, you are probably also able to navigate the GCS and set environment variables in R. But know that there are [several](https://cran.r-project.org/package=gargle/vignettes/get-api-credentials.html) [other](https://cran.r-project.org/package=googleAuthR/vignettes/google-authentication-types.html) authentication strategies, and you can use `daiR` with most of them so long as you obtain an authentication token. 
 
 There are nine main steps to go through before you can start using `daiR`.
 
@@ -97,9 +97,9 @@ include_graphics("storage6.PNG")
 
 Now we need to generate a JSON file containing the credentials for this service account. Click the small edit icon on the bottom right. On the next page, click "add key", choose "create new key", select JSON format, and click "create". This should prompt a save file window. Save the file to your hard drive. You can change the name to something more memorable if you like (but keep the `.json` extension). Also, take note of where you stored it. Now we are done in the Google Cloud Console and can finally start working in RStudio.
 
-### Step 6: Store the path to the credentials file as an environmental variable
+### Step 6: Store the path to the credentials file as an environment variable
 
-You want `daiR` to automatically authenticate you when you load the package so you don't have to fiddle with authentication every time. For this to happen, you need to tell R where it can find the JSON file with the credentials. We do this by storing the path to the json file as an environmental variable in your `.Renviron` file. Start by writing the following in your RStudio console:
+You want `daiR` to automatically authenticate you when you load the package so you don't have to fiddle with authentication every time. For this to happen, you need to tell R where it can find the JSON file with the credentials. We do this by storing the path to the json file as an environment variable in your `.Renviron` file. Start by writing the following in your RStudio console:
 
 ```{r, message=FALSE, eval=FALSE}
 usethis::edit_r_environ()

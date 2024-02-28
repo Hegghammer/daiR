@@ -17,7 +17,7 @@ To make the most of Document AI API, it is worth familiarizing yourself with Goo
 
 ## Setup
 
-Storage is such a fundamental service in GCS that it is enabled by default. If you followed the [configuration vignette](https://dair.info/articles/configuration.html) where you created a GCS account and stored an environmental variable `GCS_AUTH_FILE` in your `.Renviron` file, you are pretty much ready to go. All you need to do is load `googleCloudStorageR` and you will be auto-authenticated.
+Storage is such a fundamental service in GCS that it is enabled by default. If you followed the [configuration vignette](https://dair.info/articles/configuration.html) where you created a GCS account and stored an environment variable `GCS_AUTH_FILE` in your `.Renviron` file, you are pretty much ready to go. All you need to do is load `googleCloudStorageR` and you will be auto-authenticated.
 
 ```{r, message=FALSE}
 library(googleCloudStorageR)
