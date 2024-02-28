@@ -55,10 +55,9 @@ list_processor_types <- function(full_list = FALSE,
 
   # Process response
   if (isTRUE(full_list)) {
-    return(parsed$processorTypes) 
+    parsed$processorTypes
   } else {
-    types <- unlist(purrr::map(parsed$processorTypes, ~.x[["type"]]))
-    return(types)
+    unlist(purrr::map(parsed$processorTypes, ~.x[["type"]]))
   }
 }
 
@@ -131,7 +130,7 @@ create_processor <- function(name,
   if (response$status_code == 200) {
     id <- basename(parsed$name)
     cli::cli_alert_success(glue::glue('Processor created.\n- Name: {parsed$displayName}\n- Type: {parsed$type}\n- Id: {id}'))
-    return(id)
+    id
   } else {
     cli::cli_alert_danger(glue::glue('HTTP status: {response$status_code} - unsuccessful.\nError: "{parsed$error$message}"'))
   }
@@ -185,7 +184,7 @@ get_processors <- function(proj_id = get_project_id(),
   # Process response
 	df <- as.data.frame(data.table::rbindlist(parsed$processors))
 	df$id <- basename(df$name)
-	return(df)
+	df
 }
 
 #' Get information about processor
@@ -238,9 +237,7 @@ get_processor_info <- function(proc_id,
 
   # Send request
 	response <- httr::GET(url, httr::config(token = token))
-	parsed <- httr::content(response)
-
-	return(parsed)
+	httr::content(response)
 }
 
 #' List available versions of processor
@@ -293,8 +290,7 @@ get_processor_versions <- function(proc_id,
 	# Process response
 	df <- as.data.frame(data.table::rbindlist(parsed$processorVersions))
 	df$shortName <- basename(df$name)
-	df <- df[, c(6, 1:5)]
-	return(df)
+	df[, c(6, 1:5)]
 }
 
 #' Enable processor
@@ -458,5 +454,5 @@ delete_processor <- function(proc_id,
   } else {
     cli::cli_alert_danger(glue::glue('HTTP status: {response$status_code} - unsuccessful.\nError: "{parsed$error$message}"'))
   }
-  return(response)
+  response
 }

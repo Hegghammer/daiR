@@ -363,6 +363,5 @@ mk_bbox <- function(coord, index) {
   y1 <- coord[[index]][["ys"]][[1]]
   x2 <- coord[[index]][["xs"]][[3]]
   y2 <- coord[[index]][["ys"]][[3]]
-  bbox <- paste0("bbox ", x1, " ", y1, " ", x2, " ", y2)
-  return(bbox)
+  paste0("bbox ", x1, " ", y1, " ", x2, " ", y2)
 }

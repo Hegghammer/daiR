@@ -272,7 +272,7 @@ build_token_df <- function(object,
     df$block[df$page == i] <- df_sub$block
   }
 
-  return(df)
+  df
 
 }
 
@@ -387,9 +387,7 @@ build_block_df <- function(object,
   bottom <- unlist(purrr::map(pagewise_block_coords, ~ purrr::map(.x, ~ max(.x$y))))
 
   # combine all vectors to dataframe
-  df <- data.frame(page, block, conf, left, right, top, bottom)
-
-  return(df)
+  data.frame(page, block, conf, left, right, top, bottom)
 
 }
 
@@ -550,7 +548,7 @@ split_block <- function(block_df,
 
   row.names(new_block_df) <- NULL
 
-  return(new_block_df)
+  new_block_df
 
 }
 
@@ -642,7 +640,7 @@ reassign_tokens <- function(token_df,
 
   row.names(new_token_df) <- NULL
 
-  return(new_token_df)
+  new_token_df
 
 }
 
@@ -728,7 +726,7 @@ reassign_tokens2 <- function(token_df,
 
   row.names(new_token_df) <- NULL
 
-  return(new_token_df)
+  new_token_df
 }
 
 #' Extract block coordinates from labelme files
@@ -783,17 +781,14 @@ from_labelme <- function(json,
 
   block <- info[[3]][[1]]
 
-  blockdata <- data.frame(page = page,
-                          block = as.numeric(block),
-                          conf = NA,
-                          left = left,
-                          right = right,
-                          top = top,
-                          bottom = bottom
-  )
-
-  return(blockdata)
-
+  data.frame(page = page,
+             block = as.numeric(block),
+             conf = NA,
+             left = left,
+             right = right,
+             top = top,
+             bottom = bottom
+             )
 }
 
 #' Inspect revised block bounding boxes
@@ -950,8 +945,7 @@ redraw_blocks <- function(json,
 #' @noRd
 
 get_vertices <- function(lst) {
-  boxes <- purrr::map(lst, ~.x$layout$boundingPoly$normalizedVertices)
-  return(boxes)
+  purrr::map(lst, ~.x$layout$boundingPoly$normalizedVertices)
 }
 
 #' Get vertices for entities
@@ -963,8 +957,7 @@ get_vertices <- function(lst) {
 #' @noRd
 
 get_vertices_entities <- function(lst) {
-  boxes <- purrr::map(lst, ~.x$pageAnchor$pageRefs[[2]]$boundingPoly$normalizedVertices)
-  return(boxes)
+  purrr::map(lst, ~.x$pageAnchor$pageRefs[[2]]$boundingPoly$normalizedVertices)
 }
 
 #' Transpose blocks
@@ -977,8 +970,7 @@ get_vertices_entities <- function(lst) {
 transpose_block <- function(lst) {
   xs <- c(lst[[1]][["x"]], lst[[2]][["x"]], lst[[3]][["x"]], lst[[4]][["x"]])
   ys <- c(lst[[1]][["y"]], lst[[2]][["y"]], lst[[3]][["y"]], lst[[4]][["y"]])
-  df <- data.frame(xs, ys)
-  return(df)
+  data.frame(xs, ys)
 }
 
 #' Transpose page
@@ -990,8 +982,7 @@ transpose_block <- function(lst) {
 #' @noRd
 
 transpose_page <- function(lst) {
-  blocks <- purrr::map(lst, transpose_block)
-  return(blocks)
+  purrr::map(lst, transpose_block)
 }
 
 #' Transpose page for entities
@@ -1003,6 +994,5 @@ transpose_page <- function(lst) {
 #' @noRd
 
 transpose_page_entities <- function(lst) {
-  blocks <- purrr::map(lst, ~ .x$boundingPoly$normalizedVertices[[2]])
-  return(blocks)
+  purrr::map(lst, ~ .x$boundingPoly$normalizedVertices[[2]])
 }

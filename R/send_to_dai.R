@@ -131,7 +131,7 @@ dai_sync <- function(file,
     cli::cli_alert_danger(glue::glue('File submitted at {response$date}. HTTP status: {response$status_code} - unsuccessful.\nError: "{parsed$error$message}"'))
   }
 
-  return(response)
+  response
 
   }
 
@@ -330,7 +330,7 @@ dai_async <- function(files,
     cli::cli_alert_danger(glue::glue('{length(files)} files submitted at {response$date}. HTTP status: {response$status_code} - unsuccessful.\nError: "{parsed$error$message}"'))
   }
 
-  return(response)
+  response
 
   }
 
@@ -416,7 +416,7 @@ dai_status <- function(response,
   }
 
   if (isTRUE(verbose)) {
-    return(resp)
+    resp
   }
 
 }
