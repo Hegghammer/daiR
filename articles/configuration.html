@@ -155,8 +155,8 @@ an opinionated approach and recommends using service accounts and json
 key files. It involves a little bit more hands-on configuration than
 some of the setup wizards in other R packages, but my thinking is that
 if you are computer-literate enough to consider using an API, you are
-probably also able to navigate the GCS and set environmental variables
-in R. But know that there are <a href="https://cran.r-project.org/package=gargle/vignettes/get-api-credentials.html" class="external-link">several</a>
+probably also able to navigate the GCS and set environment variables in
+R. But know that there are <a href="https://cran.r-project.org/package=gargle/vignettes/get-api-credentials.html" class="external-link">several</a>
 <a href="https://cran.r-project.org/package=googleAuthR/vignettes/google-authentication-types.html" class="external-link">other</a>
 authentication strategies, and you can use <code>daiR</code> with most
 of them so long as you obtain an authentication token.</p>
@@ -237,14 +237,14 @@ take note of where you stored it. Now we are done in the Google Cloud
 Console and can finally start working in RStudio.</p>
 </div>
 <div class="section level3">
-<h3 id="step-6-store-the-path-to-the-credentials-file-as-an-environmental-variable">Step 6: Store the path to the credentials file as an environmental
-variable<a class="anchor" aria-label="anchor" href="#step-6-store-the-path-to-the-credentials-file-as-an-environmental-variable"></a>
+<h3 id="step-6-store-the-path-to-the-credentials-file-as-an-environment-variable">Step 6: Store the path to the credentials file as an environment
+variable<a class="anchor" aria-label="anchor" href="#step-6-store-the-path-to-the-credentials-file-as-an-environment-variable"></a>
 </h3>
 <p>You want <code>daiR</code> to automatically authenticate you when you
 load the package so you don’t have to fiddle with authentication every
 time. For this to happen, you need to tell R where it can find the JSON
 file with the credentials. We do this by storing the path to the json
-file as an environmental variable in your <code>.Renviron</code> file.
+file as an environment variable in your <code>.Renviron</code> file.
 Start by writing the following in your RStudio console:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/edit.html" class="external-link">edit_r_environ</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
