@@ -73,6 +73,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew install imagemagick
+          brew reinstall imagemagick --with-fontconfig --with-librsvg
 
       - name: Install dependencies
         run: |
