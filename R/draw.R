@@ -615,7 +615,7 @@ plot_box <- function(box, index, info, linecol, linewd, fontcol, fontsize) {
     label = index,
     col = fontcol,
     cex = fontsize,
-    family = "Liberation Sans"
+    #family = "Liberation Sans"
   )
 }
 

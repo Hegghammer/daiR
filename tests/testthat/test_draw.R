@@ -11,7 +11,7 @@ df <- mtcars
 matrix <- as.matrix(mtcars)
 
 # correct but irrelevant JSON file
-fill <- list("a" = 1, "b" = 2) 
+fill <- list("a" = 1, "b" = 2)
 json <- jsonlite::toJSON(fill)
 madeup_json_file <- tempfile(fileext = ".json")
 write(json, madeup_json_file)
@@ -22,7 +22,7 @@ test_that("draw_blocks() warns of input errors", {
   expect_error(draw_blocks(type = null), "Invalid type parameter.")
   expect_error(draw_blocks(type = na), "Invalid type parameter.")
   expect_error(draw_blocks(type = boolean), "Invalid type parameter.")
-  
+
   expect_error(draw_blocks(type = number_random), "Invalid type parameter.")
   expect_error(draw_blocks(type = string_random), "Invalid type parameter.")
   expect_error(draw_blocks(type = df), "Invalid type parameter.")
@@ -38,98 +38,178 @@ test_that("draw_blocks() warns of input errors", {
   expect_error(draw_blocks(type = "sync", object = matrix), "Object parameter not pointing to valid response object.")
   expect_error(draw_blocks(type = "sync", object = vector_strings), "Object parameter not pointing to valid response object.")
   expect_error(draw_blocks(type = "sync", object = list_strings), "Object parameter not pointing to valid response object.")
-  
+
   expect_error(draw_blocks(type = "async", object = realjson, prefix = number_random), "Invalid prefix parameter.")
   expect_error(draw_blocks(type = "async", object = realjson, prefix = df), "Invalid prefix parameter.")
   expect_error(draw_blocks(type = "async", object = realjson, prefix = matrix), "Invalid prefix parameter.")
   expect_error(draw_blocks(type = "async", object = realjson, prefix = vector_strings), "Invalid prefix parameter.")
   expect_error(draw_blocks(type = "async", object = realjson, prefix = list_strings), "Invalid prefix parameter.")
 
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "test", dir = null),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "test", dir = na),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "test", dir = boolean),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "test", dir = number_random),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = df),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = matrix),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = vector_strings),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = list_strings),
-               "Invalid dir parameter. Must be a valid folder path.")
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "test", dir = null),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "test", dir = na),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "test", dir = boolean),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "test", dir = number_random),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = df),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = matrix),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = vector_strings),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = list_strings),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
 
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = null),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = na),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = boolean),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = string_random),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = vector_strings),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = list_strings),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = df),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = matrix),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = null),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = na),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = boolean),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = string_random),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = vector_strings),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = list_strings),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = df),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = matrix),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
 
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = null),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = na),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = boolean),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = string_random),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = vector_strings),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = list_strings),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = df),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = matrix),
-               "Invalid linewd parameter. Must be a single number.")
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = null),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = na),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = boolean),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = string_random),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = vector_strings),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = list_strings),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = df),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = matrix),
+    "Invalid linewd parameter. Must be a single number."
+  )
 
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = null),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = na),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = boolean),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = string_random),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = vector_strings),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = list_strings),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = df),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = matrix),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = null),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = na),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = boolean),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = string_random),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = vector_strings),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = list_strings),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = df),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = matrix),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
 
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = null),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = na),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = boolean),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = string_random),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = vector_strings),
-               "Invalid fontsize parameter. Must be a single number.")  
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = list_strings),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = df),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = matrix),
-               "Invalid fontsize parameter. Must be a single number.")
-  })
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = null),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = na),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = boolean),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = string_random),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = vector_strings),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = list_strings),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = df),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_blocks(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = matrix),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+})
 
 test_that("draw_blocks() produces a correctly named png file", {
   skip_on_cran()
@@ -141,14 +221,14 @@ test_that("draw_blocks() produces a correctly named png file", {
   parsed <- jsonlite::fromJSON(realjson)
   pages <- parsed[["pages"]][["pageNumber"]]
   expected_filepaths <- character()
-  stem <- substr(basename(realjson), 1, nchar(basename(realjson)) -5)
+  stem <- substr(basename(realjson), 1, nchar(basename(realjson)) - 5)
   for (i in pages) {
     fname <- glue::glue("{stem}_page{i}_blocks.png")
     fpath <- file.path(tempdir(), fname)
     expected_filepaths <- c(expected_filepaths, fpath)
   }
   for (j in 1:length(expected_filepaths)) {
-  expect_true(file.exists(expected_filepaths[j]))
+    expect_true(file.exists(expected_filepaths[j]))
   }
   unlink(expected_filepaths, force = TRUE)
 })
@@ -176,101 +256,182 @@ test_that("draw_paragraphs() warns of input errors", {
   expect_error(draw_paragraphs(type = "sync", object = list_strings), "Object parameter not pointing to valid response object.")
 
   realjson <- testthat::test_path("examples", "sample_v1.json")
-  
+
   expect_error(draw_paragraphs(type = "async", object = realjson, prefix = number_random), "Invalid prefix parameter.")
   expect_error(draw_paragraphs(type = "async", object = realjson, prefix = df), "Invalid prefix parameter.")
   expect_error(draw_paragraphs(type = "async", object = realjson, prefix = matrix), "Invalid prefix parameter.")
   expect_error(draw_paragraphs(type = "async", object = realjson, prefix = vector_strings), "Invalid prefix parameter.")
   expect_error(draw_paragraphs(type = "async", object = realjson, prefix = list_strings), "Invalid prefix parameter.")
 
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "test", dir = null),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "test", dir = na),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "test", dir = boolean),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "test", dir = number_random),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = df),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = matrix),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = vector_strings),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = list_strings),
-               "Invalid dir parameter. Must be a valid folder path.")
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "test", dir = null),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "test", dir = na),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "test", dir = boolean),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "test", dir = number_random),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = df),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = matrix),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = vector_strings),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = list_strings),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
 
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = null),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = na),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = boolean),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = string_random),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = vector_strings),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = list_strings),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = df),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = matrix),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = null),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = na),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = boolean),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = string_random),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = vector_strings),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = list_strings),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = df),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = matrix),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
 
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = null),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = na),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = boolean),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = string_random),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = vector_strings),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = list_strings),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = df),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = matrix),
-               "Invalid linewd parameter. Must be a single number.")
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = null),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = na),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = boolean),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = string_random),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = vector_strings),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = list_strings),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = df),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = matrix),
+    "Invalid linewd parameter. Must be a single number."
+  )
 
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = null),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = na),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = boolean),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = string_random),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = vector_strings),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = list_strings),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = df),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = matrix),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = null),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = na),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = boolean),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = string_random),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = vector_strings),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = list_strings),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = df),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = matrix),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
 
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = null),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = na),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = boolean),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = string_random),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = vector_strings),
-               "Invalid fontsize parameter. Must be a single number.")  
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = list_strings),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = df),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = matrix),
-               "Invalid fontsize parameter. Must be a single number.")
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = null),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = na),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = boolean),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = string_random),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = vector_strings),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = list_strings),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = df),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_paragraphs(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = matrix),
+    "Invalid fontsize parameter. Must be a single number."
+  )
 })
 
 test_that("draw_paragraphs() produces a correctly named new png file", {
   skip_on_cran()
+  skip_on_ci()
   skip_if_not_installed("grDevices")
   skip_if_not_installed("magick")
   realjson <- testthat::test_path("examples", "sample_v1.json")
@@ -278,7 +439,7 @@ test_that("draw_paragraphs() produces a correctly named new png file", {
   parsed <- jsonlite::fromJSON(realjson)
   pages <- parsed[["pages"]][["pageNumber"]]
   expected_filepaths <- character()
-  stem <- substr(basename(realjson), 1, nchar(basename(realjson)) -5)
+  stem <- substr(basename(realjson), 1, nchar(basename(realjson)) - 5)
   for (i in pages) {
     fname <- glue::glue("{stem}_page{i}_paragraphs.png")
     fpath <- file.path(tempdir(), fname)
@@ -313,101 +474,182 @@ test_that("draw_lines() warns of input errors", {
   expect_error(draw_lines(type = "sync", object = list_strings), "Object parameter not pointing to valid response object.")
 
   realjson <- testthat::test_path("examples", "sample_v1.json")
-  
+
   expect_error(draw_lines(type = "async", object = realjson, prefix = number_random), "Invalid prefix parameter.")
   expect_error(draw_lines(type = "async", object = realjson, prefix = df), "Invalid prefix parameter.")
   expect_error(draw_lines(type = "async", object = realjson, prefix = matrix), "Invalid prefix parameter.")
   expect_error(draw_lines(type = "async", object = realjson, prefix = vector_strings), "Invalid prefix parameter.")
   expect_error(draw_lines(type = "async", object = realjson, prefix = list_strings), "Invalid prefix parameter.")
 
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "test", dir = null),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "test", dir = na),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "test", dir = boolean),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "test", dir = number_random),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = df),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = matrix),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = vector_strings),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = list_strings),
-               "Invalid dir parameter. Must be a valid folder path.")
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "test", dir = null),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "test", dir = na),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "test", dir = boolean),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "test", dir = number_random),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = df),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = matrix),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = vector_strings),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = list_strings),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
 
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = null),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = na),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = boolean),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = string_random),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = vector_strings),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = list_strings),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = df),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = matrix),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = null),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = na),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = boolean),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = string_random),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = vector_strings),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = list_strings),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = df),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = matrix),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
 
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = null),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = na),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = boolean),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = string_random),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = vector_strings),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = list_strings),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = df),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = matrix),
-               "Invalid linewd parameter. Must be a single number.")
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = null),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = na),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = boolean),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = string_random),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = vector_strings),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = list_strings),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = df),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = matrix),
+    "Invalid linewd parameter. Must be a single number."
+  )
 
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = null),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = na),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = boolean),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = string_random),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = vector_strings),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = list_strings),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = df),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = matrix),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = null),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = na),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = boolean),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = string_random),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = vector_strings),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = list_strings),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = df),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = matrix),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
 
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = null),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = na),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = boolean),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = string_random),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = vector_strings),
-               "Invalid fontsize parameter. Must be a single number.")  
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = list_strings),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = df),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = matrix),
-               "Invalid fontsize parameter. Must be a single number.")
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = null),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = na),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = boolean),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = string_random),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = vector_strings),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = list_strings),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = df),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_lines(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = matrix),
+    "Invalid fontsize parameter. Must be a single number."
+  )
 })
 
 test_that("draw_lines() produces a correctly named new png file", {
   skip_on_cran()
+  skip_on_ci()
   skip_if_not_installed("grDevices")
   skip_if_not_installed("magick")
   realjson <- testthat::test_path("examples", "sample_v1.json")
@@ -415,7 +657,7 @@ test_that("draw_lines() produces a correctly named new png file", {
   parsed <- jsonlite::fromJSON(realjson)
   pages <- parsed[["pages"]][["pageNumber"]]
   expected_filepaths <- character()
-  stem <- substr(basename(realjson), 1, nchar(basename(realjson)) -5)
+  stem <- substr(basename(realjson), 1, nchar(basename(realjson)) - 5)
   for (i in pages) {
     fname <- glue::glue("{stem}_page{i}_lines.png")
     fpath <- file.path(tempdir(), fname)
@@ -450,101 +692,182 @@ test_that("draw_tokens() warns of input errors", {
   expect_error(draw_tokens(type = "sync", object = list_strings), "Object parameter not pointing to valid response object.")
 
   realjson <- testthat::test_path("examples", "sample_v1.json")
-  
+
   expect_error(draw_tokens(type = "async", object = realjson, prefix = number_random), "Invalid prefix parameter.")
   expect_error(draw_tokens(type = "async", object = realjson, prefix = df), "Invalid prefix parameter.")
   expect_error(draw_tokens(type = "async", object = realjson, prefix = matrix), "Invalid prefix parameter.")
   expect_error(draw_tokens(type = "async", object = realjson, prefix = vector_strings), "Invalid prefix parameter.")
   expect_error(draw_tokens(type = "async", object = realjson, prefix = list_strings), "Invalid prefix parameter.")
 
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "test", dir = null),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "test", dir = na),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "test", dir = boolean),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "test", dir = number_random),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = df),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = matrix),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = vector_strings),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = list_strings),
-               "Invalid dir parameter. Must be a valid folder path.")
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "test", dir = null),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "test", dir = na),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "test", dir = boolean),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "test", dir = number_random),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = df),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = matrix),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = vector_strings),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = list_strings),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
 
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = null),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = na),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = boolean),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = string_random),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = vector_strings),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = list_strings),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = df),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = matrix),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = null),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = na),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = boolean),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = string_random),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = vector_strings),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = list_strings),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = df),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = matrix),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
 
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = null),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = na),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = boolean),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = string_random),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = vector_strings),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = list_strings),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = df),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = matrix),
-               "Invalid linewd parameter. Must be a single number.")
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = null),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = na),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = boolean),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = string_random),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = vector_strings),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = list_strings),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = df),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = matrix),
+    "Invalid linewd parameter. Must be a single number."
+  )
 
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = null),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = na),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = boolean),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = string_random),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = vector_strings),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = list_strings),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = df),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = matrix),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = null),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = na),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = boolean),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = string_random),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = vector_strings),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = list_strings),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = df),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = matrix),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
 
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = null),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = na),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = boolean),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = string_random),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = vector_strings),
-               "Invalid fontsize parameter. Must be a single number.")  
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = list_strings),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = df),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = matrix),
-               "Invalid fontsize parameter. Must be a single number.")
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = null),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = na),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = boolean),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = string_random),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = vector_strings),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = list_strings),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = df),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_tokens(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = matrix),
+    "Invalid fontsize parameter. Must be a single number."
+  )
 })
 
 test_that("draw_tokens() produces a correctly named new png file", {
   skip_on_cran()
+  skip_on_ci()
   skip_if_not_installed("grDevices")
   skip_if_not_installed("magick")
   realjson <- testthat::test_path("examples", "sample_v1.json")
@@ -552,7 +875,7 @@ test_that("draw_tokens() produces a correctly named new png file", {
   parsed <- jsonlite::fromJSON(realjson)
   pages <- parsed[["pages"]][["pageNumber"]]
   expected_filepaths <- character()
-  stem <- substr(basename(realjson), 1, nchar(basename(realjson)) -5)
+  stem <- substr(basename(realjson), 1, nchar(basename(realjson)) - 5)
   for (i in pages) {
     fname <- glue::glue("{stem}_page{i}_tokens.png")
     fpath <- file.path(tempdir(), fname)
@@ -587,97 +910,177 @@ test_that("draw_entities() warns of input errors", {
   expect_error(draw_entities(type = "sync", object = list_strings), "Object parameter not pointing to valid response object.")
 
   realjson <- testthat::test_path("examples", "sample_v1.json")
-  
+
   expect_error(draw_entities(type = "async", object = realjson, prefix = number_random), "Invalid prefix parameter.")
   expect_error(draw_entities(type = "async", object = realjson, prefix = df), "Invalid prefix parameter.")
   expect_error(draw_entities(type = "async", object = realjson, prefix = matrix), "Invalid prefix parameter.")
   expect_error(draw_entities(type = "async", object = realjson, prefix = vector_strings), "Invalid prefix parameter.")
   expect_error(draw_entities(type = "async", object = realjson, prefix = list_strings), "Invalid prefix parameter.")
 
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "test", dir = null),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "test", dir = na),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "test", dir = boolean),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "test", dir = number_random),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = df),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = matrix),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = vector_strings),
-               "Invalid dir parameter. Must be a valid folder path.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = list_strings),
-               "Invalid dir parameter. Must be a valid folder path.")
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "test", dir = null),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "test", dir = na),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "test", dir = boolean),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "test", dir = number_random),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = df),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = matrix),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = vector_strings),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = list_strings),
+    "Invalid dir parameter. Must be a valid folder path."
+  )
 
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = null),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = na),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = boolean),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = string_random),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = vector_strings),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = list_strings),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = df),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = matrix),
-               "Invalid linecol parameter. Must be a single valid colour representation.")
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = null),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = na),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = boolean),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = string_random),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = vector_strings),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = list_strings),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = df),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linecol = matrix),
+    "Invalid linecol parameter. Must be a single valid colour representation."
+  )
 
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = null),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = na),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = boolean),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = string_random),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = vector_strings),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = list_strings),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = df),
-               "Invalid linewd parameter. Must be a single number.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = matrix),
-               "Invalid linewd parameter. Must be a single number.")
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = null),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = na),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = boolean),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = string_random),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = vector_strings),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = list_strings),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = df),
+    "Invalid linewd parameter. Must be a single number."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", linewd = matrix),
+    "Invalid linewd parameter. Must be a single number."
+  )
 
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = null),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = na),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = boolean),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = string_random),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = vector_strings),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = list_strings),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = df),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = matrix),
-               "Invalid fontcol parameter. Must be a single valid colour representation.")
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = null),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = na),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = boolean),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = string_random),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = vector_strings),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = list_strings),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = df),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontcol = matrix),
+    "Invalid fontcol parameter. Must be a single valid colour representation."
+  )
 
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = null),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = na),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = boolean),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = string_random),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = vector_strings),
-               "Invalid fontsize parameter. Must be a single number.")  
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = list_strings),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = df),
-               "Invalid fontsize parameter. Must be a single number.")
-  expect_error(draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = matrix),
-               "Invalid fontsize parameter. Must be a single number.")
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = null),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = na),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = boolean),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = string_random),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = vector_strings),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = list_strings),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = df),
+    "Invalid fontsize parameter. Must be a single number."
+  )
+  expect_error(
+    draw_entities(type = "async", object = realjson, prefix = "myfile", dir = ".", fontsize = matrix),
+    "Invalid fontsize parameter. Must be a single number."
+  )
 })
 
 test_that("draw_entities() produces a correctly named new png file", {
@@ -689,7 +1092,7 @@ test_that("draw_entities() produces a correctly named new png file", {
   parsed <- jsonlite::fromJSON(realjson)
   pages <- parsed[["pages"]][["pageNumber"]]
   expected_filepaths <- character()
-  stem <- substr(basename(realjson), 1, nchar(basename(realjson)) -5)
+  stem <- substr(basename(realjson), 1, nchar(basename(realjson)) - 5)
   for (i in pages) {
     fname <- glue::glue("{stem}_page{i}_entities.png")
     fpath <- file.path(tempdir(), fname)
