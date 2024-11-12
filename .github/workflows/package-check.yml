@@ -69,12 +69,6 @@ jobs:
           sudo apt-get install imagemagick
           sudo mv /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/policy.xml.off
       
-      - name: Install system dependencies
-        if: runner.os == 'macOS'
-        run: |
-          brew install imagemagick
-          brew reinstall imagemagick --with-fontconfig --with-librsvg
-
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
