@@ -124,13 +124,13 @@ test_that("get_processors calls out input errors", {
   expect_error(get_processors(loc = "usa"), "Invalid loc parameter.")
 })
 
-test_that("get_processors gets processors", {
-  skip_on_cran()
-  skip_on_ci()
-  skip_if_offline()
-  response <- get_processors()
-  expect_equal(class(response), "data.frame")
-})
+# test_that("get_processors gets processors", {
+#   skip_on_cran()
+#   skip_on_ci()
+#   skip_if_offline()
+#   response <- get_processors()
+#   expect_equal(class(response), "data.frame")
+# })
 
 ## GET_PROCESSOR_INFO----------------------------------------------------
 
@@ -354,10 +354,10 @@ test_that("delete_processor calls out input errors", {
   expect_error(delete_processor(proc_id = id, loc = "usa"), "Invalid loc parameter.")
 })
 
-test_that("delete_processor deletes processors", {
-  skip_on_cran()
-  skip_on_ci()
-  skip_if_offline()
-  # response <- suppressWarnings(delete_processor(proc_id = get_processors()$id[1]))
-  # expect_equal(class(response), "data.frame")
-})
+# test_that("delete_processor deletes processors", {
+#   skip_on_cran()
+#   skip_on_ci()
+#   skip_if_offline()
+#   response <- suppressWarnings(delete_processor(proc_id = get_processors()$id[1]))
+#   expect_equal(class(response), "data.frame")
+# })

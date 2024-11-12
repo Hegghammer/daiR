@@ -1,3 +1,6 @@
+# daiR 1.0.1
+- Bug fixes.
+
 # daiR 1.0.0
 - Major revision.
 - Added several processor-related functions following an update of the Google Document AI REST API. These include `list_processor_types()`, `create_processor()`, `enable_processor()`, `disable_processor()`, and `delete_processor()`.

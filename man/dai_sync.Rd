@@ -53,7 +53,7 @@ can be up to five pages long. Extract the text from the response object with
 response <- dai_sync("doc_page.pdf")
 
 response <- dai_sync("doc_page.pdf",
-                     proc_v = "pretrained-ocr-v1.1-2022-09-12")
-
+  proc_v = "pretrained-ocr-v1.1-2022-09-12"
+)
 }
 }

@@ -733,7 +733,7 @@ reassign_tokens2 <- function(token_df,
 #'
 #' @description This is a specialized function for use in connection
 #' with text reordering. It takes the output from the image
-#' annotation tool 'Labelme' <https://github.com/labelmeai/labelme>
+#' annotation tool 'Labelme' <https://github.com/wkentaro/labelme>
 #' and turns it into a one-row data frame compatible with other
 #' 'daiR' functions for text reordering such as
 #' \code{reassign_tokens2()}. See package vignette on text reconstruction

@@ -30,76 +30,75 @@
 #' response <- dai_sync("doc_page.pdf")
 #'
 #' response <- dai_sync("doc_page.pdf",
-#'                      proc_v = "pretrained-ocr-v1.1-2022-09-12")
-#'
+#'   proc_v = "pretrained-ocr-v1.1-2022-09-12"
+#' )
 #' }
-
 dai_sync <- function(file,
                      proj_id = get_project_id(),
                      proc_id = Sys.getenv("DAI_PROCESSOR_ID"),
-										 proc_v = NA,
+                     proc_v = NA,
                      skip_rev = "true",
                      loc = "eu",
-                     token = dai_token()
-                     ) {
-
+                     token = dai_token()) {
   # Check inputs
   if (!(is.character(file) && length(file) == 1)) {
     stop("Invalid file input.")
-    }
+  }
 
   extension <- tolower(stringr::str_extract(file, "(?<=\\.)\\w{3,4}$"))
-  supported <- c("bmp", "gif", "jpeg", "jpg", "pdf", "png", "tiff", "webp")
+  supported <- c("bmp", "gif", "jpeg", "jpg", "pdf", "png", "tif", "tiff", "webp")
 
   if (!(extension %in% supported)) {
     stop("Unsupported file format. DAI accepts only bmp, gif, jpeg, jpg, pdf, png, tif, tiff, and webp.")
-    }
+  }
 
   if (extension == "pdf" && !(is_pdf(file))) {
     stop("Input file not a real pdf. Is the file in your working directory?")
-    }
+  }
 
   if (!(is.character(proj_id) && length(proj_id) == 1)) {
     stop("Invalid proj_id.")
-    }
+  }
 
   if (!(is.character(proc_id) && length(proc_id) == 1) || proc_id == "") {
     stop("Invalid proc_id.")
-    }
+  }
 
   if (!(length(proc_v) == 1)) {
-  	stop("Invalid proc_v.")
+    stop("Invalid proc_v.")
   }
 
   if (!(is.na(proc_v) || is.character(proc_v))) {
-  	stop("Invalid proc_v.")
+    stop("Invalid proc_v.")
   }
 
   skip_rev <- tolower(skip_rev)
 
   if (!(skip_rev %in% c("true", "false") && length(skip_rev) == 1)) {
     stop("Invalid skip_rev parameter.")
-    }
+  }
 
   loc <- tolower(loc)
 
   if (!(loc %in% c("eu", "us"))) {
     stop("Invalid location parameter.")
-    }
+  }
 
   # Encode
   if (extension == "pdf") {
     encoded_file <- pdf_to_binbase(file)
-    } else {
-      encoded_file <- img_to_binbase(file)
-    }
+  } else {
+    encoded_file <- img_to_binbase(file)
+  }
 
   ## Create json request body
-  req <- list("skipHumanReview" = skip_rev,
-              "rawDocument" = list("content" = encoded_file,
-                                   "mimeType" = "image/tiff"
-                                   )
-              )
+  req <- list(
+    "skipHumanReview" = skip_rev,
+    "rawDocument" = list(
+      "content" = encoded_file,
+      "mimeType" = "image/tiff"
+    )
+  )
 
   bod <- jsonlite::toJSON(req, auto_unbox = TRUE)
 
@@ -110,9 +109,9 @@ dai_sync <- function(file,
   path <- glue::glue("v1/projects/{proj_id}/locations/{loc}/processors/{proc_id}")
 
   if (is.na(proc_v)) {
-  	version <- ""
+    version <- ""
   } else {
-  	version <- glue::glue("/processorVersions/{proc_v}")
+    version <- glue::glue("/processorVersions/{proc_v}")
   }
 
   method <- ":process"
@@ -120,20 +119,19 @@ dai_sync <- function(file,
   url <- glue::glue("{base_url}{path}{version}{method}")
 
   response <- httr::POST(url,
-                         httr::config(token = token),
-                         body = bod
-                         )
+    httr::config(token = token),
+    body = bod
+  )
 
   if (response$status_code == 200) {
     cli::cli_alert_success(glue::glue("File submitted at {response$date}. HTTP status: 200 - OK."))
-    } else {
+  } else {
     parsed <- httr::content(response)
     cli::cli_alert_danger(glue::glue('File submitted at {response$date}. HTTP status: {response$status_code} - unsuccessful.\nError: "{parsed$error$message}"'))
   }
 
   response
-
-  }
+}
 
 #' OCR documents asynchronously
 #'
@@ -186,119 +184,123 @@ dai_sync <- function(file,
 #' # Specify a bucket subfolder for the json output:
 #' dai_async(my_files, dest_folder = "processed")
 #' }
-
 dai_async <- function(files,
                       dest_folder = NULL,
                       bucket = Sys.getenv("GCS_DEFAULT_BUCKET"),
                       proj_id = get_project_id(),
                       proc_id = Sys.getenv("DAI_PROCESSOR_ID"),
-											proc_v = NA,
+                      proc_v = NA,
                       skip_rev = "true",
                       loc = "eu",
-                      token = dai_token()
-                      ) {
-
+                      token = dai_token()) {
   # Check and modify inputs
   if (!(is.character(files) && length(files) >= 1)) {
     stop("Invalid files parameter.")
-    }
+  }
 
   extensions <- tolower(stringr::str_extract_all(files, "(?<=\\.)\\w{3,4}$"))
-  supported <- c("bmp", "gif", "jpeg", "jpg", "pdf", "png", "tiff", "webp")
+  supported <- c("bmp", "gif", "jpeg", "jpg", "pdf", "png", "tif", "tiff", "webp")
 
   if (!(all(unique(extensions) %in% supported))) {
     stop("Unsupported file formats. DAI accepts only bmp, gif, jpeg, jpg, pdf, png, tif, tiff, and webp.")
-    }
+  }
 
   if (length(dest_folder) > 1) {
     stop("Invalid dest_folder parameter.")
-    }
+  }
 
   if (length(dest_folder) == 1 && !(is.character(dest_folder))) {
     stop("Invalid dest_folder parameter.")
-    }
+  }
 
   if (length(dest_folder) == 1 && grepl("/$", dest_folder)) {
     dest_folder <- stringr::str_replace(dest_folder, "/$", "")
-    }
+  }
 
   if (!(is.character(bucket) && length(bucket) == 1) || bucket == "") {
     stop("Invalid bucket parameter.")
-    }
+  }
 
   if (grepl("^gs://", bucket)) {
     bucket <- stringr::str_replace(bucket, "^gs://", "")
-    }
+  }
 
   if ((grepl("/$", bucket))) {
     bucket <- stringr::str_replace(bucket, "/$", "")
-    }
+  }
 
   if (!(is.character(proj_id) && length(proj_id) == 1)) {
     stop("Invalid proj_id parameter.")
-    }
+  }
 
   if (!(is.character(proc_id) && length(proc_id) == 1) || proc_id == "") {
     stop("Invalid proc_id parameter.")
-    }
+  }
 
   if (!(length(proc_v) == 1)) {
-  	stop("Invalid proc_v.")
+    stop("Invalid proc_v.")
   }
 
   if (!(is.na(proc_v) || is.character(proc_v))) {
-  	stop("Invalid proc_v.")
+    stop("Invalid proc_v.")
   }
 
   if (!(skip_rev %in% c("true", "false") && length(skip_rev) == 1)) {
     stop("Invalid skip_rev parameter.")
-    }
+  }
 
   loc <- tolower(loc)
 
   if (!(loc %in% c("eu", "us") && length(loc) == 1)) {
     stop("Invalid loc parameter.")
-    }
+  }
 
   # format list of documents
   doc_list <- list()
 
   for (file in files) {
-
     filetype <- stringr::str_extract(file, "(?<=\\.)\\w{3,4}$")
 
     if (filetype == "pdf") {
       mime <- "application/pdf"
-      } else if (filetype == "gif") {
-        mime <- "image/gif"
-        } else {
-          mime <- "image/tiff"
-        }
+    } else if (filetype == "gif") {
+      mime <- "image/gif"
+    } else if (filetype %in% c("tif", "tiff")) {
+      mime <- "image/tiff"
+    } else if (filetype %in% c("jpg", "jpeg")) {
+      mime <- "image/jpeg"
+    } else if (filetype == "png") {
+      mime <- "image/png"
+    } else if (filetype == "bmp") {
+      mime <- "image/bmp"
+    } else {
+      mime <- "image/webp"
+    }
 
     uri <- glue::glue("gs://{bucket}/{file}")
 
-    entry <- list(list("gcsUri" = uri,
-                       "mimeType" = mime
-                       )
-                  )
+    entry <- list(list(
+      "gcsUri" = uri,
+      "mimeType" = mime
+    ))
 
-    doc_list  <- append(doc_list, entry)
-
-    }
+    doc_list <- append(doc_list, entry)
+  }
 
   # format dest folder uri
   if (is.null(dest_folder)) {
     dest_folder_uri <- glue::glue("gs://{bucket}/")
-    } else {
-      dest_folder_uri <- glue::glue("gs://{bucket}/{dest_folder}/")
-    }
+  } else {
+    dest_folder_uri <- glue::glue("gs://{bucket}/{dest_folder}/")
+  }
 
 
   ## create json request body
-  req <- list("inputDocuments" = list("gcsDocuments" = list("documents" = doc_list)),
-              "documentOutputConfig" = list("gcsOutputConfig" = list("gcsUri" = dest_folder_uri)),
-              "skipHumanReview" = skip_rev
-              )
+  req <- list(
+    "inputDocuments" = list("gcsDocuments" = list("documents" = doc_list)),
+    "documentOutputConfig" = list("gcsOutputConfig" = list("gcsUri" = dest_folder_uri)),
+    "skipHumanReview" = skip_rev
+  )
 
   bod <- jsonlite::toJSON(req, auto_unbox = TRUE)
 
@@ -309,9 +311,9 @@ dai_async <- function(files,
   path <- glue::glue("v1/projects/{proj_id}/locations/{loc}/processors/{proc_id}")
 
   if (is.na(proc_v)) {
-  	version <- ""
+    version <- ""
   } else {
-  	version <- glue::glue("/processorVersions/{proc_v}")
+    version <- glue::glue("/processorVersions/{proc_v}")
   }
 
   method <- ":batchProcess"
@@ -319,9 +321,9 @@ dai_async <- function(files,
   url <- glue::glue("{base_url}{path}{version}{method}")
 
   response <- httr::POST(url,
-                         httr::config(token = token),
-                         body = bod
-                         )
+    httr::config(token = token),
+    body = bod
+  )
 
   if (response$status_code == 200) {
     cli::cli_alert_info(glue::glue("{length(files)} file(s) submitted at {response$date}. Check job status with daiR::dai_status()."))
@@ -331,8 +333,7 @@ dai_async <- function(files,
   }
 
   response
-
-  }
+}
 
 #' Check job status
 #'
@@ -341,7 +342,7 @@ dai_async <- function(files,
 #' asynchronous job.
 #'
 #' @param response A HTTP response object generated by
-#' \code{dai_async()} 
+#' \code{dai_async()}
 #' @param loc A two-letter region code; "eu" or "us"
 #' @param token An authentication token generated by
 #' \code{dai_auth()} or another auth function
@@ -361,35 +362,32 @@ dai_async <- function(files,
 #' response <- dai_async(myfiles)
 #' status <- dai_status(response, verbose = TRUE)
 #' }
-
 dai_status <- function(response,
                        loc = "eu",
                        token = dai_token(),
-                       verbose = FALSE
-) {
-
+                       verbose = FALSE) {
   if (!(inherits(response, "response") || inherits(response[[1]], "response"))) {
     stop("Input is not a valid HTTP response.")
-    }
+  }
 
   if (inherits(response[[1]], "response")) {
     last_elem <- max(length(response))
     parsed <- httr::content(response[[last_elem]])
-    } else {
-      parsed <- httr::content(response)
-      }
+  } else {
+    parsed <- httr::content(response)
+  }
 
   if (!("name" %in% names(parsed))) {
     stop("Input does not contain a processing job id. Make sure it is from dai_async.")
-    }
+  }
 
   if (!(loc %in% c("eu", "us") && length(loc) == 1)) {
     stop("Invalid location parameter.")
-    }
+  }
 
   if (!(verbose %in% c(TRUE, FALSE) && length(verbose))) {
     stop("Parameter verbose can only be TRUE or FALSE.")
-    }
+  }
 
   name <- parsed$name
 
@@ -411,14 +409,13 @@ dai_status <- function(response,
 
   if (inherits(response[[1]], "response")) {
     cli::cli_alert_info(glue::glue('Status for job {job_no} submitted {response[[last_elem]]$date}: "{status}."'))
-    } else {
+  } else {
     cli::cli_alert_info(glue::glue('Status for job {job_no} submitted {response$date}: "{status}."'))
   }
 
   if (isTRUE(verbose)) {
     resp
   }
-
 }
 
 #' Notify on job completion
@@ -444,36 +441,33 @@ dai_status <- function(response,
 #' response <- dai_async(myfiles)
 #' dai_notify(response)
 #' }
-
 dai_notify <- function(response,
                        loc = "eu",
                        token = dai_token(),
-                       sound = 2
-                       ) {
-
+                       sound = 2) {
   if (!(inherits(response, "response") || inherits(response[[1]], "response"))) {
     stop("Input is not a valid HTTP response.")
-    }
+  }
 
   if (inherits(response[[1]], "response")) {
     last_elem <- max(length(response))
     parsed <- httr::content(response[[last_elem]])
-    } else {
+  } else {
     parsed <- httr::content(response)
-    }
+  }
 
   if (!("name" %in% names(parsed))) {
     stop("Input does not contain a processing job id. Either it's not from a\n
     dai processing function or it's from an unsuccessful processing request.")
-    }
+  }
 
   if (!(loc %in% c("eu", "us") && length(loc) == 1)) {
     stop("Invalid location parameter.")
-    }
+  }
 
   if (!(sound %in% 1:10 && length(sound) == 1)) {
     stop("Invalid sound parameter.")
-    }
+  }
 
   finished <- FALSE
 
@@ -483,10 +477,9 @@ dai_notify <- function(response,
     msg <- utils::capture.output(dai_status(response, loc, token), type = "message")
     finished <- grepl("SUCCEEDED", msg)
     Sys.sleep(1)
-    }
+  }
 
   cli::cli_alert_success("Job complete.")
 
   beepr::beep(sound)
-
 }
