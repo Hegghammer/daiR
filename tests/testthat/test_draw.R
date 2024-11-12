@@ -1085,6 +1085,7 @@ test_that("draw_entities() warns of input errors", {
 
 test_that("draw_entities() produces a correctly named new png file", {
   skip_on_cran()
+  # skip_on_ci()
   skip_if_not_installed("grDevices")
   skip_if_not_installed("magick")
   realjson <- testthat::test_path("examples", "table_form_parsed.json")
@@ -1103,7 +1104,5 @@ test_that("draw_entities() produces a correctly named new png file", {
   }
   unlink(expected_filepaths, force = TRUE)
 })
-
-
 
 unlink(madeup_json_file, force = TRUE)

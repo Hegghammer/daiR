@@ -25,7 +25,7 @@ jobs:
         config:
           - {os: windows-latest, r: 'release', dai_auth: DAIR_PASSWORD}
           - {os: macOS-latest, r: 'release', dai_auth: DAIR_PASSWORD}
-          - {os: ubuntu-22.04, r: 'release', dai_auth: DAIR_PASSWORD, rspm: "https://packagemanager.rstudio.com/cran/__linux__/jammy/latest"}
+          - {os: ubuntu-24.04, r: 'release', dai_auth: DAIR_PASSWORD, rspm: "https://packagemanager.rstudio.com/cran/__linux__/noble/latest"}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -63,11 +63,17 @@ jobs:
           while read -r cmd
           do
             eval sudo $cmd
-          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "22.04"))')
+          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "24.04"))')
           sudo apt-get install ghostscript
           sudo apt-get install libfreetype6-dev
           sudo apt-get install imagemagick
           sudo mv /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/policy.xml.off
+      
+      - name: Install system dependencies
+        if: runner.os == 'macOS'
+        run: |
+          brew install imagemagick --with-fontconfig --with-librsvg
+          
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
