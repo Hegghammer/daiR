@@ -72,8 +72,8 @@ jobs:
       - name: Install system dependencies
         if: runner.os == 'macOS'
         run: |
-          brew install imagemagick --with-fontconfig --with-librsvg
-          
+          brew install imagemagick
+
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
