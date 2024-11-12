@@ -96,7 +96,7 @@ dai_sync <- function(file,
     "skipHumanReview" = skip_rev,
     "rawDocument" = list(
       "content" = encoded_file,
-      "mimeType" = "image/tiff"
+      "mimeType" = "image/png"
     )
   )
 
