@@ -48,7 +48,7 @@ formparser_id <- unique(processors$id[processors$type == "FORM_PARSER_PROCESSOR"
 If the earlier command yielded `FALSE`, you don't have a form parser processor, and you must create one. This is very easy to do. Just run the following command, adding a unique name for your processor. 
 
 ```{r, eval=FALSE}
-formparser_id <- create_processor("<unique_chosen_name>", type = "FORM_PARSER_PROCESSOR")
+formparser_id <- create_processor("<unique_display_name>", type = "FORM_PARSER_PROCESSOR")
 ```
 
 If the processor name has been taken, you will get an error to this effect. If so, just retry with another name. When successful, `create_processor()` returns the id of the created processor, and we can capture it in the variable `formparser_id`. Double check that it worked by viewing its content:

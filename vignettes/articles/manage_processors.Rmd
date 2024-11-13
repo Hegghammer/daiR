@@ -1,0 +1,64 @@
+---
+title: "Managing processors"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(knitr)
+```
+
+**Note: Some of the functions below, notably `get_ids_by_type()` and `get_versions_by_type()` are currently only available in the development version of `daiR`. Install from Github with `devtools::install_github("hegghammer/daiR")` to use them.**
+
+Google Document AI offers a range of different processors, each optimized for a specific task. For most use cases, the default settings do the job, but there may be situations when you want to use a specific processor type or version. This vignette explains how to do that in `daiR`.
+
+First, let's clarify some concepts.
+
+- A processor *type* is a category of processors, such as `OCR_PROCESSOR`. Google keeps adding new types, but you can find a menu of available processor types at any one time in the official [documentation](https://cloud.google.com/document-ai/docs/processors-list). Many of them are designed for very specific types of documents (like the US tax form "W2") and are thus not relevant to the average user. At the current time of writing there are three main generic processor types, namely, `OCR_PROCESSOR`, `FORM_PARSER_PROCESSOR`, and `LAYOUT_PARSER_PROCESSOR`.
+
+- A processor *version* is an instance of a processor type, reflecting the fact that different instances have finished training at different points in time. A version can be referenced either by its *full name* (aka "Version ID"), such as `pretrained-ocr-v1.0-2020-09-23`, or by its *alias*, such as `stable` or `rc` ("release candidate").
+
+- A processor *id* is the user-specific identifier of a processor, made up of 16 random characters (for example `3e03a16deqac44a9`). When you create a processor for use with Document AI, that processor gets a unique id. Note that one and the same processor can be available in multiple versions. 
+
+When you process documents with `dai_sync()` and `dai_async()`, you don't normally need to specify a processor, because the functions default to the `stable` version of the processor you specified in the environment variable `DAI_PROCESSOR_ID` (see the [Configuration vignette](https://dair.info/articles/configuration.html#step-9-store-the-processor-id-as-an-environment-variable)). However, you can use the parameters `proc_id` and `proc_v` to specify a non-default processor type and version.
+
+To see which processors you have at your disposal at any one time, you can use the function `get_processors()`.
+
+```{r, eval = FALSE}
+my_processors <- get_processors()
+```
+
+The function returns a dataframe with various metadata for the available processors. If you run this right after setup and you followed the [Configuration vignette](https://dair.info/articles/configuration.html), you should have only one processor (of type `OCR_PROCESSOR`), but the dataframe will have several rows; one for each version. 
+
+Now let's say you wanted to add a processor of the type `FORM_PARSER_PROCESSOR`. Then you just need to think of a display name for that processor and pass it to the function `create_processor()` like so: 
+
+```{r, eval = FALSE}
+## NOT RUN
+create_processor("<unique_display_name>", type = "FORM_PARSER_PROCESSOR")
+```
+
+The function will create a processor and output the id in the console. But how do you retrieve the id for a processor that you created some time ago? You can't run `create_processor()` again, as it would create yet another processor. There are several ways to do this, but the easiest is with the function `get_ids_by_type()`. It takes the processor type as its main argument, for example like this:
+
+```{r, eval = FALSE}
+get_ids_by_type("FORM_PARSER_PROCESSOR")
+```
+
+Assuming you have only one processor of this type, the function will return an id which you can then pass to `dai_sync()`/`dai_async()` via the `proc_id` parameter. If you have more than one processor of the type in question, it is better to run `get_processors()` and pick the right id from the resulting data frame. 
+
+A processor is usually available in more than one version, but the range of available versions varies from one processor to another. To find out which versions are available for a given processor, you can use the function `get_versions_by_type()`, like this: 
+
+```{r, eval = FALSE}
+get_versions_by_type("FORM_PARSER_PROCESSOR")
+```
+
+This function will output both the aliases and the full names of the available versions. Pick the name or alias of the version you want to use and pass it to `dai_sync()`/`dai_async()` with the `proc_v` parameter. You can use either an alias (like `rc`) or a full name (like `pretrained-ocr-v1.0-2020-09-23`).
+
+A sample `dai_sync()` call using a specified processor might look like this:
+
+```{r, eval = FALSE}
+## NOT RUN
+resp <- dai_sync("document.pdf", proc_id = "abcdefgh12345678", proc_v = "rc")
+```
+

@@ -1,4 +1,9 @@
-# daiR 1.0.1
+# daiR 1.1.0 (development version)
+
+- Added two new functions to facilitate processor management: `get_ids_by_type()` and `get_versions_by_type()`.
+- Added vignette on processor management.
+
+# daiR 1.0.1 (latest CRAN version)
 - Bug fixes.
 
 # daiR 1.0.0

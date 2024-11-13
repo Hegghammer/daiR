@@ -54,6 +54,9 @@ reference:
       - '`enable_processor`'
       - '`disable_processor`'
       - '`delete_processor`'
+      - '`get_ids_by_type`'
+      - '`get_versions_by_type`'
+      
   - title: Create XML
     desc: ~
     contents: 
@@ -97,12 +100,16 @@ navbar:
          href: articles/usage.html
       -  text: Extracting tables
          href: articles/tables.html
+      -  text: Managing processors
+         href: articles/manage_processors.html
       -  text: Correcting text output
          href: articles/reconstructing_text.html
       # -  text: Complex file and folder management
       #    href: articles/complex_file_and_folder_management.html
       -  text: Creating searchable PDFs
          href: articles/searchable_pdfs.html
+      -  text: Concept cheatsheet
+         href: articles/cheatsheet.html
     - text: FAQs
       href: articles/faqs.html
     - text: "Reference"
