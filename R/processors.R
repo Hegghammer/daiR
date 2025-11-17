@@ -16,7 +16,7 @@
 #' it returns a character vector with just the processor names.
 #' For more information about processors, see the
 #' Google Document AI documentation at
-#' \url{https://cloud.google.com/document-ai/docs/}.
+#' \url{https://docs.cloud.google.com/document-ai/docs}.
 #'
 #' @examples
 #' \dontrun{
@@ -79,7 +79,7 @@ list_processor_types <- function(full_list = FALSE,
 #' storing the processor id in an environment variable named
 #' DAI_PROCESSOR_ID. For more information about processors, see the
 #' Google Document AI documentation at
-#' \url{https://cloud.google.com/document-ai/docs/}.
+#' \url{https://docs.cloud.google.com/document-ai/docs}.
 #'
 #' @examples
 #' \dontrun{
@@ -146,7 +146,7 @@ create_processor <- function(name,
 #' have been created in the current project and are ready for use.
 #' For more information about processors, see the Google Document
 #' AI documentation at
-#' \url{https://cloud.google.com/document-ai/docs/}.
+#' \url{https://docs.cloud.google.com/document-ai/docs}.
 #'
 #' @examples
 #' \dontrun{
@@ -176,7 +176,7 @@ get_processors <- function(proj_id = get_project_id(),
   parsed <- httr::content(response)
 
   # Process response
-  df <- as.data.frame(data.table::rbindlist(parsed$processors))
+  df <- suppressWarnings(as.data.frame(data.table::rbindlist(parsed$processors, fill = TRUE)))
   df$id <- basename(df$name)
   df
 }
@@ -195,7 +195,7 @@ get_processors <- function(proj_id = get_project_id(),
 #' @details Retrieves information about a processor. For more
 #' information about processors, see the Google Document AI
 #' documentation at
-#' \url{https://cloud.google.com/document-ai/docs/}.
+#' \url{https://docs.cloud.google.com/document-ai/docs}.
 #'
 #' @examples
 #' \dontrun{
@@ -278,7 +278,7 @@ get_processor_versions <- function(proc_id,
   parsed <- httr::content(response)
 
   # Process response
-  df <- as.data.frame(data.table::rbindlist(parsed$processorVersions))
+  df <- suppressWarnings(as.data.frame(data.table::rbindlist(parsed$processorVersions, fill = TRUE)))
   df$shortName <- basename(df$name)
   df[, c(6, 1:5)]
 }
@@ -477,7 +477,7 @@ get_ids_by_type <- function(type,
 
   processors <- get_processors(proj_id = proj_id, loc = loc, token = token)
 
-  if (type %in% my_processors$type) {
+  if (type %in% processors$type) {
     unique(processors$id[processors$type == type])
   } else {
     message("No processor of type ", type, " found.")
@@ -520,9 +520,9 @@ get_versions_by_type <- function(type,
 
   processors <- get_processors(proj_id = proj_id, loc = loc, token = token)
 
-  if (type %in% my_processors$type) {
-    aliases <- purrr::map_chr(my_processors$processorVersionAliases[my_processors$type == type], ~ basename(.x$alias))
-    versions <- purrr::map_chr(my_processors$processorVersionAliases[my_processors$type == type], ~ basename(.x$processorVersion))
+  if (type %in% processors$type) {
+    aliases <- purrr::map_chr(processors$processorVersionAliases[processors$type == type], ~ basename(.x$alias))
+    versions <- purrr::map_chr(processors$processorVersionAliases[processors$type == type], ~ basename(.x$processorVersion))
     message("Aliases:")
     print(aliases)
     message("Full names:")

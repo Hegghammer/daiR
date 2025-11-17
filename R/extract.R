@@ -63,7 +63,8 @@ get_text <- function(object,
     }
 
     if (!("text" %in% names(parsed$document) || "text" %in% names(parsed))) {
-      stop("DAI found no text. Was the page blank?")
+      warning("DAI found no text. The document may be blank.")
+      text <- ""
     }
 
     # get text
@@ -90,10 +91,13 @@ get_text <- function(object,
     }
 
     if (!("text" %in% names(parsed))) {
-      stop("DAI found no text. Was the document blank?")
+      warning("DAI found no text. The document may be blank.")
+      text <- ""
     }
 
-    text <- parsed$text
+    if ("text" %in% names(parsed)) {
+      text <- parsed$text
+    }
   }
 
   # save to file if requested

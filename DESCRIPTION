@@ -1,11 +1,11 @@
 Package: daiR
 Title: Interface with Google Cloud Document AI API
-Version: 1.1.0
+Version: 1.1.1
 Authors@R: 
     person("Thomas", "Hegghammer", , "hegghammer@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-6253-1518"))
 Description: R interface for the Google Cloud Services 'Document AI API'
-    <https://cloud.google.com/document-ai/> with additional tools for
+    <https://cloud.google.com/document-ai> with additional tools for
     output file parsing and text reconstruction. 'Document AI' is a
     powerful server-based OCR service that extracts text and tables from
     images and PDF files with high accuracy. 'daiR' gives R users

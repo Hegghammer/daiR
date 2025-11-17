@@ -39,7 +39,7 @@ already be taken; if so, try again with another name. Consider
 storing the processor id in an environment variable named
 DAI_PROCESSOR_ID. For more information about processors, see the
 Google Document AI documentation at
-\url{https://cloud.google.com/document-ai/docs/}.
+\url{https://docs.cloud.google.com/document-ai/docs}.
 }
 \examples{
 \dontrun{

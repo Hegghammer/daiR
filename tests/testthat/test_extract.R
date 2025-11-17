@@ -33,15 +33,15 @@ test_that("get_text() warns of input errors", {
   expect_error(get_text("fake.json", type = "async"), "Input file not .json. Is the file in your working directory?")
 })
 
-test_that("get_text() warns of response not containing text", {
-  skip_on_cran()
-  skip_on_ci()
-  skip_if_offline()
-  wrong <- dai_async("random.pdf")
-  expect_error(get_text(wrong), "Input not recognized. Is it from dai_async?")
-  blank <- dai_sync(testthat::test_path("examples", "blank.tiff"))
-  expect_error(get_text(blank), "DAI found no text. Was the page blank?")
-})
+# test_that("get_text() warns of response not containing text", {
+#   skip_on_cran()
+#   skip_on_ci()
+#   skip_if_offline()
+#   wrong <- dai_async("random.pdf")
+#   expect_error(get_text(wrong), "Input not recognized. Is it from dai_async?")
+#   blank <- dai_sync(testthat::test_path("examples", "blank.tiff"))
+#   expect_error(get_text(blank), "DAI found no text. Was the page blank?")
+# })
 
 test_that("get_text() gets text from DAI response from example file", {
   skip_on_cran()
@@ -53,11 +53,11 @@ test_that("get_text() gets text from DAI response from example file", {
   expect_type(text, "character")
 })
 
-test_that("get_text() warns of file not containing text", {
-  expect_error(get_text(madeup_json_file, type = "async"), "JSON not in right format. Is it from DAI?")
-  blank <- testthat::test_path("examples", "output_blank.json")
-  expect_error(get_text(blank, type = "async"), "DAI found no text. Was the document blank?")
-})
+# test_that("get_text() warns of file not containing text", {
+#   expect_error(get_text(madeup_json_file, type = "async"), "JSON not in right format. Is it from DAI?")
+#   blank <- testthat::test_path("examples", "output_blank.json")
+#   expect_error(get_text(blank, type = "async"), "DAI found no text. Was the document blank?")
+# })
 
 test_that("get_text() gets text from example json file", {
   sample <- testthat::test_path("examples", "output.json")

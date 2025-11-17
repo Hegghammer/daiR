@@ -35,7 +35,7 @@ information about each processor. With \code{full_list = FALSE}
 it returns a character vector with just the processor names.
 For more information about processors, see the
 Google Document AI documentation at
-\url{https://cloud.google.com/document-ai/docs/}.
+\url{https://docs.cloud.google.com/document-ai/docs}.
 }
 \examples{
 \dontrun{

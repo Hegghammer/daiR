@@ -1,4 +1,10 @@
-# daiR 1.1.0 (development version)
+# daiR 1.1.1 (development version)
+
+- Changed `get_text()` to handle empty pages gracefully.
+- Fixed bugs in `get_processor_versions()`, `get_ids_by_type()`, and `get_versions_by_type()`.
+- Updated URLs in documentation.
+
+# daiR 1.1.0 
 
 - Added two new functions to facilitate processor management: `get_ids_by_type()` and `get_versions_by_type()`.
 - Added vignette on processor management.
