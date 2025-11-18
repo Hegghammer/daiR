@@ -32,11 +32,3 @@ a file compliant with the official hOCR specification
 (https://github.com/kba/hocr-spec) complete with token-level confidence
 scores. It also works with non-latin scripts and right-to-left languages.
 }
-\examples{
-\dontrun{
-make_hocr(type = "async", output = "output.json")
-resp <- dai_sync("file.pdf")
-make_hocr(type = "sync", output = resp)
-make_hocr(type = "sync", output = resp, outfile_name = "myfile.xml")
-}
-}

@@ -1,4 +1,10 @@
-# daiR 1.1.1 (development version)
+# daiR 1.1.9 (development version)
+
+- Complete overhaul of tests for much better coverage.
+- Small changes to checks throughout to better handle edge cases.
+- Refactoring of `xml.R`
+
+# daiR 1.1.1 
 
 - Changed `get_text()` to handle empty pages gracefully.
 - Fixed bugs in `get_processor_versions()`, `get_ids_by_type()`, and `get_versions_by_type()`.

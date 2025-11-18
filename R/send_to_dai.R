@@ -74,13 +74,13 @@ dai_sync <- function(file,
 
   skip_rev <- tolower(skip_rev)
 
-  if (!(skip_rev %in% c("true", "false") && length(skip_rev) == 1)) {
+  if (!(length(skip_rev) == 1 && skip_rev %in% c("true", "false"))) {
     stop("Invalid skip_rev parameter.")
   }
 
   loc <- tolower(loc)
 
-  if (!(loc %in% c("eu", "us"))) {
+  if (!(length(loc) == 1 && loc %in% c("eu", "us"))) {
     stop("Invalid location parameter.")
   }
 
@@ -245,13 +245,13 @@ dai_async <- function(files,
     stop("Invalid proc_v.")
   }
 
-  if (!(skip_rev %in% c("true", "false") && length(skip_rev) == 1)) {
+  if (!(length(skip_rev) == 1 && skip_rev %in% c("true", "false"))) {
     stop("Invalid skip_rev parameter.")
   }
 
   loc <- tolower(loc)
 
-  if (!(loc %in% c("eu", "us") && length(loc) == 1)) {
+  if (!(length(loc) == 1 && loc %in% c("eu", "us"))) {
     stop("Invalid loc parameter.")
   }
 
@@ -293,7 +293,6 @@ dai_async <- function(files,
   } else {
     dest_folder_uri <- glue::glue("gs://{bucket}/{dest_folder}/")
   }
-
 
   ## create json request body
   req <- list(
@@ -381,11 +380,11 @@ dai_status <- function(response,
     stop("Input does not contain a processing job id. Make sure it is from dai_async.")
   }
 
-  if (!(loc %in% c("eu", "us") && length(loc) == 1)) {
+  if (!(length(loc) == 1 && loc %in% c("eu", "us"))) {
     stop("Invalid location parameter.")
   }
 
-  if (!(verbose %in% c(TRUE, FALSE) && length(verbose))) {
+  if (!(length(verbose) == 1 && is.logical(verbose))) {
     stop("Parameter verbose can only be TRUE or FALSE.")
   }
 
@@ -461,11 +460,11 @@ dai_notify <- function(response,
     dai processing function or it's from an unsuccessful processing request.")
   }
 
-  if (!(loc %in% c("eu", "us") && length(loc) == 1)) {
+  if (!(length(loc) == 1 && loc %in% c("eu", "us"))) {
     stop("Invalid location parameter.")
   }
 
-  if (!(sound %in% 1:10 && length(sound) == 1)) {
+  if (!(length(sound) == 1 && sound %in% 1:10)) {
     stop("Invalid sound parameter.")
   }
 

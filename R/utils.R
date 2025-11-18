@@ -70,7 +70,9 @@ is_pdf <- function(file) {
 #' is_json("file.json")
 #' }
 is_json <- function(file) {
-  result <- suppressMessages(try(jsonlite::fromJSON(file), silent = TRUE))
+  result <- suppressMessages(suppressWarnings(
+    try(jsonlite::fromJSON(file), silent = TRUE)
+  ))
 
   return(!(inherits(result, "try-error")))
 }

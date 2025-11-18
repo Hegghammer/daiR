@@ -56,16 +56,16 @@ draw_blocks <- function(object,
     stop("Invalid linecol parameter. Must be a single valid colour representation.")
   }
 
-  if (!(is.numeric(linewd) && length(linewd) == 1)) {
-    stop("Invalid linewd parameter. Must be a single number.")
+  if (!(is.numeric(linewd) && length(linewd) == 1) || linewd <= 0) {
+  stop("Invalid linewd parameter. Must be a single positive number greater than 0.")
   }
 
   if (!(length(fontcol) == 1) || !(daiR::is_colour(fontcol)) || is.na(fontcol)) {
     stop("Invalid fontcol parameter. Must be a single valid colour representation.")
   }
 
-  if (!(is.numeric(fontsize) && length(fontsize) == 1)) {
-    stop("Invalid fontsize parameter. Must be a single number.")
+  if (!(is.numeric(fontsize) && length(fontsize) == 1) || fontsize <= 0) {
+    stop("Invalid fontsize parameter. Must be a single positive number greater than 0.")
   }
 
   dir <- normalizePath(dir, winslash = "/")
@@ -100,6 +100,14 @@ draw_blocks <- function(object,
 
     # decode base64 and save to temp images
     page_imgs_base64 <- parsed$pages$image$content
+
+    if (is.null(page_imgs_base64) || any(is.na(page_imgs_base64))) {
+      stop(
+        "JSON file does not contain base64-encoded images. ",
+        "Drawing functions require files with image data."
+      )
+    }
+
     imgs <- purrr::map2_chr(page_imgs_base64, seq_along(page_imgs_base64), decode_and_save)
 
   }
@@ -108,6 +116,8 @@ draw_blocks <- function(object,
   purrr::map2(pagewise_block_sets, seq_along(pagewise_block_sets), ~ process_image(.x, .y, imgs, type, object, prefix, dir, filename, dest, linecol, linewd, fontcol, fontsize, boxtype = "blocks"))
 
   cli::cli_alert_success(glue::glue("Generated {length(pages_blocks)} image(s) with block bounding boxes."))
+
+  invisible(NULL)
 
 }
 
@@ -169,16 +179,16 @@ draw_paragraphs <- function(object,
     stop("Invalid linecol parameter. Must be a single valid colour representation.")
   }
 
-  if (!(is.numeric(linewd) && length(linewd) == 1)) {
-    stop("Invalid linewd parameter. Must be a single number.")
+  if (!(is.numeric(linewd) && length(linewd) == 1) || linewd <= 0) {
+    stop("Invalid linewd parameter. Must be a single positive number greater than 0.")
   }
 
   if (!(length(fontcol) == 1) || !(daiR::is_colour(fontcol)) || is.na(fontcol)) {
     stop("Invalid fontcol parameter. Must be a single valid colour representation.")
   }
 
-  if (!(is.numeric(fontsize) && length(fontsize) == 1)) {
-    stop("Invalid fontsize parameter. Must be a single number.")
+  if (!(is.numeric(fontsize) && length(fontsize) == 1) || fontsize <= 0) {
+    stop("Invalid fontsize parameter. Must be a single positive number greater than 0.")
   }
 
   dir <- normalizePath(dir, winslash = "/")
@@ -213,6 +223,14 @@ draw_paragraphs <- function(object,
 
     # decode base64 and save to temp images
     page_imgs_base64 <- parsed$pages$image$content
+
+    if (is.null(page_imgs_base64) || any(is.na(page_imgs_base64))) {
+      stop(
+        "JSON file does not contain base64-encoded images. ",
+        "Drawing functions require files with image data."
+      )
+    }
+
     imgs <- purrr::map2_chr(page_imgs_base64, seq_along(page_imgs_base64), decode_and_save)
 
   }
@@ -221,6 +239,8 @@ draw_paragraphs <- function(object,
   purrr::map2(pagewise_block_sets, seq_along(pagewise_block_sets), ~ process_image(.x, .y, imgs, type, object, prefix, dir, filename, dest, linecol, linewd, fontcol, fontsize, boxtype = "paragraphs"))
 
   cli::cli_alert_success(glue::glue("Generated {length(pages_paragraphs)} image(s) with paragraph bounding boxes."))
+
+  invisible(NULL)
 
 }
 
@@ -282,16 +302,16 @@ draw_lines <- function(object,
     stop("Invalid linecol parameter. Must be a single valid colour representation.")
   }
 
-  if (!(is.numeric(linewd) && length(linewd) == 1)) {
-    stop("Invalid linewd parameter. Must be a single number.")
+  if (!(is.numeric(linewd) && length(linewd) == 1) || linewd <= 0) {
+    stop("Invalid linewd parameter. Must be a single positive number greater than 0.")
   }
 
   if (!(length(fontcol) == 1) || !(daiR::is_colour(fontcol)) || is.na(fontcol)) {
     stop("Invalid fontcol parameter. Must be a single valid colour representation.")
   }
 
-  if (!(is.numeric(fontsize) && length(fontsize) == 1)) {
-    stop("Invalid fontsize parameter. Must be a single number.")
+  if (!(is.numeric(fontsize) && length(fontsize) == 1) || fontsize <= 0) {
+    stop("Invalid fontsize parameter. Must be a single positive number greater than 0.")
   }
 
   dir <- normalizePath(dir, winslash = "/")
@@ -326,6 +346,14 @@ draw_lines <- function(object,
 
     # decode base64 and save to temp images
     page_imgs_base64 <- parsed$pages$image$content
+
+    if (is.null(page_imgs_base64) || any(is.na(page_imgs_base64))) {
+      stop(
+        "JSON file does not contain base64-encoded images. ",
+        "Drawing functions require files with image data."
+      )
+    }
+
     imgs <- purrr::map2_chr(page_imgs_base64, seq_along(page_imgs_base64), decode_and_save)
 
   }
@@ -334,6 +362,8 @@ draw_lines <- function(object,
   purrr::map2(pagewise_block_sets, seq_along(pagewise_block_sets), ~ process_image(.x, .y, imgs, type, object, prefix, dir, filename, dest, linecol, linewd, fontcol, fontsize, boxtype = "lines"))
 
   cli::cli_alert_success(glue::glue("Generated {length(pages_lines)} image(s) with line bounding boxes."))
+
+  invisible(NULL)
 
 }
 
@@ -395,16 +425,16 @@ draw_tokens <- function(object,
     stop("Invalid linecol parameter. Must be a single valid colour representation.")
   }
 
-  if (!(is.numeric(linewd) && length(linewd) == 1)) {
-    stop("Invalid linewd parameter. Must be a single number.")
+  if (!(is.numeric(linewd) && length(linewd) == 1) || linewd <= 0) {
+    stop("Invalid linewd parameter. Must be a single positive number greater than 0.")
   }
 
   if (!(length(fontcol) == 1) || !(daiR::is_colour(fontcol)) || is.na(fontcol)) {
     stop("Invalid fontcol parameter. Must be a single valid colour representation.")
   }
 
-  if (!(is.numeric(fontsize) && length(fontsize) == 1)) {
-    stop("Invalid fontsize parameter. Must be a single number.")
+  if (!(is.numeric(fontsize) && length(fontsize) == 1) || fontsize <= 0) {
+    stop("Invalid fontsize parameter. Must be a single positive number greater than 0.")
   }
 
   dir <- normalizePath(dir, winslash = "/")
@@ -439,6 +469,14 @@ draw_tokens <- function(object,
 
     # decode base64 and save to temp images
     page_imgs_base64 <- parsed$pages$image$content
+
+    if (is.null(page_imgs_base64) || any(is.na(page_imgs_base64))) {
+      stop(
+        "JSON file does not contain base64-encoded images. ",
+        "Drawing functions require files with image data."
+      )
+    }
+
     imgs <- purrr::map2_chr(page_imgs_base64, seq_along(page_imgs_base64), decode_and_save)
 
   }
@@ -447,6 +485,8 @@ draw_tokens <- function(object,
   purrr::map2(pagewise_block_sets, seq_along(pagewise_block_sets), ~ process_image(.x, .y, imgs, type, object, prefix, dir, filename, dest, linecol, linewd, fontcol, fontsize, boxtype = "tokens"))
 
   cli::cli_alert_success(glue::glue("Generated {length(pages_tokens)} image(s) with token bounding boxes."))
+
+  invisible(NULL)
 
 }
 
@@ -509,16 +549,16 @@ draw_entities <- function(object,
     stop("Invalid linecol parameter. Must be a single valid colour representation.")
   }
 
-  if (!(is.numeric(linewd) && length(linewd) == 1)) {
-    stop("Invalid linewd parameter. Must be a single number.")
+  if (!(is.numeric(linewd) && length(linewd) == 1) || linewd <= 0) {
+    stop("Invalid linewd parameter. Must be a single positive number greater than 0.")
   }
 
   if (!(length(fontcol) == 1) || !(daiR::is_colour(fontcol)) || is.na(fontcol)) {
     stop("Invalid fontcol parameter. Must be a single valid colour representation.")
   }
 
-  if (!(is.numeric(fontsize) && length(fontsize) == 1)) {
-    stop("Invalid fontsize parameter. Must be a single number.")
+  if (!(is.numeric(fontsize) && length(fontsize) == 1) || fontsize <= 0) {
+    stop("Invalid fontsize parameter. Must be a single positive number greater than 0.")
   }
 
   dir <- normalizePath(dir, winslash = "/")
@@ -555,6 +595,14 @@ draw_entities <- function(object,
 
     # decode base64 and save to temp images
     page_imgs_base64 <- parsed$pages$image$content
+
+    if (is.null(page_imgs_base64) || any(is.na(page_imgs_base64))) {
+      stop(
+        "JSON file does not contain base64-encoded images. ",
+        "Drawing functions require files with image data."
+      )
+    }
+
     imgs <- purrr::map2_chr(page_imgs_base64, seq_along(page_imgs_base64), decode_and_save)
   }
 
@@ -562,6 +610,8 @@ draw_entities <- function(object,
   purrr::map2(pagewise_entities_sets, seq_along(pagewise_entities_sets), ~ process_image(.x, .y, imgs, type, object, prefix, dir, filename, dest, linecol, linewd, fontcol, fontsize, boxtype = "entities"))
 
   cli::cli_alert_success(glue::glue("Generated {length(pages_entities)} image(s) with entity bounding boxes."))
+
+  invisible(NULL)
 
 }
 

@@ -163,7 +163,7 @@ get_processors <- function(proj_id = get_project_id(),
   loc <- tolower(loc)
 
   if (!(length(loc) == 1) || !(loc %in% c("eu", "us"))) {
-    stop("Invalid loc parameter.")
+    stop("Invalid loc parameter. Must be either 'eu' or 'us'.")
   }
 
   # Build request
@@ -219,7 +219,7 @@ get_processor_info <- function(proc_id,
   loc <- tolower(loc)
 
   if (!(length(loc) == 1) || !(loc %in% c("eu", "us"))) {
-    stop("Invalid loc parameter.")
+    stop("Invalid loc parameter. Must be either 'eu' or 'us'.")
   }
 
   # Build request
@@ -265,7 +265,7 @@ get_processor_versions <- function(proc_id,
   loc <- tolower(loc)
 
   if (!(length(loc) == 1) || !(loc %in% c("eu", "us"))) {
-    stop("Invalid loc parameter.")
+    stop("Invalid loc parameter. Must be either 'eu' or 'us'.")
   }
 
   # Build request
@@ -278,9 +278,28 @@ get_processor_versions <- function(proc_id,
   parsed <- httr::content(response)
 
   # Process response
+  # Handle case where processorVersions is NULL or missing
+  if (is.null(parsed$processorVersions) || length(parsed$processorVersions) == 0) {
+    # Return empty data.frame with expected structure
+    return(data.frame())
+  }
+
   df <- suppressWarnings(as.data.frame(data.table::rbindlist(parsed$processorVersions, fill = TRUE)))
-  df$shortName <- basename(df$name)
-  df[, c(6, 1:5)]
+
+  # Only add shortName if we have data and a name column
+  if (nrow(df) > 0 && "name" %in% names(df)) {
+    df$shortName <- basename(df$name)
+    # Reorder to put shortName first, but only if we have enough columns
+    if (ncol(df) >= 6) {
+      df <- df[, c(ncol(df), 1:(ncol(df) - 1))] # Move last column (shortName) to front
+    } else {
+      # If fewer columns, just move shortName to front
+      other_cols <- setdiff(names(df), "shortName")
+      df <- df[, c("shortName", other_cols)]
+    }
+  }
+
+  df
 }
 
 #' Enable processor
@@ -314,7 +333,7 @@ enable_processor <- function(proc_id,
   loc <- tolower(loc)
 
   if (!(length(loc) == 1) || !(loc %in% c("eu", "us"))) {
-    stop("Invalid loc parameter.")
+    stop("Invalid loc parameter. Must be either 'eu' or 'us'.")
   }
 
   # Build request
@@ -367,7 +386,7 @@ disable_processor <- function(proc_id,
   loc <- tolower(loc)
 
   if (!(length(loc) == 1) || !(loc %in% c("eu", "us"))) {
-    stop("Invalid loc parameter.")
+    stop("Invalid loc parameter. Must be either 'eu' or 'us'.")
   }
 
   # Build request
@@ -420,7 +439,7 @@ delete_processor <- function(proc_id,
   loc <- tolower(loc)
 
   if (!(length(loc) == 1) || !(loc %in% c("eu", "us"))) {
-    stop("Invalid loc parameter.")
+    stop("Invalid loc parameter. Must be either 'eu' or 'us'.")
   }
 
   # Build request
@@ -472,7 +491,7 @@ get_ids_by_type <- function(type,
   loc <- tolower(loc)
 
   if (!(length(loc) == 1) || !(loc %in% c("eu", "us"))) {
-    stop("Invalid loc parameter.")
+    stop("Invalid loc parameter. Must be either 'eu' or 'us'.")
   }
 
   processors <- get_processors(proj_id = proj_id, loc = loc, token = token)
@@ -515,7 +534,7 @@ get_versions_by_type <- function(type,
   loc <- tolower(loc)
 
   if (!(length(loc) == 1) || !(loc %in% c("eu", "us"))) {
-    stop("Invalid loc parameter.")
+    stop("Invalid loc parameter. Must be either 'eu' or 'us'.")
   }
 
   processors <- get_processors(proj_id = proj_id, loc = loc, token = token)

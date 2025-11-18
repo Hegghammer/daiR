@@ -57,6 +57,7 @@ dai_token <- function(path = Sys.getenv("GCS_AUTH_FILE"),
 
   if (!inherits(token, "Token2.0")) {
     cli::cli_alert_danger("Invalid GCS credentials. No token produced.")
+    return(invisible(NULL))
   } else {
     return(token)
   }

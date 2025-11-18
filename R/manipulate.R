@@ -27,20 +27,20 @@ merge_shards <- function(source_dir = getwd(),
                          dest_dir = getwd()
                         ) {
 
-  if (length(source_dir) > 1) {
-    stop("Invalid source_dir argument. Must be a valid folder path.")
+  if (!(is.character(source_dir) && length(source_dir) == 1)) {
+    stop("Invalid source_dir parameter: must be a single character string directory path.")
   }
 
-  if (!(is.character(source_dir))) {
-    stop("Invalid source_dir argument. Must be a valid folder path.")
+  if (!dir.exists(source_dir)) {
+    stop("Invalid source_dir parameter: directory does not exist.")
   }
 
-  if (!(length(dest_dir) == 1)) {
-    stop("Invalid dest_dir argument. Must be a valid folder path.")
+  if (!(is.character(dest_dir) && length(dest_dir) == 1)) {
+    stop("Invalid dest_dir parameter: must be a single character string directory path.")
   }
 
-  if (!(is.character(dest_dir))) {
-    stop("Invalid dest_dir argument. Must be a valid folder path.")
+  if (!dir.exists(dest_dir)) {
+    stop("Invalid dest_dir parameter: directory does not exist.")
   }
 
   source_dir <- normalizePath(source_dir, winslash = "/")
@@ -52,7 +52,7 @@ merge_shards <- function(source_dir = getwd(),
     stop("No .txt files found.")
   }
 
-  if (isFALSE(grepl("-\\d{1,3}\\.txt", files)) && isFALSE(grepl("-page-\\d{1,4}-to-\\d{1,4}", files))) {
+  if (!any(grepl("-\\d{1,3}\\.txt", files)) && !any(grepl("-page-\\d{1,4}-to-\\d{1,4}", files))) {
     stop("The .txt files are incorrectly formatted. Are they from Document AI output shards?")
   }
 
@@ -126,8 +126,17 @@ build_token_df <- function(object,
     stop("Invalid type parameter.")
   }
 
-  if (!(inherits(object, "response") || is_json(object))) {
-    stop("Invalid object parameter.")
+  if (type == "sync") {
+    if (!inherits(object, "response")) {
+      stop("Invalid object: not a valid HTTP response.")
+    }
+  } else if (type == "async") {
+    if (!(is.character(object) && length(object) == 1)) {
+      stop("Invalid object: must be a single character string filepath.")
+    }
+    if (!is_json(object)) {
+      stop("Invalid object: file is not a .json file or does not exist.")
+    }
   }
 
   if (type == "sync") {
@@ -143,8 +152,8 @@ build_token_df <- function(object,
     start_ind <- integer()
     for (i in pages_tokens_sync) {
       for (j in i) {
-        ind <- as.integer(j[["layout"]][["textAnchor"]][["textSegments"]][[1]][["startIndex"]]) + 1
-        start_ind <- c(start_ind, ind)
+        ind <- as.integer(j[["layout"]][["textAnchor"]][["textSegments"]][[1]][["startIndex"]]) + 1L
+        start_ind <- c(start_ind, as.integer(ind))
       }
     }
 
@@ -185,18 +194,20 @@ build_token_df <- function(object,
     pagewise_token_indices_async <- purrr::map(pages_tokens_async, ~.x$layout$textAnchor$textSegments)
 
     # extract all start indices as single vector, shifting them by one, because the token really starts at (index + 1)
-    start_ind <- as.integer(unlist(purrr::map(pagewise_token_indices_async, ~ purrr::map(.x, ~.x$startIndex)))) + 1
+    start_ind <- as.integer(unlist(purrr::map(pagewise_token_indices_async, ~ purrr::map(.x, ~ .x$startIndex)))) + 1L
+    start_ind <- as.integer(start_ind)
 
     # extract all end indices as single vector
-    end_ind <- unlist(purrr::map(pagewise_token_indices_async, ~ purrr::map(.x, ~.x$endIndex)))
-
+    end_ind <- as.integer(unlist(purrr::map(pagewise_token_indices_async, ~ purrr::map(.x, ~ .x$endIndex))))
+    
     # get confidence scores as single vector
     conf <- unlist(purrr::map(pages_tokens_async, ~.x$layout$confidence))
 
   }
 
   # insert implicit start index
-  start_ind <- c(1, start_ind)
+  start_ind <- c(1L, start_ind)
+  start_ind <- as.integer(start_ind)
 
   # get all tokens as single vector
   token <- character()
@@ -229,10 +240,30 @@ build_token_df <- function(object,
     pagewise_token_coords <- purrr::map(pagewise_token_coords, transpose_page)
   } else { pagewise_token_coords <- purrr::map(pages_tokens_async, ~.x$layout$boundingPoly$normalizedVertices)}
 
-  left <-  unlist(purrr::map(pagewise_token_coords, ~ purrr::map(.x, ~ min(.x$x))))
-  right <- unlist(purrr::map(pagewise_token_coords, ~ purrr::map(.x, ~ max(.x$x))))
-  top <- unlist(purrr::map(pagewise_token_coords, ~ purrr::map(.x, ~ min(.x$y))))
-  bottom <- unlist(purrr::map(pagewise_token_coords, ~ purrr::map(.x, ~ max(.x$y))))
+  left <- unlist(purrr::map(pagewise_token_coords, ~ purrr::map(.x, function(coords) {
+    if (is.null(coords) || is.null(coords$x) || length(coords$x) == 0) {
+      return(NA_real_)
+    }
+    min(coords$x, na.rm = TRUE)
+  })))
+  right <- unlist(purrr::map(pagewise_token_coords, ~ purrr::map(.x, function(coords) {
+    if (is.null(coords) || is.null(coords$x) || length(coords$x) == 0) {
+      return(NA_real_)
+    }
+    max(coords$x, na.rm = TRUE)
+  })))
+  top <- unlist(purrr::map(pagewise_token_coords, ~ purrr::map(.x, function(coords) {
+    if (is.null(coords) || is.null(coords$y) || length(coords$y) == 0) {
+      return(NA_real_)
+    }
+    min(coords$y, na.rm = TRUE)
+  })))
+  bottom <- unlist(purrr::map(pagewise_token_coords, ~ purrr::map(.x, function(coords) {
+    if (is.null(coords) || is.null(coords$y) || length(coords$y) == 0) {
+      return(NA_real_)
+    }
+    max(coords$y, na.rm = TRUE)
+  })))
 
   # combine all vectors to dataframe
   df <- data.frame(token,
@@ -312,8 +343,17 @@ build_block_df <- function(object,
     stop("Invalid type parameter.")
   }
 
-  if (!(inherits(object, "response") || is_json(object))) {
-    stop("Invalid object parameter.")
+  if (type == "sync") {
+    if (!inherits(object, "response")) {
+      stop("Invalid object: not a valid HTTP response.")
+    }
+  } else if (type == "async") {
+    if (!(is.character(object) && length(object) == 1)) {
+      stop("Invalid object: must be a single character string filepath.")
+    }
+    if (!is_json(object)) {
+      stop("Invalid object: file is not a .json file or does not exist.")
+    }
   }
 
   if (type == "sync") {
@@ -381,10 +421,30 @@ build_block_df <- function(object,
   }
 
   # get coordinates as single vectors
-  left <-  unlist(purrr::map(pagewise_block_coords, ~ purrr::map(.x, ~ min(.x$x))))
-  right <- unlist(purrr::map(pagewise_block_coords, ~ purrr::map(.x, ~ max(.x$x))))
-  top <- unlist(purrr::map(pagewise_block_coords, ~ purrr::map(.x, ~ min(.x$y))))
-  bottom <- unlist(purrr::map(pagewise_block_coords, ~ purrr::map(.x, ~ max(.x$y))))
+  left <- unlist(purrr::map(pagewise_block_coords, ~ purrr::map(.x, function(coords) {
+    if (is.null(coords) || is.null(coords$x) || length(coords$x) == 0) {
+      return(NA_real_)
+    }
+    min(coords$x, na.rm = TRUE)
+  })))
+  right <- unlist(purrr::map(pagewise_block_coords, ~ purrr::map(.x, function(coords) {
+    if (is.null(coords) || is.null(coords$x) || length(coords$x) == 0) {
+      return(NA_real_)
+    }
+    max(coords$x, na.rm = TRUE)
+  })))
+  top <- unlist(purrr::map(pagewise_block_coords, ~ purrr::map(.x, function(coords) {
+    if (is.null(coords) || is.null(coords$y) || length(coords$y) == 0) {
+      return(NA_real_)
+    }
+    min(coords$y, na.rm = TRUE)
+  })))
+  bottom <- unlist(purrr::map(pagewise_block_coords, ~ purrr::map(.x, function(coords) {
+    if (is.null(coords) || is.null(coords$y) || length(coords$y) == 0) {
+      return(NA_real_)
+    }
+    max(coords$y, na.rm = TRUE)
+  })))
 
   # combine all vectors to dataframe
   data.frame(page, block, conf, left, right, top, bottom)
@@ -425,8 +485,8 @@ split_block <- function(block_df,
 ) {
 
   # checks
-  if (!(is.data.frame(block_df))) {
-    stop("Input not a data frame.")
+  if (!is.data.frame(block_df)) {
+    stop("Invalid block_df parameter: not a data frame.")
   }
 
   if (!(identical(colnames(block_df), c("page", "block", "conf", "left", "right", "top", "bottom")))) {
@@ -449,7 +509,7 @@ split_block <- function(block_df,
     stop("No such block number on this page.")
   }
 
-  if (!(length(cut_point) == 1 && is.numeric(cut_point) && round(cut_point) == cut_point && cut_point > 0)) {
+  if (!(length(cut_point) == 1 && is.numeric(cut_point) && round(cut_point) == cut_point)) {
     stop("Invalid cut point parameter.")
   }
 
@@ -521,7 +581,7 @@ split_block <- function(block_df,
       page = as.integer(page),
       block = as.integer(max(old_page_df$block[old_page_df$page == page]) + 1),
       conf = NA,
-      left = old_block$right,
+      left = old_block$left,
       right = old_block$right,
       top = cut_loc,
       bottom = old_block$bottom
@@ -578,8 +638,8 @@ reassign_tokens <- function(token_df,
 ) {
 
   # checks
-  if (!(is.data.frame(token_df))) {
-    stop("token_df not a data frame.")
+  if (!is.data.frame(token_df)) {
+    stop("Invalid token_df parameter: not a data frame.")
   }
 
   if (!(identical(colnames(token_df),
@@ -587,8 +647,8 @@ reassign_tokens <- function(token_df,
     stop("Token dataframe not recognized. Was it made with build_token_df?")
   }
 
-  if (!(is.data.frame(block_df))) {
-    stop("block_df not a data frame.")
+  if (!is.data.frame(block_df)) {
+    stop("Invalid block_df parameter: not a data frame.")
   }
 
   if (!(identical(colnames(block_df), c("page", "block", "conf", "left", "right", "top", "bottom")))) {
@@ -610,39 +670,39 @@ reassign_tokens <- function(token_df,
   new_token_df <- as.data.frame(matrix(ncol = length(colnames), nrow = 0, dimnames = list(NULL, colnames)))
 
   # loop over each page
-  for (i in seq_along(token_df_pages)) {
 
-    # short names for readability
+  for (i in seq_along(token_df_pages)) {
     tokens <- token_df_pages[[i]]
     blocks <- block_df_pages[[i]]
 
-    # set up empty new page dataframe
-    new_token_df_page <- as.data.frame(matrix(ncol = length(colnames), nrow = 0, dimnames = list(NULL, colnames)))
+    blocks$area <- (blocks$right - blocks$left) * (blocks$bottom - blocks$top)
 
-    # loop over each block
-    for (j in seq_len(nrow(blocks))) {
+    block_order <- order(blocks$area, decreasing = TRUE)
 
-      tokens_in_block <- tokens[tokens$top >= blocks[j, ]$top &
-                                  tokens$bottom <= blocks[j, ]$bottom &
-                                  tokens$left >= blocks[j, ]$left &
-                                  tokens$right <= blocks[j, ]$right, ]
+    tokens$block <- NA_integer_
+    tokens$page <- i
 
-      if (nrow(tokens_in_block) > 0) {
-        tokens_in_block$block <- j
-        tokens_in_block$page <- i
-        new_token_df_page <- rbind(new_token_df_page, tokens_in_block)
-      }
+    for (j in block_order) {
+      token_center_x <- (tokens$left + tokens$right) / 2
+      token_center_y <- (tokens$top + tokens$bottom) / 2
+
+      in_block <- !is.na(token_center_x) & !is.na(token_center_y) &
+        token_center_x >= blocks[j, ]$left &
+        token_center_x <= blocks[j, ]$right &
+        token_center_y >= blocks[j, ]$top &
+        token_center_y <= blocks[j, ]$bottom
+
+      tokens$block[in_block] <- blocks$block[j]
     }
 
-    new_token_df <- rbind(new_token_df, new_token_df_page)
-
+    new_token_df <- rbind(new_token_df, tokens)
   }
 
-  row.names(new_token_df) <- NULL
+    row.names(new_token_df) <- NULL
 
-  new_token_df
+    new_token_df
 
-}
+  }
 
 #' Assign tokens to a single new block
 #'
@@ -670,8 +730,8 @@ reassign_tokens2 <- function(token_df,
 ) {
 
   # checks
-  if (!(is.data.frame(token_df))) {
-    stop("token_df not a data frame.")
+  if (!is.data.frame(token_df)) {
+    stop("Invalid token_df parameter: not a data frame.")
   }
 
   if (!(identical(colnames(token_df),
@@ -679,8 +739,8 @@ reassign_tokens2 <- function(token_df,
     stop("Token dataframe not recognized. Was it made with build_token_df?")
   }
 
-  if (!(is.data.frame(block))) {
-    stop("block input not a data frame.")
+  if (!is.data.frame(block)) {
+    stop("Invalid block parameter: not a data frame.")
   }
 
   if (!(identical(colnames(block), c("page", "block", "conf",  "left", "right", "top", "bottom")))) {
@@ -756,8 +816,12 @@ from_labelme <- function(json,
 ) {
 
   # checks
-  if (!(is_json(json))) {
-    stop("Input file not .json.")
+  if (!(is.character(json) && length(json) == 1)) {
+    stop("Invalid json parameter: must be a single character string filepath.")
+  }
+
+  if (!is_json(json)) {
+    stop("Invalid json parameter: file is not a .json file or does not exist.")
   }
 
   if (!(length(page) == 1 && is.numeric(page) && round(page) == page && page > 0)) {
@@ -820,20 +884,16 @@ redraw_blocks <- function(json,
                           dir = getwd()
 ) {
   # checks
-  if (length(json) > 1) {
-    stop("Invalid json input. This function is not vectorised.")
+  if (!(is.character(json) && length(json) == 1)) {
+    stop("Invalid json parameter: must be a single character string filepath. This function is not vectorised.")
   }
 
-  if (!(is.character(json))) {
-    stop("Invalid json input.")
+  if (!is_json(json)) {
+    stop("Invalid json parameter: file is not a .json file or does not exist.")
   }
 
-  if (!(is_json(json))) {
-    stop("Input 'json' not .json.")
-  }
-
-  if (!(is.data.frame(token_df))) {
-    stop("token_df not a data frame.")
+  if (!is.data.frame(token_df)) {
+    stop("Invalid token_df parameter: not a data frame.")
   }
 
   if (!(identical(colnames(token_df),
@@ -845,6 +905,21 @@ redraw_blocks <- function(json,
 
   # parse the json
   parsed <- jsonlite::fromJSON(json)
+
+  if (!("pages" %in% names(parsed))) {
+    stop("JSON file does not contain valid Document AI response with images.")
+  }
+
+  if (is.null(parsed$pages$image) ||
+    is.null(parsed$pages$image$content) ||
+    length(parsed$pages$image$content) == 0) {
+    stop("JSON file does not contain valid Document AI response with images.")
+  }
+
+  if (any(is.na(parsed$pages$image$content)) ||
+    any(parsed$pages$image$content == "")) {
+    stop("JSON file does not contain valid Document AI response with images.")
+  }
 
   # create a list with pagewise sets of block boundary box coordinates
   pages_blocks <- split(token_df, token_df$page)
