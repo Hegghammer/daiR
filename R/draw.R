@@ -152,15 +152,16 @@ draw_blocks <- function(object,
 #' draw_paragraphs("page.json", type = "async")
 #' }
 
-draw_paragraphs <- function(object,
-                            type = "sync",
-                            prefix = NULL,
-                            dir = getwd(),
-                            linecol = "red",
-                            linewd = 3,
-                            fontcol = "blue",
-                            fontsize = 4
-) {
+draw_paragraphs <- function(
+  object,
+  type = "sync",
+  prefix = NULL,
+  dir = getwd(),
+  linecol = "red",
+  linewd = 3,
+  fontcol = "blue",
+  fontsize = 4
+  ) {
 
   # checks
   if (!(length(type) == 1) || !(type %in% c("sync", "async"))) {
@@ -275,15 +276,16 @@ draw_paragraphs <- function(object,
 #' draw_lines("page.json", type = "async")
 #' }
 
-draw_lines <- function(object,
-                       type = "sync",
-                       prefix = NULL,
-                       dir = getwd(),
-                       linecol = "red",
-                       linewd = 3,
-                       fontcol = "blue",
-                       fontsize = 4
-) {
+draw_lines <- function(
+  object,
+  type = "sync",
+  prefix = NULL,
+  dir = getwd(),
+  linecol = "red",
+  linewd = 3,
+  fontcol = "blue",
+  fontsize = 4
+  ) {
 
   # checks
   if (!(length(type) == 1) || !(type %in% c("sync", "async"))) {
@@ -398,15 +400,16 @@ draw_lines <- function(object,
 #' draw_tokens("page.json", type = "async")
 #'}
 
-draw_tokens <- function(object,
-                        type = "sync",
-                        prefix = NULL,
-                        dir = getwd(),
-                        linecol = "red",
-                        linewd = 3,
-                        fontcol = "blue",
-                        fontsize = 4
-) {
+draw_tokens <- function(
+  object,
+  type = "sync",
+  prefix = NULL,
+  dir = getwd(),
+  linecol = "red",
+  linewd = 3,
+  fontcol = "blue",
+  fontsize = 4
+  ) {
 
   # checks
   if (!(length(type) == 1) || !(type %in% c("sync", "async"))) {
@@ -522,15 +525,16 @@ draw_tokens <- function(object,
 #'
 #' }
 
-draw_entities <- function(object,
-                          type = "sync",
-                          prefix = NULL,
-                          dir = getwd(),
-                          linecol = "red",
-                          linewd = 3,
-                          fontcol = "blue",
-                          fontsize = 4
-) {
+draw_entities <- function(
+  object,
+  type = "sync",
+  prefix = NULL,
+  dir = getwd(),
+  linecol = "red",
+  linewd = 3,
+  fontcol = "blue",
+  fontsize = 4
+  ) {
 
   # checks
   if (!(length(type) == 1) || !(type %in% c("sync", "async"))) {
@@ -624,12 +628,18 @@ draw_entities <- function(object,
 #'
 #' @noRd
 
-decode_and_save <- function(base64_string, index) {
+decode_and_save <- function(
+  base64_string, 
+  index
+  ) {
+
   path <- file.path(tempdir(), glue::glue("page{index}.jpg"))
   outconn <- file(path, "wb")
   base64enc::base64decode(base64_string, outconn)
   close(outconn)
+
   return(path)
+
 }
 
 #' Plot bounding box
@@ -646,19 +656,31 @@ decode_and_save <- function(base64_string, index) {
 #'
 #' @noRd
 
-plot_box <- function(box, index, info, linecol, linewd, fontcol, fontsize) {
+plot_box <- function(
+  box,
+  index,
+  info,
+  linecol,
+  linewd,
+  fontcol,
+  fontsize
+  ) {
+
   if (is.na(box$y[1])) box$y[1] <- 0
   if (is.na(box$y[2])) box$y[2] <- 0
   if (is.na(box$x[1])) box$x[1] <- 0
   if (is.na(box$x[4])) box$x[4] <- 0
+
   box$x1 <- box$x * info$width
   box$y1 <- box$y * info$height
+
   graphics::polygon(
     x = box$x1,
     y = box$y1,
     border = linecol,
     lwd = linewd
   )
+
   graphics::text(
     x = box$x1[1],
     y = box$y1[1],
@@ -690,22 +712,44 @@ plot_box <- function(box, index, info, linecol, linewd, fontcol, fontsize) {
 #'
 #' @noRd
 
-process_image <- function(pagewise_block_set, index, imgs, type, object, prefix, dir, filename, dest, linecol, linewd, fontcol, fontsize, boxtype) {
+process_image <- function(
+  pagewise_block_set,
+  index,
+  imgs,
+  type,
+  object,
+  prefix,
+  dir,
+  filename,
+  dest,
+  linecol,
+  linewd,
+  fontcol,
+  fontsize,
+  boxtype
+  ) {
+
   img <- magick::image_read(imgs[index])
   info <- magick::image_info(img)
+
   canvas <- magick::image_draw(img)
+
   purrr::map2(pagewise_block_set, seq_along(pagewise_block_set), ~ plot_box(.x, .y, info, linecol, linewd, fontcol, fontsize))
+
   if (type == "async") {
     default_prefix <- substr(basename(object), 1, nchar(basename(object)) - 5)
   } else {
     default_prefix <- "document"
   }
+
   if (is.null(prefix)) {
     filename <- glue::glue("{default_prefix}_page{index}_{boxtype}.png")
   } else {
     filename <- glue::glue("{prefix}_page{index}_{boxtype}.png")
   }
+
   dest <- file.path(dir, filename)
   magick::image_write(canvas, format = "png", dest)
   grDevices::dev.off()
+
 }

@@ -33,14 +33,16 @@
 #'   proc_v = "pretrained-ocr-v1.1-2022-09-12"
 #' )
 #' }
-dai_sync <- function(file,
-                     proj_id = get_project_id(),
-                     proc_id = Sys.getenv("DAI_PROCESSOR_ID"),
-                     proc_v = NA,
-                     skip_rev = "true",
-                     loc = "eu",
-                     token = dai_token()) {
-  # Check inputs
+dai_sync <- function(
+  file,
+  proj_id = get_project_id(),
+  proc_id = Sys.getenv("DAI_PROCESSOR_ID"),
+  proc_v = NA,
+  skip_rev = "true",
+  loc = "eu",
+  token = dai_token()
+  ) {
+  # check
   if (!(is.character(file) && length(file) == 1)) {
     stop("Invalid file input.")
   }
@@ -84,14 +86,14 @@ dai_sync <- function(file,
     stop("Invalid location parameter.")
   }
 
-  # Encode
+  # encode
   if (extension == "pdf") {
     encoded_file <- pdf_to_binbase(file)
   } else {
     encoded_file <- img_to_binbase(file)
   }
 
-  ## Create json request body
+  # create json request body
   req <- list(
     "skipHumanReview" = skip_rev,
     "rawDocument" = list(
@@ -102,8 +104,7 @@ dai_sync <- function(file,
 
   bod <- jsonlite::toJSON(req, auto_unbox = TRUE)
 
-  ## Build URL and submit API request
-
+  # build url
   base_url <- glue::glue("https://{loc}-documentai.googleapis.com/")
 
   path <- glue::glue("v1/projects/{proj_id}/locations/{loc}/processors/{proc_id}")
@@ -117,7 +118,8 @@ dai_sync <- function(file,
   method <- ":process"
 
   url <- glue::glue("{base_url}{path}{version}{method}")
-
+  
+  # submit
   response <- httr::POST(url,
     httr::config(token = token),
     body = bod
@@ -184,16 +186,18 @@ dai_sync <- function(file,
 #' # Specify a bucket subfolder for the json output:
 #' dai_async(my_files, dest_folder = "processed")
 #' }
-dai_async <- function(files,
-                      dest_folder = NULL,
-                      bucket = Sys.getenv("GCS_DEFAULT_BUCKET"),
-                      proj_id = get_project_id(),
-                      proc_id = Sys.getenv("DAI_PROCESSOR_ID"),
-                      proc_v = NA,
-                      skip_rev = "true",
-                      loc = "eu",
-                      token = dai_token()) {
-  # Check and modify inputs
+dai_async <- function(
+  files,
+  dest_folder = NULL,
+  bucket = Sys.getenv("GCS_DEFAULT_BUCKET"),
+  proj_id = get_project_id(),
+  proc_id = Sys.getenv("DAI_PROCESSOR_ID"),
+  proc_v = NA,
+  skip_rev = "true",
+  loc = "eu",
+  token = dai_token()
+  ) {
+  # check
   if (!(is.character(files) && length(files) >= 1)) {
     stop("Invalid files parameter.")
   }
@@ -294,7 +298,7 @@ dai_async <- function(files,
     dest_folder_uri <- glue::glue("gs://{bucket}/{dest_folder}/")
   }
 
-  ## create json request body
+  # create json request body
   req <- list(
     "inputDocuments" = list("gcsDocuments" = list("documents" = doc_list)),
     "documentOutputConfig" = list("gcsOutputConfig" = list("gcsUri" = dest_folder_uri)),
@@ -303,8 +307,7 @@ dai_async <- function(files,
 
   bod <- jsonlite::toJSON(req, auto_unbox = TRUE)
 
-  ## build URL and submit API request
-
+  # build url
   base_url <- glue::glue("https://{loc}-documentai.googleapis.com/")
 
   path <- glue::glue("v1/projects/{proj_id}/locations/{loc}/processors/{proc_id}")
@@ -318,7 +321,8 @@ dai_async <- function(files,
   method <- ":batchProcess"
 
   url <- glue::glue("{base_url}{path}{version}{method}")
-
+  
+  # submit
   response <- httr::POST(url,
     httr::config(token = token),
     body = bod
@@ -361,10 +365,13 @@ dai_async <- function(files,
 #' response <- dai_async(myfiles)
 #' status <- dai_status(response, verbose = TRUE)
 #' }
-dai_status <- function(response,
-                       loc = "eu",
-                       token = dai_token(),
-                       verbose = FALSE) {
+dai_status <- function(
+  response,
+  loc = "eu",
+  token = dai_token(),
+  verbose = FALSE
+  ) {
+  # checks  
   if (!(inherits(response, "response") || inherits(response[[1]], "response"))) {
     stop("Input is not a valid HTTP response.")
   }
@@ -390,10 +397,12 @@ dai_status <- function(response,
 
   name <- parsed$name
 
+  # build url
   base_url <- glue::glue("https://{loc}-documentai.googleapis.com/v1/")
 
   url <- glue::glue(base_url, name)
 
+  # submit
   resp <- httr::GET(url, httr::config(token = token))
 
   resp_par <- httr::content(resp)
@@ -440,10 +449,13 @@ dai_status <- function(response,
 #' response <- dai_async(myfiles)
 #' dai_notify(response)
 #' }
-dai_notify <- function(response,
-                       loc = "eu",
-                       token = dai_token(),
-                       sound = 2) {
+dai_notify <- function(
+  response,
+  loc = "eu",
+  token = dai_token(),
+  sound = 2
+  ) {
+  # checks
   if (!(inherits(response, "response") || inherits(response[[1]], "response"))) {
     stop("Input is not a valid HTTP response.")
   }

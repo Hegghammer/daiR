@@ -20,7 +20,10 @@
 #' # A vector of image files:
 #' image_to_pdf(images)
 #' }
-image_to_pdf <- function(files, pdf_name) {
+image_to_pdf <- function(
+  files,
+  pdf_name
+  ) {
   # checks
   if (!(is.vector(files))) {
     stop("'files' input not a vector.")
@@ -53,6 +56,7 @@ image_to_pdf <- function(files, pdf_name) {
 #' is_pdf("document.pdf")
 #' }
 is_pdf <- function(file) {
+
   result <- suppressMessages(try(pdftools::pdf_info(file), silent = TRUE))
 
   return(!(inherits(result, "try-error")))
@@ -70,6 +74,7 @@ is_pdf <- function(file) {
 #' is_json("file.json")
 #' }
 is_json <- function(file) {
+
   result <- suppressMessages(suppressWarnings(
     try(jsonlite::fromJSON(file), silent = TRUE)
   ))
@@ -90,6 +95,7 @@ is_json <- function(file) {
 #' is_colour("#12345")
 #' }
 is_colour <- function(x) {
+
   result <- suppressMessages(try(grDevices::col2rgb(x), silent = TRUE))
 
   return(!(inherits(result, "try-error")))
@@ -106,6 +112,7 @@ is_colour <- function(x) {
 #' doc_encoded <- pdf_to_binbase("document.pdf")
 #' }
 pdf_to_binbase <- function(file) {
+
   if (!(is_pdf(file))) {
     stop("Input file not a pdf.")
   }
@@ -135,6 +142,7 @@ pdf_to_binbase <- function(file) {
 #' img_encoded <- img_to_binbase("image.png")
 #' }
 img_to_binbase <- function(file) {
+
   if (is_pdf(file)) {
     stop("Input file is .pdf.")
   }

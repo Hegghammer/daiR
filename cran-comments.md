@@ -1,12 +1,18 @@
 This is a new release.
 
-It adresses a small number of bugs, notably a `.jpg` problem on MacOS, handling of `.tif` files in `dai_sync()`/`dai_async()`, and some missing MIME values in `dai_async()`. 
+It contains a number of improvements and bug fixes, notably: 
+
+- New functions to facilitate processor management
+- New vignette on processor management
+- Better handling of edge cases, such as graceful handling of empty pages
+- Complete overhaul of tests, for substantially better coverage
+- Refactoring for consistency and clarity
 
 ## Test environments
-* Local Ubuntu Linux 24.10, R 4.4.1
-* Windows Server 2022 10.0.20348 (on Github actions), R 4.4.2
-* Ubuntu 24.04 (on Github actions), R 4.4.2
-* Mac OS 14.7 (on Github actions), R 4.4.2
+* Local Debian 13 Stable, R 4.5.2
+* Microsoft Windows Server 2025 10.0.26100 (on Github actions), R 4.5.2
+* Ubuntu 24.04.3 LTS (on Github actions), R 4.5.2
+* MacOS 15.7.1 24G231 (on Github actions), R 4.5.2
 
 ## R CMD check results
 There were no ERRORs or WARNINGs or NOTEs.

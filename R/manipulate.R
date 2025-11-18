@@ -23,10 +23,11 @@
 #' merge_shards(tempdir(), getwd())
 #' }
 
-merge_shards <- function(source_dir = getwd(),
-                         dest_dir = getwd()
-                        ) {
-
+merge_shards <- function(
+  source_dir = getwd(),
+  dest_dir = getwd()
+  ) {
+  # checks
   if (!(is.character(source_dir) && length(source_dir) == 1)) {
     stop("Invalid source_dir parameter: must be a single character string directory path.")
   }
@@ -117,10 +118,10 @@ merge_shards <- function(source_dir = getwd(),
 #' token_df <- build_token_df("pdf_output.json", type = "async")
 #' }
 
-build_token_df <- function(object,
-                           type = "sync"
-                           ) {
-
+build_token_df <- function(
+  object,
+  type = "sync"
+  ) {
   # checks
   if (!(length(type) == 1) || !(type %in% c("sync", "async"))) {
     stop("Invalid type parameter.")
@@ -266,16 +267,17 @@ build_token_df <- function(object,
   })))
 
   # combine all vectors to dataframe
-  df <- data.frame(token,
-                   start_ind,
-                   end_ind,
-                   conf,
-                   left,
-                   right,
-                   top,
-                   bottom,
-                   page,
-                   block = NA
+  df <- data.frame(
+    token,
+    start_ind,
+    end_ind,
+    conf,
+    left,
+    right,
+    top,
+    bottom,
+    page,
+    block = NA
   )
 
   # get block numbers, assigning by token location
@@ -334,10 +336,10 @@ build_token_df <- function(object,
 #' block_df <- build_block_df("pdf_output.json", type = "async")
 #' }
 
-build_block_df <- function(object,
-                           type = "sync"
-                          ) {
-
+build_block_df <- function(
+  object,
+  type = "sync"
+  ) {
   # checks
   if (!(length(type) == 1) || !(type %in% c("sync", "async"))) {
     stop("Invalid type parameter.")
@@ -427,18 +429,21 @@ build_block_df <- function(object,
     }
     min(coords$x, na.rm = TRUE)
   })))
+
   right <- unlist(purrr::map(pagewise_block_coords, ~ purrr::map(.x, function(coords) {
     if (is.null(coords) || is.null(coords$x) || length(coords$x) == 0) {
       return(NA_real_)
     }
     max(coords$x, na.rm = TRUE)
   })))
+
   top <- unlist(purrr::map(pagewise_block_coords, ~ purrr::map(.x, function(coords) {
     if (is.null(coords) || is.null(coords$y) || length(coords$y) == 0) {
       return(NA_real_)
     }
     min(coords$y, na.rm = TRUE)
   })))
+
   bottom <- unlist(purrr::map(pagewise_block_coords, ~ purrr::map(.x, function(coords) {
     if (is.null(coords) || is.null(coords$y) || length(coords$y) == 0) {
       return(NA_real_)
@@ -477,13 +482,13 @@ build_block_df <- function(object,
 #' new_block_df <- split_block(df = old_block_df, block = 7, cut_point = 33)
 #' }
 
-split_block <- function(block_df,
-                        page = 1,
-                        block,
-                        cut_point,
-                        direction = "v"
-) {
-
+split_block <- function(
+  block_df,
+  page = 1,
+  block,
+  cut_point,
+  direction = "v"
+  ) {
   # checks
   if (!is.data.frame(block_df)) {
     stop("Invalid block_df parameter: not a data frame.")
@@ -570,7 +575,7 @@ split_block <- function(block_df,
       new_block_df <- rbind(preceding, new_page_df, succeeding)
     }
 
-    # horizontal split
+  # horizontal split
   } else {
 
     dist <- old_block$bottom - old_block$top
@@ -633,9 +638,10 @@ split_block <- function(block_df,
 #' new_token_df <- reassign_tokens(token_df, new_block_df)
 #' }
 
-reassign_tokens <- function(token_df,
-                            block_df
-) {
+reassign_tokens <- function(
+  token_df,
+  block_df
+  ) {
 
   # checks
   if (!is.data.frame(token_df)) {
@@ -698,11 +704,11 @@ reassign_tokens <- function(token_df,
     new_token_df <- rbind(new_token_df, tokens)
   }
 
-    row.names(new_token_df) <- NULL
+  row.names(new_token_df) <- NULL
 
-    new_token_df
+  new_token_df
 
-  }
+}
 
 #' Assign tokens to a single new block
 #'
@@ -724,11 +730,11 @@ reassign_tokens <- function(token_df,
 #' new_token_df <- reassign_tokens2(token_df, new_block_df, 5)
 #' }
 
-reassign_tokens2 <- function(token_df,
-                             block,
-                             page = 1
-) {
-
+reassign_tokens2 <- function(
+  token_df,
+  block,
+  page = 1
+  ) {
   # checks
   if (!is.data.frame(token_df)) {
     stop("Invalid token_df parameter: not a data frame.")
@@ -811,8 +817,9 @@ reassign_tokens2 <- function(token_df,
 #' new_block <- from_labelme("document5_blocks.json", 5)
 #' }
 
-from_labelme <- function(json,
-                         page = 1
+from_labelme <- function(
+  json,
+  page = 1
 ) {
 
   # checks
@@ -845,14 +852,15 @@ from_labelme <- function(json,
 
   block <- info[[3]][[1]]
 
-  data.frame(page = page,
-             block = as.numeric(block),
-             conf = NA,
-             left = left,
-             right = right,
-             top = top,
-             bottom = bottom
-             )
+  data.frame(
+    page = page,
+    block = as.numeric(block),
+    conf = NA,
+    left = left,
+    right = right,
+    top = top,
+    bottom = bottom
+    )
 }
 
 #' Inspect revised block bounding boxes
@@ -879,10 +887,11 @@ from_labelme <- function(json,
 #' redraw_blocks("pdf_output.json", revised_token_df, dir = tempdir())
 #' }
 
-redraw_blocks <- function(json,
-                          token_df,
-                          dir = getwd()
-) {
+redraw_blocks <- function(
+  json,
+  token_df,
+  dir = getwd()
+  ) {
   # checks
   if (!(is.character(json) && length(json) == 1)) {
     stop("Invalid json parameter: must be a single character string filepath. This function is not vectorised.")
@@ -1020,6 +1029,7 @@ redraw_blocks <- function(json,
 #' @noRd
 
 get_vertices <- function(lst) {
+
   purrr::map(lst, ~.x$layout$boundingPoly$normalizedVertices)
 }
 
@@ -1032,6 +1042,7 @@ get_vertices <- function(lst) {
 #' @noRd
 
 get_vertices_entities <- function(lst) {
+
   purrr::map(lst, ~.x$pageAnchor$pageRefs[[2]]$boundingPoly$normalizedVertices)
 }
 
@@ -1043,6 +1054,7 @@ get_vertices_entities <- function(lst) {
 #'
 #' @noRd
 transpose_block <- function(lst) {
+
   xs <- c(lst[[1]][["x"]], lst[[2]][["x"]], lst[[3]][["x"]], lst[[4]][["x"]])
   ys <- c(lst[[1]][["y"]], lst[[2]][["y"]], lst[[3]][["y"]], lst[[4]][["y"]])
   data.frame(xs, ys)
@@ -1057,6 +1069,7 @@ transpose_block <- function(lst) {
 #' @noRd
 
 transpose_page <- function(lst) {
+
   purrr::map(lst, transpose_block)
 }
 
@@ -1069,5 +1082,6 @@ transpose_page <- function(lst) {
 #' @noRd
 
 transpose_page_entities <- function(lst) {
+
   purrr::map(lst, ~ .x$boundingPoly$normalizedVertices[[2]])
 }

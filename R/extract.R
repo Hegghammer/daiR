@@ -25,6 +25,8 @@ get_text <- function(object,
                      save_to_file = FALSE,
                      dest_dir = getwd(),
                      outfile_stem = NULL) {
+
+  # checks
   if (!(length(type) == 1) || !(type %in% c("sync", "async"))) {
     stop("Invalid type parameter.")
   }
@@ -128,13 +130,18 @@ get_text <- function(object,
 #'
 #' tables <- get_tables("file.json", type = "async")
 #' }
-get_tables <- function(object,
-                       type = "sync") {
+get_tables <- function(
+  object,
+  type = "sync"
+  ) {
+
+
   if (!(length(type) == 1) || !(type %in% c("sync", "async"))) {
     stop("Invalid type parameter.")
   }
 
   if (type == "sync") {
+    # checks
     if (!(inherits(object, "response"))) {
       stop("Invalid object: not a valid HTTP response. Did you supply a JSON filepath without type = 'async'?")
     }
@@ -149,7 +156,7 @@ get_tables <- function(object,
       stop("DAI found no text. Was the page blank?")
     }
 
-    # Compile a list of table entries
+    # compile list of table entries
     if ("pages" %in% names(parsed$document)) {
       table_list_raw <- purrr::map(parsed$document$pages, ~ .x$tables)
     } else {
@@ -163,7 +170,9 @@ get_tables <- function(object,
     table_list <- purrr::flatten(table_list_raw)
     text <- get_text(object)
     purrr::map(table_list, ~ resp_build_table(.x, text))
+
   } else if (type == "async") {
+
     # checks
     if (!(is.character(object) && length(object) == 1)) {
       stop("Invalid object: must be a single character string filepath.")
@@ -214,13 +223,17 @@ get_tables <- function(object,
 #'
 #' entities <- get_entities("file.json", type = "async")
 #' }
-get_entities <- function(object,
-                         type = "sync") {
+get_entities <- function(
+  object,
+  type = "sync"
+  ) {
+
   if (!(length(type) == 1) || !(type %in% c("sync", "async"))) {
     stop("Invalid type parameter.")
   }
 
   if (type == "sync") {
+    # checks
     if (!(inherits(object, "response"))) {
       stop("Invalid object: not a valid HTTP response. Did you supply a JSON filepath without type = 'async'?")
     }
@@ -244,7 +257,9 @@ get_entities <- function(object,
       entity_pages <- parsed$document$entities
       purrr::map(entity_pages, build_sync_entity_df)
     }
+
   } else if (type == "async") {
+    # checks
     if (!(is.character(object) && length(object) == 1)) {
       stop("Invalid object: must be a single character string filepath.")
     }
@@ -282,8 +297,13 @@ get_entities <- function(object,
 #'
 #' @noRd
 
-resp_get_cell_text <- function(cell, text) {
+resp_get_cell_text <- function(
+  cell, 
+  text
+  ) {
+
   anchors <- cell$layout$textAnchor
+
   if (length(anchors) == 0) {
     txt <- ""
   } else {
@@ -311,7 +331,10 @@ resp_get_cell_text <- function(cell, text) {
 #'
 #' @noRd
 
-resp_get_row_vector <- function(elem, text) {
+resp_get_row_vector <- function(
+  elem, 
+  text
+  ) {
   cells <- elem$cells
   purrr::map_chr(cells, ~ resp_get_cell_text(.x, text))
 }
@@ -324,7 +347,10 @@ resp_get_row_vector <- function(elem, text) {
 #'
 #' @noRd
 
-resp_build_table <- function(table, text) {
+resp_build_table <- function(
+  table,
+  text
+  ) {
   headers_list <- table$headerRows
   rows_list <- table$bodyRows
   headervectors <- purrr::map(headers_list, ~ resp_get_row_vector(.x, text))
@@ -346,6 +372,7 @@ resp_build_table <- function(table, text) {
 #' @noRd
 
 file_get_table_objects <- function(page) {
+
   if (is.null(page)) {
     return(NULL)
   } else {
@@ -371,7 +398,11 @@ file_get_table_objects <- function(page) {
 #'
 #' @noRd
 
-file_get_cell_text <- function(cell, text) {
+file_get_cell_text <- function(
+  cell, 
+  text
+  ) {
+
   if (is.null(cell)) {
     txt <- ""
   } else {
@@ -398,7 +429,11 @@ file_get_cell_text <- function(cell, text) {
 #'
 #' @noRd
 
-file_get_row_vector <- function(elem, text) {
+file_get_row_vector <- function(
+  elem,
+  text
+  ) {
+
   cells <- elem$layout$textAnchor$textSegments
   purrr::map_chr(cells, ~ file_get_cell_text(.x, text))
 }
@@ -411,12 +446,17 @@ file_get_row_vector <- function(elem, text) {
 #'
 #' @noRd
 
-file_build_table <- function(table_object, text) {
+file_build_table <- function(
+  table_object, 
+  text
+  ) {
+
   headers_list <- table_object$headerRows$cells
   rows_list <- table_object$bodyRows$cells
   headervectors <- purrr::map(headers_list, ~ file_get_row_vector(.x, text))
   rowvectors <- purrr::map(rows_list, ~ file_get_row_vector(.x, text))
   table <- data.frame(matrix(nrow = 0, ncol = 6))
+
   if (length(rowvectors) == 0) {
     table <- as.data.frame(t(headervectors[[1]]))
   } else {
@@ -446,13 +486,16 @@ file_build_table <- function(table_object, text) {
 #' @noRd
 
 build_sync_entity_df <- function(lst) {
+
   props <- lst$properties
   ids <- as.numeric(unlist(purrr::map(props, ~ .x$id)))
   mentionTexts <- purrr::map_chr(props, ~ .x$mentionText)
   types <- purrr::map_chr(props, ~ .x$type)
   confs <- as.numeric(unlist(purrr::map(props, ~ .x$confidence)))
+
   start_inds <- as.numeric(unlist(purrr::map(props, ~ .x$textAnchor$textSegments[[1]]$startIndex)))
   end_inds <- as.numeric(unlist(purrr::map(props, ~ .x$textAnchor$textSegments[[1]]$endIndex)))
+
   lefts <- as.numeric(unlist(purrr::map(props, ~ .x$pageAnchor$pageRefs[[2]][[1]][[1]][[1]]$x)))
   rights <- as.numeric(unlist(purrr::map(props, ~ .x$pageAnchor$pageRefs[[2]][[1]][[1]][[2]]$x)))
   tops <- as.numeric(unlist(purrr::map(props, ~ .x$pageAnchor$pageRefs[[2]][[1]][[1]][[1]]$y)))
@@ -480,11 +523,14 @@ build_sync_entity_df <- function(lst) {
 #' @noRd
 
 build_async_entity_df <- function(x) {
+
   anchors <- x$pageAnchor$pageRefs
+
   lefts <- as.numeric(unlist(purrr::map(anchors, ~ .x$boundingPoly$normalizedVertices[[2]]$x[1])))
   rights <- as.numeric(unlist(purrr::map(anchors, ~ .x$boundingPoly$normalizedVertices[[2]]$x[2])))
   tops <- as.numeric(unlist(purrr::map(anchors, ~ .x$boundingPoly$normalizedVertices[[2]]$y[1])))
   bottoms <- as.numeric(unlist(purrr::map(anchors, ~ .x$boundingPoly$normalizedVertices[[2]]$y[3])))
+
   data.frame(
     id = as.numeric(x$id),
     mentionText = x$mentionText,

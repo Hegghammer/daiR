@@ -17,8 +17,10 @@
 #' dai_auth()
 #'}
 
-dai_auth <- function(path = Sys.getenv("GCS_AUTH_FILE"),
-                     scopes = "https://www.googleapis.com/auth/cloud-platform") {
+dai_auth <- function(
+  path = Sys.getenv("GCS_AUTH_FILE"),
+  scopes = "https://www.googleapis.com/auth/cloud-platform"
+  ) {
 
   if (!is_json(path)) {
     token <- NULL
@@ -46,8 +48,10 @@ dai_auth <- function(path = Sys.getenv("GCS_AUTH_FILE"),
 #' token <- dai_token()
 #'}
 
-dai_token <- function(path = Sys.getenv("GCS_AUTH_FILE"),
-                      scopes = "https://www.googleapis.com/auth/cloud-platform") {
+dai_token <- function(
+  path = Sys.getenv("GCS_AUTH_FILE"),
+  scopes = "https://www.googleapis.com/auth/cloud-platform"
+  ) {
 
   if (!is_json(path)) {
     token <- NULL
@@ -96,7 +100,9 @@ dai_user <- function() {
 #' project_id <- get_project_id()
 #'}
 
-get_project_id <- function(path = Sys.getenv("GCS_AUTH_FILE")) {
+get_project_id <- function(
+  path = Sys.getenv("GCS_AUTH_FILE")
+  ) {
 
   if (!(length(path) == 1 && is.character(path)) || path == "") {
     stop("Error: invalid path parameter.")

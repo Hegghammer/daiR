@@ -23,11 +23,13 @@
 #' avail_short <- list_processor_types()
 #' avail_long <- list_processor_types(full_list = TRUE)
 #' }
-list_processor_types <- function(full_list = FALSE,
-                                 proj_id = get_project_id(),
-                                 loc = "eu",
-                                 token = dai_token()) {
-  # Check
+list_processor_types <- function(
+  full_list = FALSE,
+  proj_id = get_project_id(),
+  loc = "eu",
+  token = dai_token()
+  ) {
+  # check
   if (!(length(full_list) == 1) || !(full_list %in% c(TRUE, FALSE))) {
     stop("Invalid full_list argument. Must be either TRUE or FALSE.")
   }
@@ -42,16 +44,16 @@ list_processor_types <- function(full_list = FALSE,
     stop("Invalid loc parameter. Must be either 'eu' or 'us'.")
   }
 
-  # Build request
+  # build request
   base_url <- glue::glue("https://{loc}-documentai.googleapis.com")
   path <- glue::glue("/v1/projects/{proj_id}/locations/{loc}:fetchProcessorTypes")
   url <- glue::glue("{base_url}{path}")
 
-  # Send request
+  # send request
   response <- httr::GET(url, httr::config(token = token))
   parsed <- httr::content(response)
 
-  # Process response
+  # process response
   if (isTRUE(full_list)) {
     parsed$processorTypes
   } else {
@@ -85,12 +87,14 @@ list_processor_types <- function(full_list = FALSE,
 #' \dontrun{
 #' proc_id <- create_processor("my-processor-123")
 #' }
-create_processor <- function(name,
-                             type = "OCR_PROCESSOR",
-                             proj_id = get_project_id(),
-                             loc = "eu",
-                             token = dai_token()) {
-  # Check
+create_processor <- function(
+  name,
+  type = "OCR_PROCESSOR",
+  proj_id = get_project_id(),
+  loc = "eu",
+  token = dai_token()
+  ) {
+  # check
   if (!(is.character(name) && length(name) == 1)) {
     stop("Invalid name parameter.")
   }
@@ -111,18 +115,18 @@ create_processor <- function(name,
     stop("Invalid loc parameter. Must be either 'eu' or 'us'.")
   }
 
-  # Build request
+  # build request
   base_url <- glue::glue("https://{loc}-documentai.googleapis.com")
   path <- glue::glue("/v1/projects/{proj_id}/locations/{loc}/processors")
   url <- glue::glue("{base_url}{path}")
   req <- list("type" = type, "displayName" = name)
   bod <- jsonlite::toJSON(req, auto_unbox = TRUE)
 
-  # Send request
+  # send request
   response <- httr::POST(url, httr::config(token = token), body = bod)
   parsed <- httr::content(response)
 
-  # Process response
+  # process response
   if (response$status_code == 200) {
     id <- basename(parsed$name)
     cli::cli_alert_success(glue::glue("Processor created.\n- Name: {parsed$displayName}\n- Type: {parsed$type}\n- Id: {id}"))
@@ -152,10 +156,12 @@ create_processor <- function(name,
 #' \dontrun{
 #' df <- get_processors()
 #' }
-get_processors <- function(proj_id = get_project_id(),
-                           loc = "eu",
-                           token = dai_token()) {
-  # Check
+get_processors <- function(
+  proj_id = get_project_id(),
+  loc = "eu",
+  token = dai_token()
+  ) {
+  # check
   if (!(is.character(proj_id) && length(proj_id) == 1)) {
     stop("Invalid proj_id parameter.")
   }
@@ -166,16 +172,16 @@ get_processors <- function(proj_id = get_project_id(),
     stop("Invalid loc parameter. Must be either 'eu' or 'us'.")
   }
 
-  # Build request
+  # build request
   base_url <- glue::glue("https://{loc}-documentai.googleapis.com")
   path <- glue::glue("/v1/projects/{proj_id}/locations/{loc}/processors")
   url <- glue::glue("{base_url}{path}")
 
-  # Send request
+  # send request
   response <- httr::GET(url, httr::config(token = token))
   parsed <- httr::content(response)
 
-  # Process response
+  # process response
   df <- suppressWarnings(as.data.frame(data.table::rbindlist(parsed$processors, fill = TRUE)))
   df$id <- basename(df$name)
   df
@@ -203,11 +209,13 @@ get_processors <- function(proj_id = get_project_id(),
 #'
 #' info <- get_processor_info(proc_id = get_processors()$id[1])
 #' }
-get_processor_info <- function(proc_id,
-                               proj_id = get_project_id(),
-                               loc = "eu",
-                               token = dai_token()) {
-  # Check
+get_processor_info <- function(
+  proc_id,
+  proj_id = get_project_id(),
+  loc = "eu",
+  token = dai_token()
+  ) {
+  # check
   if (!(is.character(proj_id) && length(proj_id) == 1)) {
     stop("Invalid proj_id parameter.")
   }
@@ -222,12 +230,12 @@ get_processor_info <- function(proc_id,
     stop("Invalid loc parameter. Must be either 'eu' or 'us'.")
   }
 
-  # Build request
+  # build request
   base_url <- glue::glue("https://{loc}-documentai.googleapis.com")
   path <- glue::glue("/v1/projects/{proj_id}/locations/{loc}/processors/{proc_id}")
   url <- glue::glue("{base_url}{path}")
 
-  # Send request
+  # send request
   response <- httr::GET(url, httr::config(token = token))
   httr::content(response)
 }
@@ -249,10 +257,12 @@ get_processor_info <- function(proc_id,
 #'
 #' df <- get_processor_versions(proc_id = get_processors()$id[1])
 #' }
-get_processor_versions <- function(proc_id,
-                                   proj_id = get_project_id(),
-                                   loc = "eu",
-                                   token = dai_token()) {
+get_processor_versions <- function(
+  proc_id,
+  proj_id = get_project_id(),
+  loc = "eu",
+  token = dai_token()
+  ) {
   # Check
   if (!(is.character(proj_id) && length(proj_id) == 1)) {
     stop("Invalid proj_id parameter.")
@@ -268,32 +278,29 @@ get_processor_versions <- function(proc_id,
     stop("Invalid loc parameter. Must be either 'eu' or 'us'.")
   }
 
-  # Build request
+  # build request
   base_url <- glue::glue("https://{loc}-documentai.googleapis.com")
   path <- glue::glue("/v1/projects/{proj_id}/locations/{loc}/processors/{proc_id}/processorVersions")
   url <- glue::glue("{base_url}{path}")
 
-  # Send request
+  # send request
   response <- httr::GET(url, httr::config(token = token))
   parsed <- httr::content(response)
 
-  # Process response
-  # Handle case where processorVersions is NULL or missing
+  # process response
   if (is.null(parsed$processorVersions) || length(parsed$processorVersions) == 0) {
-    # Return empty data.frame with expected structure
     return(data.frame())
   }
 
   df <- suppressWarnings(as.data.frame(data.table::rbindlist(parsed$processorVersions, fill = TRUE)))
 
-  # Only add shortName if we have data and a name column
   if (nrow(df) > 0 && "name" %in% names(df)) {
     df$shortName <- basename(df$name)
-    # Reorder to put shortName first, but only if we have enough columns
+    # reorder to put shortName first, but only if enough columns
     if (ncol(df) >= 6) {
-      df <- df[, c(ncol(df), 1:(ncol(df) - 1))] # Move last column (shortName) to front
+      df <- df[, c(ncol(df), 1:(ncol(df) - 1))] # move last column (shortName) to front
     } else {
-      # If fewer columns, just move shortName to front
+      # if fewer columns, move shortName to front
       other_cols <- setdiff(names(df), "shortName")
       df <- df[, c("shortName", other_cols)]
     }
@@ -317,11 +324,13 @@ get_processor_versions <- function(proc_id,
 #' \dontrun{
 #' enable_processor(proc_id = get_processors()$id[1])
 #' }
-enable_processor <- function(proc_id,
-                             proj_id = get_project_id(),
-                             loc = "eu",
-                             token = dai_token()) {
-  # Check
+enable_processor <- function(
+  proc_id,
+  proj_id = get_project_id(),
+  loc = "eu",
+  token = dai_token()
+  ) {
+  # check
   if (!(is.character(proc_id) && length(proc_id) == 1)) {
     stop("Invalid proc_id parameter.")
   }
@@ -336,16 +345,16 @@ enable_processor <- function(proc_id,
     stop("Invalid loc parameter. Must be either 'eu' or 'us'.")
   }
 
-  # Build request
+  # build request
   base_url <- glue::glue("https://{loc}-documentai.googleapis.com")
   path <- glue::glue("/v1/projects/{proj_id}/locations/{loc}/processors/{proc_id}:enable")
   url <- glue::glue("{base_url}{path}")
 
-  # Send request
+  # send request
   response <- httr::POST(url, httr::config(token = token))
   parsed <- httr::content(response)
 
-  # Process response
+  # process response
   if (response$status_code == 200) {
     cli::cli_alert_success(glue::glue("Success -- processor {proc_id} enabled."))
   } else if (response$status_code == 400) {
@@ -370,10 +379,12 @@ enable_processor <- function(proc_id,
 #' \dontrun{
 #' disable_processor(proc_id = get_processors()$id[1])
 #' }
-disable_processor <- function(proc_id,
-                              proj_id = get_project_id(),
-                              loc = "eu",
-                              token = dai_token()) {
+disable_processor <- function(
+  proc_id,
+  proj_id = get_project_id(),
+  loc = "eu",
+  token = dai_token()
+  ) {
   # Check
   if (!(is.character(proc_id) && length(proc_id) == 1)) {
     stop("Invalid proc_id parameter.")
@@ -389,16 +400,16 @@ disable_processor <- function(proc_id,
     stop("Invalid loc parameter. Must be either 'eu' or 'us'.")
   }
 
-  # Build request
+  # build request
   base_url <- glue::glue("https://{loc}-documentai.googleapis.com")
   path <- glue::glue("/v1/projects/{proj_id}/locations/{loc}/processors/{proc_id}:disable")
   url <- glue::glue("{base_url}{path}")
 
-  # Send request
+  # send request
   response <- httr::POST(url, httr::config(token = token))
   parsed <- httr::content(response)
 
-  # Process response
+  # process response
   if (response$status_code == 200) {
     cli::cli_alert_success(glue::glue("Success -- processor {proc_id} disabled."))
   } else if (response$status_code == 400) {
@@ -423,11 +434,13 @@ disable_processor <- function(proc_id,
 #' \dontrun{
 #' delete_processor(proc_id = get_processors()$id[1])
 #' }
-delete_processor <- function(proc_id,
-                             proj_id = get_project_id(),
-                             loc = "eu",
-                             token = dai_token()) {
-  # Check
+delete_processor <- function(
+  proc_id,
+  proj_id = get_project_id(),
+  loc = "eu",
+  token = dai_token()
+  ) {
+  # check
   if (!(is.character(proc_id) && length(proc_id) == 1)) {
     stop("Invalid proc_id parameter.")
   }
@@ -442,16 +455,16 @@ delete_processor <- function(proc_id,
     stop("Invalid loc parameter. Must be either 'eu' or 'us'.")
   }
 
-  # Build request
+  # build request
   base_url <- glue::glue("https://{loc}-documentai.googleapis.com")
   path <- glue::glue("/v1/projects/{proj_id}/locations/{loc}/processors/{proc_id}")
   url <- glue::glue("{base_url}{path}")
 
-  # Send request
+  # send request
   response <- httr::DELETE(url, httr::config(token = token))
   parsed <- httr::content(response)
 
-  # Process response
+  # process response
   if (response$status_code == 200) {
     cli::cli_alert_info(glue::glue("Request successfully submitted. Check status with daiR::dai_status()."))
   } else {
@@ -475,10 +488,12 @@ delete_processor <- function(proc_id,
 #' \dontrun{
 #' get_ids_by_type("OCR_PROCESSOR")
 #' }
-get_ids_by_type <- function(type,
-                            proj_id = get_project_id(),
-                            loc = "eu",
-                            token = dai_token()) {
+get_ids_by_type <- function(
+  type,
+  proj_id = get_project_id(),
+  loc = "eu",
+  token = dai_token()
+  ) {
   # check
   if (!(is.character(type) && length(type) == 1)) {
     stop("Invalid type parameter.")
@@ -518,10 +533,12 @@ get_ids_by_type <- function(type,
 #' \dontrun{
 #' get_versions_by_type("OCR_PROCESSOR")
 #' }
-get_versions_by_type <- function(type,
-                                 proj_id = get_project_id(),
-                                 loc = "eu",
-                                 token = dai_token()) {
+get_versions_by_type <- function(
+  type,
+  proj_id = get_project_id(),
+  loc = "eu",
+  token = dai_token()
+  ) {
   # check
   if (!(is.character(type) && length(type) == 1)) {
     stop("Invalid type parameter.")
