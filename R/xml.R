@@ -64,11 +64,12 @@ make_hocr <- function(
     parsed_sync <- httr::content(output)
 
     # add metadata
-    langs <- paste(parsed_sync[["document"]][["pages"]][[1]][["detectedLanguages"]][[1]][["languageCode"]])
+    lang <- parsed_sync[["document"]][["pages"]][[1]][["detectedLanguages"]][[1]][["languageCode"]]
+    if (is.null(lang)) lang <- "unknown"
     n_pages <- length(parsed_sync[["document"]][["pages"]])
     head <- xml2::xml_children(doc)[[1]]
     lang_node <- xml2::xml_children(head)[[4]]
-    xml2::xml_attrs(lang_node)[[2]] <- langs
+    xml2::xml_attrs(lang_node)[[2]] <- lang
     pages_node <- xml2::xml_children(head)[[5]]
     xml2::xml_attrs(pages_node)[[2]] <- n_pages
 
@@ -85,11 +86,12 @@ make_hocr <- function(
     parsed <- jsonlite::fromJSON(output)
 
     # add metadata
-    langs <- paste(parsed[["pages"]][["detectedLanguages"]][[1]][["languageCode"]], collapse = " ")
+    lang <- parsed[["pages"]][["detectedLanguages"]][[1]][["languageCode"]]
+    if (is.null(lang)) lang <- "unknown"
     n_pages <- nrow(parsed$pages)
     head <- xml2::xml_children(doc)[[1]]
     lang_node <- xml2::xml_children(head)[[4]]
-    xml2::xml_attrs(lang_node)[[2]] <- langs
+    xml2::xml_attrs(lang_node)[[2]] <- lang
     pages_node <- xml2::xml_children(head)[[5]]
     xml2::xml_attrs(pages_node)[[2]] <- n_pages
 
@@ -116,21 +118,26 @@ process_page_sync <- function(
   page_index,
   pages,
   text
-  ) {
-
+) {
   page <- pages[[page_index]]
   id <- paste0("page_", page_index)
   x2_page <- page[["dimension"]][["width"]]
   y2_page <- page[["dimension"]][["height"]]
   bbox <- paste0("bbox 0 0 ", x2_page, " ", y2_page)
-  xml2::xml_add_child(body, "div", class = 'ocr_page', id = id, title = bbox)
+  xml2::xml_add_child(body, "div", class = "ocr_page", id = id, title = bbox)
   div1 <- xml2::xml_children(body)[[page_index]]
-  
+
   blocks <- page[["blocks"]]
+
+  # handle blank pages
+  if (is.null(blocks) || length(blocks) == 0) {
+    return(invisible(NULL))
+  }
+
   block_coords <- get_vertices(blocks)
   block_coords <- purrr::map(block_coords, transpose_block)
   block_coords <- purrr::map(block_coords, ~ process_coord(.x, x2_page, y2_page))
-  block_segments <- purrr::map(blocks, ~.x[["layout"]][["textAnchor"]][["textSegments"]][[1]])
+  block_segments <- purrr::map(blocks, ~ .x[["layout"]][["textAnchor"]][["textSegments"]][[1]])
   if (is.null(block_segments[[1]][["startIndex"]])) block_segments[[1]][["startIndex"]] <- 0
 
   for (j in seq_along(block_coords)) {
@@ -314,18 +321,25 @@ process_page_async <- function(
   page_index,
   parsed,
   text
-  ) {
+) {
   id <- paste0("page_", page_index)
   page_coords <- parsed[["pages"]][["layout"]][["boundingPoly"]][["vertices"]]
   x2_page <- page_coords[[page_index]][["x"]][[3]]
   y2_page <- page_coords[[page_index]][["y"]][[3]]
   bbox <- paste0("bbox 0 0 ", x2_page, " ", y2_page)
-  xml2::xml_add_child(body, "div", class = 'ocr_page', id = id, title = bbox)
+  xml2::xml_add_child(body, "div", class = "ocr_page", id = id, title = bbox)
   div1 <- xml2::xml_children(body)[[page_index]]
-  
-  block_coords <- parsed[["pages"]][["blocks"]][[page_index]][["layout"]][["boundingPoly"]][["normalizedVertices"]]
-  block_coords <- purrr::map(block_coords, ~ process_coord(.x, x2_page, y2_page))    
-  block_segments <- parsed[["pages"]][["blocks"]][[page_index]][["layout"]][["textAnchor"]][["textSegments"]]
+
+  blocks <- parsed[["pages"]][["blocks"]][[page_index]]
+
+  # handle blank pages
+  if (is.null(blocks) || length(blocks) == 0) {
+    return(invisible(NULL))
+  }
+
+  block_coords <- blocks[["layout"]][["boundingPoly"]][["normalizedVertices"]]
+  block_coords <- purrr::map(block_coords, ~ process_coord(.x, x2_page, y2_page))
+  block_segments <- blocks[["layout"]][["textAnchor"]][["textSegments"]]
   if (is.null(block_segments[[1]][["startIndex"]])) block_segments[[1]][["startIndex"]] <- 0
 
   for (j in seq_along(block_coords)) {
@@ -590,14 +604,12 @@ process_coord <- function(
   x2_page,
   y2_page
   ) {
-  # handle async format (data frame with x, y columns)
   if (is.data.frame(coord)) {
       coord[coord < 0] <- 0
-      xs <- round(coord[["x"]] * x2_page)
-      ys <- round(coord[["y"]] * y2_page)
+      xs <- round(coord[["xs"]] * x2_page)
+      ys <- round(coord[["ys"]] * y2_page)
       return(list(xs = xs, ys = ys))
   }
-  # handle sync format (list with xs, ys fields)
   else {
       coord[coord < 0] <- 0
       coord[["xs"]] <- round(coord[["xs"]] * x2_page)

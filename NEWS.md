@@ -1,3 +1,7 @@
+# daiR 1.2.1
+
+- Fixed bug in `make_hocr()`
+
 # daiR 1.2.0 (latest CRAN version)
 
 - Minor refactoring
