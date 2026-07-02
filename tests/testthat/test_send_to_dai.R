@@ -216,6 +216,72 @@ test_that("dai_sync accepts valid skip_rev values (case insensitive)", {
   }
 })
 
+test_that("dai_sync errors with invalid imageless parameter", {
+  skip_on_cran()
+  skip_on_ci()
+  
+  expect_error(
+    dai_sync(file = "foo.png", proj_id = "abc", proc_id = "def", imageless = null),
+    "Invalid imageless parameter."
+  )
+  expect_error(
+    dai_sync(file = "foo.png", proj_id = "abc", proc_id = "def", imageless = na),
+    "Invalid imageless parameter."
+  )
+  expect_error(
+    dai_sync(file = "foo.png", proj_id = "abc", proc_id = "def", imageless = "true"),
+    "Invalid imageless parameter."
+  )
+  expect_error(
+    dai_sync(file = "foo.png", proj_id = "abc", proc_id = "def", imageless = c(TRUE, FALSE)),
+    "Invalid imageless parameter."
+  )
+})
+
+test_that("check_pdf_pages warns when PDF exceeds sync page limit", {
+  skip_on_cran()
+  skip_on_ci()
+
+  pdf <- tempfile(fileext = ".pdf")
+  grDevices::pdf(pdf, width = 8.5, height = 11)
+  for (i in 1:16) {
+    graphics::plot.new()
+    graphics::text(0.5, 0.5, paste("Page", i), cex = 3)
+  }
+  grDevices::dev.off()
+
+  expect_warning(
+    check_pdf_pages(pdf, imageless = FALSE),
+    "PDF has 16 pages; Document AI sync limit is 15 pages"
+  )
+
+  expect_no_warning(
+    check_pdf_pages(pdf, imageless = TRUE)
+  )
+
+  unlink(pdf, force = TRUE)
+})
+
+test_that("check_pdf_pages warns when PDF exceeds imageless sync page limit", {
+  skip_on_cran()
+  skip_on_ci()
+
+  pdf <- tempfile(fileext = ".pdf")
+  grDevices::pdf(pdf, width = 8.5, height = 11)
+  for (i in 1:31) {
+    graphics::plot.new()
+    graphics::text(0.5, 0.5, paste("Page", i), cex = 3)
+  }
+  grDevices::dev.off()
+
+  expect_warning(
+    check_pdf_pages(pdf, imageless = TRUE),
+    "PDF has 31 pages; Document AI sync limit is 30 pages"
+  )
+
+  unlink(pdf, force = TRUE)
+})
+
 test_that("dai_sync errors with invalid loc parameter", {
   skip_on_cran()
   skip_on_ci()

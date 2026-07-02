@@ -103,8 +103,8 @@ is_colour <- function(x) {
 
 #' PDF to base64 tiff
 #'
-#' @description Converts a PDF file to a base64-encoded binary .tiff file.
-#' @param file path to a single-page pdf file
+  #' @description Converts a PDF file to a base64-encoded binary .tiff file.
+  #' @param file path to a single-page pdf file
 #' @return a base64-encoded string
 #' @export
 #' @examples

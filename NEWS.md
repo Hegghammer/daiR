@@ -1,6 +1,7 @@
 # daiR 1.2.1
 
 - Fixed bug in `make_hocr()`
+- Fixed `dai_sync()` to send PDFs as raw `application/pdf` bytes, preserving all pages instead of converting to a single-page image.
 
 # daiR 1.2.0 (latest CRAN version)
 

@@ -10,12 +10,13 @@ dai_sync(
   proc_id = Sys.getenv("DAI_PROCESSOR_ID"),
   proc_v = NA,
   skip_rev = "true",
+  imageless = FALSE,
   loc = "eu",
   token = dai_token()
 )
 }
 \arguments{
-\item{file}{path to a single-page pdf or image file}
+\item{file}{path to a pdf or image file.}
 
 \item{proj_id}{a GCS project id.}
 
@@ -26,6 +27,9 @@ latest processor from the stable channel, or 3) "rc" for the latest
 processor from the release candidate channel.}
 
 \item{skip_rev}{whether to skip human review; "true" or "false".}
+
+\item{imageless}{logical; if \code{TRUE}, removes images from the response
+and raises the sync page limit from 15 to 30. Defaults to \code{FALSE}.}
 
 \item{loc}{a two-letter region code; "eu" or "us".}
 
@@ -42,11 +46,13 @@ HTTP response object containing the OCRed text and additional data.
 }
 \details{
 Requires a GCS access token and some configuration of the
-.Renviron file; see package vignettes for details.Input files can be in
+.Renviron file; see package vignettes for details. Input files can be in
 either .pdf, .bmp, .gif, .jpeg, .jpg, .png, or .tiff format. PDF files
-can be up to five pages long. Extract the text from the response object with
-\code{text_from_dai_response()}. Inspect the entire response object with
-\code{httr::content()}.
+are sent to Document AI as raw \code{application/pdf} bytes. The Document AI
+synchronous endpoint accepts up to 15 pages (30 when \code{imageless = TRUE}).
+A warning is issued if a PDF exceeds the relevant limit. Extract the text
+from the response object with \code{text_from_dai_response()}. Inspect the
+entire response object with \code{httr::content()}.
 }
 \examples{
 \dontrun{
@@ -55,5 +61,7 @@ response <- dai_sync("doc_page.pdf")
 response <- dai_sync("doc_page.pdf",
   proc_v = "pretrained-ocr-v1.1-2022-09-12"
 )
+
+response <- dai_sync("long_doc.pdf", imageless = TRUE)
 }
 }
