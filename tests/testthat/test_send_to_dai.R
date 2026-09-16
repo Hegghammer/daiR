@@ -473,6 +473,57 @@ test_that("dai_async errors with invalid skip_rev parameter", {
   )
 })
 
+test_that("dai_async errors with invalid field_mask parameter", {
+  valid_args <- list(
+    files = "foo.pdf",
+    bucket = "abc",
+    proj_id = "abc",
+    proc_id = "def",
+    token = NULL
+  )
+
+  invalid_values <- list(NA, TRUE, 1, "", "   ", c("text", "pages.tokens"))
+
+  for (value in invalid_values) {
+    valid_args$field_mask <- value
+    expect_error(
+      do.call(dai_async, valid_args),
+      "Invalid field_mask parameter."
+    )
+  }
+})
+
+test_that("dai_async includes field_mask in the batch request", {
+  request <- new.env(parent = emptyenv())
+  field_mask <- "text,pages.pageNumber,pages.blocks,pages.tokens"
+
+  local_mocked_bindings(
+    POST = function(url, config, body) {
+      request$url <- url
+      request$body <- body
+      list(status_code = 200, date = Sys.time())
+    },
+    .package = "httr"
+  )
+
+  dai_async(
+    files = "foo.pdf",
+    dest_folder = "output",
+    bucket = "bucket",
+    proj_id = "project",
+    proc_id = "processor",
+    field_mask = field_mask,
+    token = NULL
+  )
+
+  body <- jsonlite::fromJSON(request$body, simplifyVector = FALSE)
+
+  expect_equal(
+    body$documentOutputConfig$gcsOutputConfig$fieldMask,
+    field_mask
+  )
+})
+
 test_that("dai_async errors with invalid loc parameter", {
   skip_on_cran()
   skip_on_ci()
@@ -944,5 +995,4 @@ test_that("URL construction handles edge cases", {
 })
 
 ## CLEANUP ---------------------------------------------------------------------
-
 

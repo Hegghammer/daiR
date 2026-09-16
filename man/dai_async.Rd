@@ -12,6 +12,7 @@ dai_async(
   proc_id = Sys.getenv("DAI_PROCESSOR_ID"),
   proc_v = NA,
   skip_rev = "true",
+  field_mask = NULL,
   loc = "eu",
   token = dai_token()
 )
@@ -35,6 +36,10 @@ latest processor from the stable channel, or 3) "rc" for the latest
 processor from the release candidate channel.}
 
 \item{skip_rev}{whether to skip human review; "true" or "false"}
+
+\item{field_mask}{optional comma-separated string specifying which Document
+output fields to include. For example, omit page images by listing the text
+and page fields you need without including \code{pages.image}.}
 
 \item{loc}{a two-letter region code; "eu" or "us"}
 
@@ -76,5 +81,17 @@ dai_async(my_files)
 
 # Specify a bucket subfolder for the json output:
 dai_async(my_files, dest_folder = "processed")
+
+# Exclude embedded page images by selecting only the required fields:
+dai_async(my_files,
+  field_mask = paste(
+    c(
+      "text", "uri", "shardInfo", "pages.pageNumber",
+      "pages.dimension", "pages.layout", "pages.detectedLanguages",
+      "pages.blocks", "pages.paragraphs", "pages.lines", "pages.tokens"
+    ),
+    collapse = ","
+  )
+)
 }
 }
