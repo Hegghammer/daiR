@@ -1,6 +1,7 @@
 # daiR 1.2.1
 
 - Fixed bug in `make_hocr()`
+- Fixed bug in `transpose_block()`
 - Fixed `dai_sync()` to send PDFs as raw `application/pdf` bytes, preserving all pages instead of converting to a single-page image.
 - Added a `field_mask` parameter to `dai_async()` for selecting fields in batch output, including support for excluding embedded page images.
 

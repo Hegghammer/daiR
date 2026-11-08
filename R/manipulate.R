@@ -1055,9 +1055,18 @@ get_vertices_entities <- function(lst) {
 #' @noRd
 transpose_block <- function(lst) {
 
-  xs <- c(lst[[1]][["x"]], lst[[2]][["x"]], lst[[3]][["x"]], lst[[4]][["x"]])
-  ys <- c(lst[[1]][["y"]], lst[[2]][["y"]], lst[[3]][["y"]], lst[[4]][["y"]])
-  data.frame(xs, ys)
+  # Document AI omits zero-valued fields in its JSON, so a vertex on the top or
+  # left edge of a page can arrive without one or both coordinates. Treat missing
+  # coordinates as zero so each vertex contributes exactly one value per axis.
+  coord <- function(vertex, axis) {
+    value <- vertex[[axis]]
+    if (is.null(value)) 0 else as.numeric(value)
+  }
+
+  data.frame(
+    xs = vapply(lst, coord, numeric(1), axis = "x"),
+    ys = vapply(lst, coord, numeric(1), axis = "y")
+  )
 }
 
 #' Transpose page

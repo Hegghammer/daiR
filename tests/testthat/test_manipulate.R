@@ -815,6 +815,53 @@ test_that("redraw_blocks() generates annotated images when images present", {
   skip("Requires JSON file with base64-encoded images")
 })
 
+## INTERNAL COORDINATE HELPERS -------------------------------------------------
+
+test_that("transpose_block() restores zero coordinates omitted from Document AI JSON", {
+  parsed <- jsonlite::fromJSON(sample_json_multipage, simplifyVector = FALSE)
+  vertices <- parsed$pages[[1]]$layout$boundingPoly$normalizedVertices
+
+  expect_identical(
+    daiR:::transpose_block(vertices),
+    data.frame(
+      xs = c(0, 1, 1, 0),
+      ys = c(0, 0, 1, 1)
+    )
+  )
+})
+
+test_that("transpose_block() preserves vertex order with a single omitted coordinate", {
+  vertices <- jsonlite::fromJSON(
+    '[{"x":0.1,"y":0.1},{"x":0.12379},{"x":0.9,"y":0.8},{"x":0.1,"y":0.8}]',
+    simplifyVector = FALSE
+  )
+
+  expect_identical(
+    daiR:::transpose_block(vertices),
+    data.frame(
+      xs = c(0.1, 0.12379, 0.9, 0.1),
+      ys = c(0.1, 0, 0.8, 0.8)
+    )
+  )
+})
+
+test_that("transpose_block() retains fully specified coordinates", {
+  vertices <- list(
+    list(x = 0.1, y = 0.2),
+    list(x = 0.9, y = 0.2),
+    list(x = 0.9, y = 0.8),
+    list(x = 0.1, y = 0.8)
+  )
+
+  expect_identical(
+    daiR:::transpose_block(vertices),
+    data.frame(
+      xs = c(0.1, 0.9, 0.9, 0.1),
+      ys = c(0.2, 0.2, 0.8, 0.8)
+    )
+  )
+})
+
 ## INTEGRATION TESTS -----------------------------------------------------------
 
 test_that("build_token_df() and build_block_df() produce compatible dataframes", {
